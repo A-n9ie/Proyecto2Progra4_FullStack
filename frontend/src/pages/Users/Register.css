@@ -1,0 +1,90 @@
+.register{
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    padding: 5%;
+    margin-top: 2%;
+    box-shadow: 0 -4px 8px rgba(1, 0, 0, 0.1), 0 4px 8px rgba(1, 0, 0, 0.1);
+    background: whitesmoke;
+    border-radius: 8px;
+}
+
+#noPadding{
+    padding: 0px;
+}
+
+.register img {
+    width: 20%;
+    height: auto;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    margin: 10px auto;
+}
+
+.register button{
+    background-color: cadetblue;
+    color: white;
+    margin-top: 5%;
+    padding: 5px 30px;;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: center;
+}
+
+div.campo {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    justify-content: center;
+    padding-left: 0;
+}
+
+div.campo>div {
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+div.campo>div:nth-child(1) {
+    white-space-collapse: collapse;
+    text-align: left;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.upload {
+    background-color: #efeeee;
+    padding: 3px 6px;
+    border-radius: 2px;
+    cursor: pointer;
+    display: inline-block;
+    border: 1px black;
+    font-size: 100%;
+}
+
+
+.error-message{
+    color: red;
+    font-size: 12px;
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+div.campo input {
+    width: 65%;
+    margin-left: 0;
+}
+
+.register i{
+    border-radius: 2px;
+    background-color: white;
+    border: 1px solid #777777;
+    padding: 15%;
+}

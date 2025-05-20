@@ -1,0 +1,152 @@
+#cuerpo_div_index{
+    background-color: #FCAF58;
+    padding: 5px;
+    width: 80%;
+    border-radius: 10px;
+    margin: 7% auto;
+}
+
+.busca_lugar_especialidad {
+    background-color: white;
+    padding: 20px;
+}
+
+.buscador {
+    padding: 10px 0px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.buscar_especialidad_lugar {
+    display: flex;
+}
+
+.buscar_especialidad_lugar input {
+    background-color: white;
+    border: 1px solid #FCAF58;
+    border-radius: 50px;
+    padding: 10px;
+    width: 200px;
+    outline: none;
+}
+.citas_disponibles form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    font-size: 15px;
+    margin-left: 10%;
+}
+
+.buscar_especialidad_lugar span {
+    margin-left: 10px;
+    background-color: #ccc;
+    border: 1px solid #ccc;
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #424242;
+    border-radius: 10px 0px 0px 10px;
+}
+.medicos{
+    margin-top: 10px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.informacion_medico{
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+
+.medicos h5{
+    color: black;
+    font-weight: bold;
+}
+
+.medicos p{
+    color: black;
+    font-size: 15px;
+    font-weight: normal;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.id_medico{
+    color: #007bff;
+}
+
+.medicos img{
+    width: 10%;
+    height: 10%;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.informacion_personal{
+    width: max-content;
+    min-width: 220px;
+    white-space: normal;
+}
+
+.dias{
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+.dias p{
+    font-size: 20px;
+    font-weight: bold;
+    color: darkorange;
+}
+.cada_cita{
+    display: flex;
+    align-items: center;
+    padding: 20px;
+}
+
+.dias_disponibles {
+    display: flex;
+    flex-direction: row;
+}
+
+.info_citas{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    padding: 10px;
+}
+
+.btn_schedule{
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: white;
+    border-radius: 20px;
+    text-align: center;
+}
+
+#cuerpo_div_index button, .historial_col button{
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 20px;
+    margin: 5px;
+}
+
+#cuerpo_div_index button:hover, .historial_col button:hover{
+    background-color: lightslategrey ;
+}
+
+.oculto {
+    display: none;
+}
+
+.toggleDias:checked ~ div .oculto {
+    display: block;
+}
