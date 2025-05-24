@@ -27,7 +27,7 @@ function Main(){
       <div className={"App-main"}>
         <AppProvider>
           <Routes>
-            <Route exact path="/" element={<Profile/>}/>
+            <Route exact path="/" element={<Principal/>}/>
             <Route exact path="/login" element={<Login />}/>
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile/>} />
@@ -61,7 +61,7 @@ function Header() {
             <nav>
               <ul className="Menu">
                 <li><Link to="/login">Login</Link></li>
-                {/* <li><Link to="/perfil">Mi Perfil</Link></li> */}
+                <li><Link to="/profile">Profile</Link></li>
               </ul>
             </nav>
           </div>
