@@ -28,13 +28,9 @@ public class ServiceDoctor {
         return doctorRepository.findById(id).orElse(null);
     }
 
-    public void addDoctor(Medico doctor) {
-        doctorRepository.save(doctor);
-    }
+    public Medico addDoctor(Medico doctor) {return doctorRepository.save(doctor);}
 
-    public Medico findDoctor(String cedula) {
-        return doctorRepository.findByCedula(cedula);
-    }
+    public Medico findDoctor(String cedula) {return doctorRepository.findByCedula(cedula);}
 
     public Medico getDoctorbyUser(Usuario usuario) {return doctorRepository.findByUsuario(usuario);}
 

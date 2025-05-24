@@ -1,5 +1,4 @@
-
-.doctorProfileBody{
+.cuerpo{
     font-family: Arial, sans-serif;
     font-size: 14px;
     /*border: 2px solid yellow;*/
@@ -13,7 +12,7 @@
 .cuerpo :first-child{
     margin: 5px;
 }
-.divFormProfile {
+.col_datos {
     display: flex;
     flex-direction: column;
     /* border: 1px solid blue;*/
@@ -25,7 +24,6 @@
 }
 
 .col_datos button{
-    align-content: center;
     display: flex;
     width: 15%;
     height: auto;
@@ -42,6 +40,12 @@
     background: #1ec0ca;
 }
 
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    bottom: 20%;
+}
 
 #numero {
     width: 60px;
@@ -69,7 +73,6 @@
 .col_datos input {
     padding: 5px;
     margin-bottom: 10px;
-    width: 20%;
 }
 
 .datos {

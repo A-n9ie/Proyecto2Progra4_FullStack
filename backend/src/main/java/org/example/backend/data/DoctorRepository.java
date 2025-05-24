@@ -9,10 +9,11 @@ import java.util.List;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<Medico, Integer> {
+    public Medico save(Medico medico);
     public Medico findByCedula(String cedula);
     public Medico findByUsuario(Usuario usuario);
 //    public Iterable<Medico> findMedicoByLugar(String lugar);
-public Medico findById(int id);
+    public Medico findById(int id);
 
     // Buscar médicos por ciudad (búsqueda parcial)
     Iterable<Medico> findByLugarAtencionContainingIgnoreCase(String ciudad);

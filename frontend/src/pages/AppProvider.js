@@ -28,6 +28,8 @@ function AppProvider(props) {
             horario_inicio: '',
             horario_fin: '',
             frecuencia_citas: '',
+            frecuencia_cantidad: 0,
+            frecuencia_tipo: '',
             foto_url: '',
             presentacion: ''
         }
