@@ -38,11 +38,13 @@ public class ControllerDoctor {
 
     @PutMapping("/profile/update/{cedula}")
     public Medico edit(@PathVariable String cedula, @RequestBody Medico medico) {
-        System.out.println( "id: " + cedula);
+        System.out.println(medico.getFrecuenciaCitas());
+        System.out.println(medico.getCostoConsulta());
         if(serviceDoctor.findDoctor(cedula) == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        return serviceDoctor.addDoctor(medico);
+        serviceDoctor.editDoctor(serviceUser.getUser("BBanner"),medico);
+        return serviceDoctor.findDoctor(cedula);
     }
 
 

@@ -59,20 +59,26 @@ function Profile() {
     function handleSave(event) {
       //  if (!validar()) return;
         const medicoUpdate = {
+            cedula: medicosState.medico.cedula,
             nombre: medicosState.medico.nombre,
             especialidad: medicosState.medico.especialidad,
-            costo_consulta: medicosState.medico.costo_consulta,
-            lugar_atencion: medicosState.medico.lugar_atencion,
-            frecuencia_citas: `${medicosState.medico.frecuencia_citas} ${medicosState.medico.frecuencia_tipo}`,
-            foto_url: medicosState.medico.foto_url,
-            presentacion: medicosState.medico.presentacion
+            costoConsulta: medicosState.medico.costoConsulta,
+            lugarAtencion: medicosState.medico.lugarAtencion,
+            frecuenciaCitas: `${medicosState.medico.frecuenciaCantidad} ${medicosState.medico.frecuenciaTipo}`,
+            fotoUrl: medicosState.medico.fotoUrl,
+            presentacion: medicosState.medico.presentacion,
+            horarioInicio: medicosState.medico.horarioInicio,
+            horarioFin: medicosState.medico.horarioFin,
+            dias: medicosState.medico.dias
         };
-        let request = new Request(`${backend}/update/${medicosState.medico._id}`, {
+
+
+        let request = new Request(`${backend}/update/${medicosState.medico.cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
         });
-
+        console.log("Medico enviado:", JSON.stringify(medicoUpdate, null, 2));
         (async () => {
             const response = await fetch(request);
             if (!response.ok) {
@@ -163,6 +169,7 @@ function Show({ entity, handleChange, handleSave }) {
                             <div className="col_datos">
                                 <label htmlFor="costo_consulta">Consultation fee:</label>
                                 <input
+                                    type="number"
                                     id="costoConsulta"
                                     name="costoConsulta"
                                     value={entity.costoConsulta}
@@ -237,8 +244,8 @@ function Show({ entity, handleChange, handleSave }) {
                                         onChange={handleChange}
                                         required
                                     >
-                                        <option value="hours">hours</option>
-                                        <option value="minutes">minutes</option>
+                                        <option value="horas">hours</option>
+                                        <option value="minutos">minutes</option>
                                     </select>
 
                                 </div>
