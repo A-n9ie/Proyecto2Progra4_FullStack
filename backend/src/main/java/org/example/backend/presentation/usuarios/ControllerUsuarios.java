@@ -71,7 +71,7 @@ public class ControllerUsuarios {
                 throw new IllegalArgumentException("Paciente ya existe");
             }
 
-            serviceUser.addUser(usuario, passwordConfirm);
+            serviceUser.addUser(usuario);
             usuario = serviceUser.getLastUser();
             persona.setUsuario(usuario);
 

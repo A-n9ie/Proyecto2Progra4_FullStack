@@ -2,6 +2,8 @@ package org.example.backend.logic;
 
 import org.example.backend.data.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 /*import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;*/
 
@@ -22,12 +24,9 @@ public class ServiceUser {
         return usuarioRepository.findByUsuario(username);
     }
 
-    public void addUser(Usuario user, String password) {
+    public void addUser(Usuario user) {
         if (getUser(user.getUsername()) != null) {
-            throw new IllegalArgumentException("User already exists");
-        }
-        if(!user.getClave().equals(password)) {
-            throw new IllegalArgumentException("Password doesn't match");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username Already Exist");
         }
        /* BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setClave(passwordEncoder.encode(user.getClave()));*/

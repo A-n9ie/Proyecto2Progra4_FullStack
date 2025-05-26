@@ -2,21 +2,21 @@ package org.example.backend.presentation.patient;
 
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-@org.springframework.stereotype.Controller("pacientes")
-
+@RestController
+@RequestMapping("/pacientes")
 public class ControllerPatient {
     @Autowired
     private ServicePatient servicePatient;
@@ -26,6 +26,15 @@ public class ControllerPatient {
     private ServiceDoctor serviceDoctor;
     @Autowired
     private ServiceUser serviceUser;
+
+    @PostMapping("/save")
+    public Paciente save(@RequestBody Paciente paciente) {
+        if(servicePatient.findPatient(paciente.getCedula()) != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Patient Already Exist");
+        }
+        serviceUser.addUser(paciente.getUsuario());
+        return servicePatient.addPatient(paciente);
+    }
 
     @GetMapping("/presentation/pacientes/show")
     public String show(Model model) {

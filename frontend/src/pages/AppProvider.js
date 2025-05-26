@@ -6,21 +6,21 @@ function AppProvider(props) {
 
     const [personasState, setPersonasState] = useState({
         personas: [],
-        persona: {nombre: '', cedula: '', usuario: ''}
+        persona: {nombre: '', cedula: '', usuario: { id: '', username: '', clave: '', rol: '' }}
     });
 
     const [usuariosState, setUsuariosState] = useState({
         usuarios: [],
-        usuario: { id: '', usuario: '', clave: '', rol: '' }
+        usuario: { id: '', username: '', clave: '', rol: '' }
     });
 
     const [medicosState, setMedicosState] = useState({
         medicos: [],
         medico: {
             id: '',
-            usuario_id: '',
             cedula: '',
             nombre: '',
+            usuario: '',
             aprobado: false,
             especialidad: '',
             costo_consulta: 0,
@@ -44,9 +44,9 @@ function AppProvider(props) {
         pacientes: [],
         paciente: {
             id: '',
-            usuario_id: '',
             cedula: '',
             nombre: '',
+            usuario: '',
             telefono: '',
             direccion: '',
             foto_url: ''

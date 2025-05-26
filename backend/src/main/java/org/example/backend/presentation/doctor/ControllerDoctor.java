@@ -1,5 +1,6 @@
 package org.example.backend.presentation.doctor;
 
+import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.data.HorarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +32,33 @@ public class ControllerDoctor {
         return serviceDoctor.medicosFindAll();
     }
 
+    @PostMapping("/save")
+    public Medico save(@RequestBody Medico medico) {
+        System.out.println("cedula medico: " + medico.getCedula());
+        System.out.println("nom medico: " + medico.getNombre());
+        System.out.println("username: " + medico.getUsuario().getUsername());
+        System.out.println("rol: " + medico.getUsuario().getRol());
+        if(serviceDoctor.findDoctor(medico.getCedula()) != null){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor Already Exist");
+        }
+        serviceUser.addUser(medico.getUsuario());
+        return serviceDoctor.addDoctor(medico);
+    }
+
     @GetMapping("/profile")
-    public Medico profile() {
-        return serviceDoctor.findDoctor("111111111");
+    public PerfilMedicoDTO profile() {
+        Medico medico = serviceDoctor.findDoctor("12128");
+        return new PerfilMedicoDTO(medico);
+    }
+
+    @GetMapping("/profile/{cedula}")
+    public List<HorariosMedico> profile(@PathVariable String cedula) {
+        System.out.println(cedula);
+        return serviceDoctor.horarioMdico(serviceDoctor.findDoctor(cedula).getId());
     }
 
     @PutMapping("/profile/update/{cedula}")
     public Medico edit(@PathVariable String cedula, @RequestBody Medico medico) {
-        System.out.println(medico.getFrecuenciaCitas());
-        System.out.println(medico.getCostoConsulta());
         if(serviceDoctor.findDoctor(cedula) == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -47,6 +66,15 @@ public class ControllerDoctor {
         return serviceDoctor.findDoctor(cedula);
     }
 
+//    @GetMapping("/save")
+//    public Medico save(@RequestBody Medico medico) {
+//
+//        Usuario nuevoUsuario = serviceUser.addUser(medico.getUsuario());
+//
+//        // Asociar usuario al médico
+//        medico.setUsuario(nuevoUsuario);
+//        Medico nuevoMedico = serviceDoctor.addDoctor(medico);
+//    }
 
     @GetMapping("/appointment/show")
     public String historyShow(@ModelAttribute("usuario") Usuario user,

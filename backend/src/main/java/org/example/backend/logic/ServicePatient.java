@@ -3,6 +3,8 @@ package org.example.backend.logic;
 import org.example.backend.data.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 @org.springframework.stereotype.Service("servicePatient")
 public class ServicePatient {
     @Autowired
@@ -12,8 +14,8 @@ public class ServicePatient {
         return patientRepository.findAll();
     }
 
-    public void addPatient(Paciente paciente) {
-        patientRepository.save(paciente);
+    public Paciente addPatient(Paciente paciente) {
+        return patientRepository.save(paciente);
     }
 
     public Paciente findPatient(String cedula) {return patientRepository.findByCedula(cedula);}
