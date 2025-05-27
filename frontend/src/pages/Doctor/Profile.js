@@ -3,14 +3,23 @@ import {AppContext} from '../AppProvider';
 import './Profile.css';
 
 function Profile() {
-    const {medicosState, setMedicosState, horariosState, setHorariosState} = useContext(AppContext);
-
-    const[error, setError] = useState('');
+    const {medicosState, setMedicosState} = useContext(AppContext);
+    const [horariosState, setHorariosState] = useState({
+        horarios: [],
+        horario: []
+    });
+    const [diasSeleccionados, setDiasSeleccionados] = useState([]);
 
     useEffect(()=> {
         handleDoctor();
-       // handlerDias();
     }, []);
+
+    useEffect(() => {
+        if (horariosState.horario) {
+            const dias = horariosState.horario.map(h => h.dia);
+            setDiasSeleccionados(dias);
+        }
+    }, [horariosState.horario]);
 
     const backend = "http://localhost:8080/medicos/profile";
 
@@ -26,16 +35,20 @@ function Profile() {
         });
     }
 
-    function handleDoctor(){
-        (async ()=>{
+    function handleDoctor() {
+        (async () => {
             const medico = await doctor();
+            if (!medico) return;
+
             if (medico.frecuenciaCitas) {
                 const [cantidad, tipo] = medico.frecuenciaCitas.split(" ");
                 medico.frecuenciaCantidad = parseInt(cantidad);
                 medico.frecuenciaTipo = tipo;
             }
 
-            setMedicosState({...medicosState, medico: medico});
+            setMedicosState(prev => ({ ...prev, medico }));
+
+            handlerDias(medico.cedula);
         })();
     }
 
@@ -47,34 +60,65 @@ function Profile() {
         return await response.json();
     }
 
-    /*function handlerDias(){
-        (async ()=>{
-            const horario = await horarioDias();
-
-            setHorariosState({...horariosState, horario: horario});
+    function handlerDias(cedula) {
+        (async () => {
+            const horario = await horarioDias(cedula);
+            if (horario) {
+                setHorariosState(prev => ({ ...prev, horario }));
+            }
         })();
     }
 
-    async function horarioDias(){
-        const request = new Request(`${backend}/${medicosState.medico.cedula}`, {method: 'GET', headers:{ }});
+    async function horarioDias(cedula) {
+        const request = new Request(`${backend}/${cedula}`, { method: 'GET' });
         const response = await fetch(request);
-        if(!response.ok){alert("Error: " + response.status);
-            return;}
+        if (!response.ok) {
+            alert("Error: " + response.status);
+            return;
+        }
         return await response.json();
-    }*/
+    }
 
     function validar() {
-        if (!medicosState.medico.cedula || !medicosState.medico.nombre || !medicosState.medico.especialidad
+        /*if (!medicosState.medico.cedula || !medicosState.medico.nombre || !medicosState.medico.especialidad
             || !medicosState.medico.costo_consulta || !medicosState.medico.lugar_atencion
-            || !medicosState.medico.foto_url || !medicosState.medico.presentacion || !medicosState.medico.frecuencia_citas) {
+            || !medicosState.medico.presentacion || !medicosState.medico.frecuencia_citas) {
             alert("Todos los campos deben ser llenados.");
             return false;
+        }*/
+        if (medicosState.medico.costoConsulta <= 0) {
+            alert("Consultation fee must be a positive value.");
+            return false;
         }
+
+        if (!diasSeleccionados || diasSeleccionados.length === 0) {
+            alert("Please select at least one available day.");
+            return false;
+        }
+
+        if (medicosState.medico.horarioInicio >= medicosState.medico.horarioFin) {
+            alert("End time must be later than start time.");
+            return false;
+        }
+
         return true;
     }
 
+    async function saveDias(cedula, dias) {
+        const request = new Request(`${backend}/dias/${cedula}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(dias)
+        });
+
+        const response = await fetch(request);
+        if (!response.ok) {
+            alert("Error al guardar días: " + response.status);
+        }
+    }
+
     function handleSave(event) {
-      //  if (!validar()) return;
+        if (!validar()) return;
         const medicoUpdate = {
             cedula: medicosState.medico.cedula,
             nombre: medicosState.medico.nombre,
@@ -100,7 +144,9 @@ function Profile() {
                 alert("Error: " + response.status);
                 return;
             }
+            await saveDias(medicosState.medico.cedula, diasSeleccionados);
             handleDoctor();
+            window.scrollTo(0, 0);
         })();
     }
 
@@ -110,12 +156,17 @@ function Profile() {
                 entity={medicosState.medico}
                 handleChange={handleChange}
                 handleSave={handleSave}
+                diasSeleccionados={diasSeleccionados}
+                setDiasSeleccionados={setDiasSeleccionados}
             />
+
         </>
     );
 }
 
-function Show({ entity, handleChange, handleSave }) {
+function Show({ entity, handleChange, handleSave, diasSeleccionados, setDiasSeleccionados }) {
+    const { horariosState } = useContext(AppContext);
+
     return (
         <div className="cuerpo">
             <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
@@ -269,20 +320,18 @@ function Show({ entity, handleChange, handleSave }) {
                             <div className="col_datos">
                                 <label>Days:</label>
                                 <div className="datos">
-
                                     {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((day) => (
                                         <label key={day}>
                                             <input
                                                 type="checkbox"
-                                                name="dias"
                                                 value={day}
-                                                checked={(entity.dias || []).includes(day)}
+                                                checked={diasSeleccionados.includes(day)}
                                                 onChange={(e) => {
                                                     const checked = e.target.checked;
-                                                    const newDias = checked
-                                                        ? [...(entity.dias || []), day]
-                                                        : (entity.dias || []).filter(d => d !== day);
-                                                    handleChange({target: {name: 'dias', value: newDias}});
+                                                    const updatedDias = checked
+                                                        ? [...diasSeleccionados, day]
+                                                        : diasSeleccionados.filter(d => d !== day);
+                                                    setDiasSeleccionados(updatedDias);
                                                 }}
                                             />
                                             <span>{day}</span>

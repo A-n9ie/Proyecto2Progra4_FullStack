@@ -41,6 +41,23 @@ function Register() {
         }));
     }
 
+    function clear() {
+        setPersonasState({
+            persona: {
+                cedula: '',
+                nombre: '',
+                foto_url: '',
+                foto_file: null,
+                usuario: {
+                    username: '',
+                    clave: '',
+                    rol: ''
+                }
+            }
+        });
+        setPassword({ password_c: '' });
+    }
+
 
     function validar() {
         if (password.password_c !== personasState.persona.usuario.clave) {

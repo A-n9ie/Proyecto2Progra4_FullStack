@@ -40,10 +40,6 @@ public class ControllerDoctor {
 
     @PostMapping("/save")
     public Medico save(@RequestBody Medico medico) {
-        System.out.println("cedula medico: " + medico.getCedula());
-        System.out.println("nom medico: " + medico.getNombre());
-        System.out.println("username: " + medico.getUsuario().getUsername());
-        System.out.println("rol: " + medico.getUsuario().getRol());
         if(serviceDoctor.findDoctor(medico.getCedula()) != null){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor Already Exist");
         }
@@ -53,14 +49,16 @@ public class ControllerDoctor {
 
     @GetMapping("/profile")
     public PerfilMedicoDTO profile() {
-        Medico medico = serviceDoctor.findDoctor("12128");
+        Medico medico = serviceDoctor.findDoctor("111111111");
         return new PerfilMedicoDTO(medico);
     }
 
     @GetMapping("/profile/{cedula}")
     public List<HorariosMedico> profile(@PathVariable String cedula) {
-        System.out.println(cedula);
-        return serviceDoctor.horarioMdico(serviceDoctor.findDoctor(cedula).getId());
+        List<HorariosMedico> list = serviceDoctor.horarioMdico(serviceDoctor.findDoctor(cedula).getId());
+        if(list.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lista no encontrada");
+        return list;
     }
 
     @PutMapping("/profile/update/{cedula}")
@@ -72,6 +70,12 @@ public class ControllerDoctor {
         return serviceDoctor.findDoctor(cedula);
     }
 
+    @PutMapping("/profile/dias/{cedula}")
+    public List<HorariosMedico> updateDias(@PathVariable String cedula, @RequestBody List<String> dias) {
+        Medico medico = serviceDoctor.findDoctor(cedula);
+        serviceDoctor.editDays(medico, dias);
+        return serviceDoctor.horarioMdico(medico.getId());
+    }
 
     @GetMapping("/appointment/show")
     public String historyShow(@ModelAttribute("usuario") Usuario user,
