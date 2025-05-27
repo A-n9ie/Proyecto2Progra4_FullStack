@@ -3,15 +3,16 @@ import {AppContext} from '../AppProvider';
 import './Profile.css';
 
 function Profile() {
-    const {medicosState, setMedicosState} = useContext(AppContext);
+    const {medicosState, setMedicosState, horariosState, setHorariosState} = useContext(AppContext);
 
     const[error, setError] = useState('');
 
     useEffect(()=> {
         handleDoctor();
+       // handlerDias();
     }, []);
 
-    const backend = "http://localhost:8080/medicos";
+    const backend = "http://localhost:8080/medicos/profile";
 
     function handleChange(event){
         const target = event.target;
@@ -39,12 +40,28 @@ function Profile() {
     }
 
     async function doctor(){
-        const request = new Request(backend+`/profile`, {method: 'GET', headers:{ }});
+        const request = new Request(backend, {method: 'GET', headers:{ }});
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
             return;}
         return await response.json();
     }
+
+    /*function handlerDias(){
+        (async ()=>{
+            const horario = await horarioDias();
+
+            setHorariosState({...horariosState, horario: horario});
+        })();
+    }
+
+    async function horarioDias(){
+        const request = new Request(`${backend}/${medicosState.medico.cedula}`, {method: 'GET', headers:{ }});
+        const response = await fetch(request);
+        if(!response.ok){alert("Error: " + response.status);
+            return;}
+        return await response.json();
+    }*/
 
     function validar() {
         if (!medicosState.medico.cedula || !medicosState.medico.nombre || !medicosState.medico.especialidad
@@ -68,12 +85,10 @@ function Profile() {
             fotoUrl: medicosState.medico.fotoUrl,
             presentacion: medicosState.medico.presentacion,
             horarioInicio: medicosState.medico.horarioInicio,
-            horarioFin: medicosState.medico.horarioFin,
-            dias: medicosState.medico.dias
+            horarioFin: medicosState.medico.horarioFin
         };
 
-
-        let request = new Request(`${backend}/profile/update/${medicosState.medico.cedula}`, {
+        let request = new Request(`${backend}/update/${medicosState.medico.cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
@@ -120,7 +135,7 @@ function Show({ entity, handleChange, handleSave }) {
                                     type="text"
                                     id="usernameMedico"
                                     name="username"
-                                    value={entity.username}
+                                    value={entity.usuario}
                                     readOnly
                                 />
                                 <br /><br />
@@ -251,12 +266,10 @@ function Show({ entity, handleChange, handleSave }) {
                                 </div>
                             </div>
 
-
-                            {/* Placeholder para los días (puedes adaptar a tu estado si los usas) */}
                             <div className="col_datos">
                                 <label>Days:</label>
                                 <div className="datos">
-                                    {/* Simulación de días de atención (ajústalo según tu modelo) */}
+
                                     {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((day) => (
                                         <label key={day}>
                                             <input

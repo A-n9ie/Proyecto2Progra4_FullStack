@@ -27,7 +27,7 @@ function Main(){
       <div className={"App-main"}>
         <AppProvider>
           <Routes>
-            <Route exact path="/" element={<Principal/>}/>
+            <Route exact path="/" element={<Register/>}/>
             <Route exact path="/login" element={<Login />}/>
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile/>} />
