@@ -27,15 +27,9 @@ public class ControllerDoctor {
     private ServiceUser serviceUser;
 
 
-
     @GetMapping
     public List<Medico> getMedicosConHorarios() {
         return serviceDoctor.medicosFindAll();
-    }
-
-    @GetMapping("/horarios")
-    public List<MedicosConHorarios> getMedicosConHorarios() {
-        return serviceDoctor.obtenerMedicosConHorarios();
     }
 
     @PostMapping("/save")
