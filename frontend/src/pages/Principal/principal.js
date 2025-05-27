@@ -60,7 +60,7 @@ function Medicos(){
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
             return;}
-        const data = await response.json(); // Esto es un objeto tipo: { "1": ["Lunes 10:00", "Martes 11:00"], ... }
+        const data = await response.json();
         // Convertir a array de objetos
         const horariosList = Object.entries(data).map(([medicoId, fechas]) => ({
             medicoId: parseInt(medicoId),

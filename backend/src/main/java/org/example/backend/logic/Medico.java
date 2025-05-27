@@ -25,7 +25,7 @@ public class Medico {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
-    //@JsonIgnore
+    @JsonIgnore
     private Usuario usuario;
 
     @Size(max = 20)
