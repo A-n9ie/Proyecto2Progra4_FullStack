@@ -110,14 +110,14 @@ public class ServiceDoctor {
 
     /// ////////// PRUEBBBBBAAAAA///////////////
     public Map<Integer, Map<String, List<String>>> obtenerMedicosConFechasYHoras() {
-        Map<Integer, List<String>> fechasPorMedico = obtenerMedicosConHorariosFechas(); // tu método actual
+        Map<Integer, List<String>> fechasPorMedico = obtenerMedicosConHorariosFechas();
         Map<Integer, Map<String, List<String>>> resultado = new HashMap<>();
 
         for (Map.Entry<Integer, List<String>> entry : fechasPorMedico.entrySet()) {
             Integer medicoId = entry.getKey();
             List<String> fechas = entry.getValue();
 
-            Medico medico = doctorRepository.findById(medicoId).orElse(null); // o como accedas al Medico
+            Medico medico = doctorRepository.findById(medicoId).orElse(null);
             if (medico == null) continue;
 
             Map<String, List<String>> fechasConHoras = new LinkedHashMap<>();
@@ -172,21 +172,6 @@ public class ServiceDoctor {
         diasDeLaSemana.put("Sábado", 6);
         diasDeLaSemana.put("Domingo", 7);
 
-//        for (HorariosMedico horario : horarios) {
-//            //sacr el id del medico
-//            medicoId = horario.getMedico().getId();
-//            String dia = horario.getDia();
-//
-//            LocalDate fechaDia = calcularFechaParaDiaSemana(fechaBase, diasDeLaSemana.get(dia));
-//
-//            // Agregar la fecha al mapa
-//            medicosConHorarios.putIfAbsent(medicoId, new ArrayList<>());
-//            List<String> diasDelMedico = medicosConHorarios.get(medicoId);
-//
-//            if (!diasDelMedico.contains(fechaDia.toString())) {
-//                diasDelMedico.add(fechaDia.toString());
-//            }
-//        }
         for (LocalDate fecha = fechaBase; !fecha.isAfter(fechaLimite); fecha = fecha.plusDays(1)) {
             String nombreDia = fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
 
