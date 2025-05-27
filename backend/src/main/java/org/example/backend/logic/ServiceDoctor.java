@@ -7,6 +7,7 @@ import org.example.backend.data.HorarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class ServiceDoctor {
         return horarioRepository.findAll();
     }
 
-    public Map<Integer, List<String>> obtenerMedicosConHorarios() {
+    public Map<Integer, List<String>> obtenerMedicosConHorariosFechas() {
         List<HorariosMedico> horarios = (List<HorariosMedico>) horariosMedicosFindAll();
         Map<Integer, List<String>> medicosConHorarios = new HashMap<>();
 
@@ -105,6 +106,41 @@ public class ServiceDoctor {
             }
         }
         return medicosConHorarios;
+    }
+
+    /// ////////// PRUEBBBBBAAAAA///////////////
+    public Map<Integer, Map<String, List<String>>> obtenerMedicosConFechasYHoras() {
+        Map<Integer, List<String>> fechasPorMedico = obtenerMedicosConHorariosFechas(); // tu método actual
+        Map<Integer, Map<String, List<String>>> resultado = new HashMap<>();
+
+        for (Map.Entry<Integer, List<String>> entry : fechasPorMedico.entrySet()) {
+            Integer medicoId = entry.getKey();
+            List<String> fechas = entry.getValue();
+
+            Medico medico = doctorRepository.findById(medicoId).orElse(null); // o como accedas al Medico
+            if (medico == null) continue;
+
+            Map<String, List<String>> fechasConHoras = new LinkedHashMap<>();
+
+            for (String fechaStr : fechas) {
+                LocalDate fecha = LocalDate.parse(fechaStr);
+                List<LocalTime> horas = medico.citasDisponibles(fecha);
+
+                if (!horas.isEmpty()) {
+                    List<String> horasFormateadas = horas.stream()
+                            .map(LocalTime::toString)
+                            .collect(Collectors.toList());
+
+                    fechasConHoras.put(fechaStr, horasFormateadas);
+                }
+            }
+
+            if (!fechasConHoras.isEmpty()) {
+                resultado.put(medicoId, fechasConHoras);
+            }
+        }
+
+        return resultado;
     }
 
     private LocalDate calcularFechaParaDiaSemana(LocalDate hoy, int diaSemana) {

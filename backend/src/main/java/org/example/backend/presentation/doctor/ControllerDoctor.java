@@ -27,8 +27,13 @@ public class ControllerDoctor {
 
 
     @GetMapping
-    public List<Medico> getMedicosConHorarios() {
+    public List<Medico> getMedicos() {
         return serviceDoctor.medicosFindAll();
+    }
+
+    @GetMapping("/horarios")
+    public Map<Integer, Map<String, List<String>>> getMedicosConHorarios() {
+        return serviceDoctor.obtenerMedicosConFechasYHoras();
     }
 
     @GetMapping("/profile")

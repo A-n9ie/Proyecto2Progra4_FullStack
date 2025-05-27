@@ -11,7 +11,7 @@ function Profile() {
         handleDoctor();
     }, []);
 
-    const backend = "http://localhost:8080/medicos/profile";
+    const backend = "http://localhost:8080/medicos";
 
     function handleChange(event){
         const target = event.target;
@@ -39,7 +39,7 @@ function Profile() {
     }
 
     async function doctor(){
-        const request = new Request(backend, {method: 'GET', headers:{ }});
+        const request = new Request(backend+`/profile`, {method: 'GET', headers:{ }});
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
             return;}
@@ -73,7 +73,7 @@ function Profile() {
         };
 
 
-        let request = new Request(`${backend}/update/${medicosState.medico.cedula}`, {
+        let request = new Request(`${backend}/profile/update/${medicosState.medico.cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
