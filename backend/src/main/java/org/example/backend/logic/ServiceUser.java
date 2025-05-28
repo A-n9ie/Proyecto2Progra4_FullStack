@@ -3,6 +3,7 @@ package org.example.backend.logic;
 import org.example.backend.data.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.server.ResponseStatusException;
 /*import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.core.context.SecurityContextHolder;*/
@@ -21,7 +22,7 @@ public class ServiceUser {
     }
 
     public Usuario getUser(String username) {
-        return usuarioRepository.findByUsuario(username);
+        return usuarioRepository.findByUsuario(username).orElse(null);
     }
 
     public void addUser(Usuario user) {
@@ -34,7 +35,6 @@ public class ServiceUser {
     }
 
     public String getUserAuthenticated (){
-       // return SecurityContextHolder.getContext().getAuthentication().getName();
-        return "user";
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 }

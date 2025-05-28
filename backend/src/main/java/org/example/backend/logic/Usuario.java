@@ -2,13 +2,19 @@ package org.example.backend.logic;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.Collections;
 
 @Entity
 @Table(name = "usuarios")
-public class Usuario {
+public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -38,52 +44,59 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario")
     private Set<Paciente> pacientes = new LinkedHashSet<>();
 
-    public Integer getId() {
-        return id;
+    // Getters y setters originales
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
+
+    public String getUsuario() { return usuario; }
+    public void setUsuario(String usuario) { this.usuario = usuario; }
+
+    public String getClave() { return clave; }
+    public void setClave(String clave) { this.clave = clave; }
+
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
+
+    public Set<Medico> getMedicos() { return medicos; }
+    public void setMedicos(Set<Medico> medicos) { this.medicos = medicos; }
+
+    public Set<Paciente> getPacientes() { return pacientes; }
+    public void setPacientes(Set<Paciente> pacientes) { this.pacientes = pacientes; }
+
+    // Implementación de UserDetails
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(this.getRol()));
+
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    @Override
+    public String getPassword() {
+        return clave;
     }
 
+    @Override
     public String getUsername() {
         return usuario;
     }
 
-    public void setUsername(String usuario) {
-        this.usuario = usuario;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public String getClave() {
-        return clave;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setClave(String clave) {
-        this.clave = clave;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public String getRol() {
-        return rol;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
-
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
-
-    public Set<Medico> getMedicos() {
-        return medicos;
-    }
-
-    public void setMedicos(Set<Medico> medicos) {
-        this.medicos = medicos;
-    }
-
-    public Set<Paciente> getPacientes() {
-        return pacientes;
-    }
-
-    public void setPacientes(Set<Paciente> pacientes) {
-        this.pacientes = pacientes;
-    }
-
 }

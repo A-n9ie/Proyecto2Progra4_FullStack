@@ -1,29 +1,25 @@
 import React, { useState } from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Login.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
 
-function Login() {
-    const [formData, setFormData] = useState({ username: '', password: '' });
+function Login({ handleLogin }) {
+    const [formData, setFormData] = useState({ usuario: '', clave: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-            setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+        setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (formData.username === 'admin' && formData.password === '123') {
-            setError('');
-            navigate('/');
-        } else {
-            setError('Usuario no existe o contraseña incorrecta');
+        try {
+            await handleLogin(formData);
+            navigate("/home"); // redirección SPA (sin recarga)
+        } catch (err) {
+            setError("Credenciales inválidas desde LOGIN.JS");
         }
     };
 
@@ -41,10 +37,10 @@ function Login() {
                             <FontAwesomeIcon icon={faUser} className="icon" />
                             <input
                                 type="text"
-                                name="username"
-                                value={formData.username}
+                                name="usuario"
+                                value={formData.usuario}
                                 onChange={handleChange}
-                                placeholder="Username"
+                                placeholder="Usuario"
                                 required
                             />
                         </div>
@@ -55,10 +51,10 @@ function Login() {
                             <FontAwesomeIcon icon={faLock} className="icon" />
                             <input
                                 type="password"
-                                name="password"
-                                value={formData.password}
+                                name="clave"
+                                value={formData.clave}
                                 onChange={handleChange}
-                                placeholder="Password"
+                                placeholder="Contraseña"
                                 required
                             />
                         </div>
@@ -70,8 +66,8 @@ function Login() {
                 </form>
 
                 <div className="RegisterHere">
-                    Don't have an account yet?
-                    <p><Link to="/register">Sign up here.</Link></p>
+                    ¿No tienes cuenta aún?
+                    <p><Link to="/register">Regístrate aquí.</Link></p>
                 </div>
 
                 {error && (

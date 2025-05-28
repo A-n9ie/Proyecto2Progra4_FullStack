@@ -3,22 +3,29 @@ package org.example.backend.presentation.usuarios;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.*;
 import org.example.backend.logic.*;
+import org.example.backend.presentation.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-@org.springframework.stereotype.Controller("usuarios")
 
+
+@RestController
+@RequestMapping("/usuarios")
 public class ControllerUsuarios {
     @Autowired
     private ServiceUser serviceUser;
@@ -26,6 +33,15 @@ public class ControllerUsuarios {
     private ServiceDoctor serviceDoctor;
     @Autowired
     private ServicePatient servicePatient;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
+
+
+
 
     @PostMapping("/notAuthorized")
     public String error(Model model) {
@@ -46,7 +62,6 @@ public class ControllerUsuarios {
         model.addAttribute("persona", new Persona());
         return "/presentation/usuarios/register";
     }
-
 
 
     @PostMapping("/presentation/usuarios/create")
@@ -112,10 +127,6 @@ public class ControllerUsuarios {
     }
 
 
-
-
-
-
     @GetMapping("/presentation/perfil/show")
     public String profile(RedirectAttributes redirect) {
         String username = serviceUser.getUserAuthenticated();
@@ -158,19 +169,61 @@ public class ControllerUsuarios {
         String username = serviceUser.getUserAuthenticated();
         Usuario usuario = serviceUser.getUser(username);
         redirect.addFlashAttribute("usuario", usuario);
-        if(usuario.getRol().equals("Paciente"))
+        if (usuario.getRol().equals("Paciente"))
             return "redirect:/presentation/patient/history/show";
         else
             return "redirect:/presentation/doctor/appointment/show";
     }
 
 
-//    Login
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario user) {
+        System.out.println("ENTRÓ AL MÉTODO LOGIN");
+        System.out.println("Login recibido: usuario=" + user.getUsuario() + ", clave=" + user.getClave());
 
-    @GetMapping("/presentation/usuarios/login")
-    public String showLoginPage() {
-        return "/presentation/usuarios/login";
+        var authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        user.getUsuario(), user.getClave()));
+
+        String token = tokenService.generateToken(authentication);
+        System.out.println("Token generado: " + token);
+
+        return ResponseEntity.ok().body(Map.of("token", token));
     }
+
+    @GetMapping("/verificar-token")
+    public ResponseEntity<?> verificarToken() {
+        return ResponseEntity.ok().body(Map.of("status", "token válido"));
+    }
+
+
+
+
+
+
+//    @GetMapping("/home")
+//    public String home(HttpSession session, Model model) {
+//        // Obtener el usuario autenticado desde SecurityContext
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String username = "";
+//
+//        if (principal instanceof UserDetails) {
+//            username = ((UserDetails) principal).getUsername();
+//        }
+//
+//        // Guardar en la sesión si no está presente
+//        if (session.getAttribute("username") == null) {
+//            session.setAttribute("username", username);
+//        }
+//
+//        // Pasar el nombre de usuario a la vista
+//        model.addAttribute("username", username);
+//        return "/presentation/fragments/fragments";
+//    }
+
+
+
+
 
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
@@ -192,11 +245,5 @@ public class ControllerUsuarios {
         model.addAttribute("username", username);
         return "/presentation/fragments/fragments";
     }
-
-
-
-
-
-
 
 }
