@@ -60,8 +60,13 @@ function Header() {
             <p>Search</p>
             <nav>
               <ul className="Menu">
-                <li><Link to="/login">Login</Link></li>
-                <li><Link to="/profile">Profile</Link></li>
+                <li>
+                    <Link to="/login">Login</Link>
+                    <ul>
+                        <li><Link to="/profile">Profile</Link></li>
+                        <li><Link to="/logout">Logout</Link></li>
+                    </ul>
+                </li>
               </ul>
             </nav>
           </div>
