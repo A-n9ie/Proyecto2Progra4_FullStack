@@ -76,7 +76,12 @@ public class SecurityConfig {
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/usuarios/login", "/usuarios/registerSys", "/usuarios/create").permitAll()
+                        .requestMatchers( "/usuarios/login",
+                                "/usuarios/registerSys",
+                                "/usuarios/create",
+                                "/medicos",
+                                "/medicos/horarios"       // 👈 Agrega estas
+                        ).permitAll()
                         .requestMatchers("/doctor/**").hasAuthority("Medico")
                         .requestMatchers("/patient/**").hasAuthority("Paciente")
                         .requestMatchers("/administrador/**").hasAuthority("Administrador")
