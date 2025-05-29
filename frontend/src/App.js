@@ -33,9 +33,17 @@ function App() {
                     if (!res.ok) throw new Error();
                     const usuario = getUser(token);
                     setUser(usuario);
+
+                    // ✅ Obtener perfil después de verificar token
+                    return fetch("http://localhost:8080/usuarios/me", {
+                        headers: {
+                            "Authorization": "Bearer " + token
+                        }
+                    });
                 })
+                .then(res => res.json())
                 .catch(() => {
-                    // Token inválido o backend caído
+                    // Token inválido o error
                     localStorage.removeItem("token");
                     setUser({ id: null, rol: '', name: '' });
                 });
@@ -136,8 +144,17 @@ function Header({ user, handleLogout }) {
                         <ul className="Menu">
                             <li><Link to="/">Inicio</Link></li>
                             {!user.id && <li><Link to="/login">Login</Link></li>}
-                            {user.id && <li><Link to="/profile">Profile</Link></li>}
-                            {user.id && <li><Link to="/" onClick={onLogout}>Logout</Link></li>}
+                            {user.id && (
+                                <li className="dropdown">
+                                    <input type="checkbox" id="user-toggle" className="dropdown-toggle" />
+                                    <label htmlFor="user-toggle" className="dropbtn">{user.name}</label>
+                                    <ul className="dropdown-content">
+                                        <li><Link to="/profile">Profile</Link></li>
+                                        <li><button onClick={onLogout}>Logout</button></li>
+                                    </ul>
+                                </li>
+                            )}
+
                         </ul>
                     </nav>
                 </div>
@@ -152,9 +169,9 @@ function Footer() {
             <div className="footer-content">
                 Total Soft Inc.
                 <div>
-                    <Link to="#" className="icon"><FontAwesomeIcon icon={faTwitter} /></Link>
-                    <Link to="#" className="icon"><FontAwesomeIcon icon={faFacebookF} /></Link>
-                    <Link to="#" className="icon"><FontAwesomeIcon icon={faInstagram} /></Link>
+                    <Link to="#" className="icon"><FontAwesomeIcon icon={faTwitter}/></Link>
+                    <Link to="#" className="icon"><FontAwesomeIcon icon={faFacebookF}/></Link>
+                    <Link to="#" className="icon"><FontAwesomeIcon icon={faInstagram}/></Link>
                 </div>
                 <div className="AnioInf">©2019 Tsf, Inc.</div>
             </div>

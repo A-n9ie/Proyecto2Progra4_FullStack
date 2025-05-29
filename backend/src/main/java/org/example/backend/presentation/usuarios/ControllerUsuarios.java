@@ -2,13 +2,16 @@ package org.example.backend.presentation.usuarios;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.*;
+import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.logic.*;
 import org.example.backend.presentation.security.TokenService;
+import org.example.backend.presentation.security.UserDetailsImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -18,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -39,9 +43,6 @@ public class ControllerUsuarios {
 
     @Autowired
     private TokenService tokenService;
-
-
-
 
     @PostMapping("/notAuthorized")
     public String error(Model model) {
@@ -196,8 +197,16 @@ public class ControllerUsuarios {
         return ResponseEntity.ok().body(Map.of("status", "token válido"));
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<?> userLogin(Authentication authentication) {
+        Usuario usuario = (Usuario) authentication.getPrincipal();
+        Map<String, Object> usuarioLoggeado = new HashMap<>();
+        usuarioLoggeado.put("id", usuario.getId());
+        usuarioLoggeado.put("username", usuario.getUsuario());
+        usuarioLoggeado.put("rol", usuario.getRol());
 
-
+        return ResponseEntity.ok(usuarioLoggeado);
+    }
 
 
 
