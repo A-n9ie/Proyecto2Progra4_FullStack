@@ -44,7 +44,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return new UserDetailsImp(user.orElse(null));
 
         } catch (UsernameNotFoundException e) {
-            throw e; // ya lanzado arriba
+            throw e;
         } catch (Exception e) {
             System.out.println("Error inesperado al cargar usuario: " + e.getMessage());
             throw new UsernameNotFoundException("Error interno al autenticar usuario");

@@ -19,7 +19,7 @@ import { Link, BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react
 function App() {
     const [user, setUser] = useState({ id: null, rol: '', name: '' });
 
-    // Carga usuario de token si hay en localStorage al iniciar la app
+    // Carga usuario de token
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {

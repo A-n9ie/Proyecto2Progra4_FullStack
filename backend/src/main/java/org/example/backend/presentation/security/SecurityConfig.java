@@ -71,7 +71,7 @@ public class SecurityConfig {
                     config.setAllowedOrigins(List.of("http://localhost:3000"));
                     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-                    config.setAllowCredentials(true); // importante si usas cookies (opcional)
+                    config.setAllowCredentials(true);
                     return config;
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -80,7 +80,7 @@ public class SecurityConfig {
                                 "/usuarios/registerSys",
                                 "/usuarios/create",
                                 "/medicos",
-                                "/medicos/horarios"       // 👈 Agrega estas
+                                "/medicos/horarios"
                         ).permitAll()
                         .requestMatchers("/doctor/**").hasAuthority("Medico")
                         .requestMatchers("/patient/**").hasAuthority("Paciente")
@@ -106,7 +106,7 @@ public class SecurityConfig {
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers("/usuarios/login", "/usuarios/registerSys", "/usuarios/create").permitAll()
-//                        // aquí define roles o scopes que necesitas para tus endpoints
+//                        // aquí define roles o scopes
 //                        .requestMatchers("/doctor/**").hasAuthority("Medico")
 //                        .requestMatchers("/patient/**").hasAuthority("Paciente")
 //                        .requestMatchers("/administrador/**").hasAuthority("Administrador")

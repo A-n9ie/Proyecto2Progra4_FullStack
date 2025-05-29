@@ -44,7 +44,7 @@ public class Usuario implements UserDetails {
     @OneToMany(mappedBy = "usuario")
     private Set<Paciente> pacientes = new LinkedHashSet<>();
 
-    // Getters y setters originales
+
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
 
