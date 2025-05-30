@@ -2,8 +2,8 @@ import {useContext, useEffect, useState} from 'react';
 import {AppContext} from '../AppProvider';
 import './Profile.css';
 
-function Profile() {
-    const {medicosState, setMedicosState} = useContext(AppContext);
+function Profile({ user }) {
+    const {medicosState, setMedicosState, usuariosState, setUsuariosState} = useContext(AppContext);
     const [horariosState, setHorariosState] = useState({
         horarios: [],
         horario: []
@@ -11,7 +11,7 @@ function Profile() {
     const [diasSeleccionados, setDiasSeleccionados] = useState([]);
 
     useEffect(()=> {
-        handleUser();
+        handleDoctor();
     }, []);
 
     useEffect(() => {
@@ -35,7 +35,7 @@ function Profile() {
         });
     }
 
-    function handleUser() {
+    function handleDoctor() {
         (async () => {
             const medico = await doctor();
             if (!medico) return;
@@ -53,7 +53,7 @@ function Profile() {
     }
 
     async function doctor(){
-        const request = new Request(`${backend}/medicos/profile`, {
+        const request = new Request(`${backend}/medicos/profile/${user.name}`, {
             method: 'GET',
             headers: {}
         });
@@ -74,7 +74,7 @@ function Profile() {
     }
 
     async function horarioDias(cedula) {
-        const request = new Request(`${backend}/medicos/profile/${cedula}`, { method: 'GET' });
+        const request = new Request(`${backend}/medicos/profile/days/${cedula}`, { method: 'GET' });
         const response = await fetch(request);
         if (!response.ok) {
             alert("Error: " + response.status);
@@ -109,7 +109,7 @@ function Profile() {
     }
 
     async function saveDias(cedula, dias) {
-        const request = new Request(`${backend}/medicos/profile/dias/${cedula}`, {
+        const request = new Request(`${backend}/medicos/profile/saveDays/${cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(dias)
@@ -136,7 +136,7 @@ function Profile() {
             horarioFin: medicosState.medico.horarioFin
         };
 
-        let request = new Request(`${backend}/medicos/profile/update/${medicosState.medico.cedula}`, {
+        let request = new Request(`${backend}/medicos/profile/update/${user.name}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
@@ -149,7 +149,7 @@ function Profile() {
                 return;
             }
             await saveDias(medicosState.medico.cedula, diasSeleccionados);
-            handleUser();
+            handleDoctor();
             window.scrollTo(0, 0);
         })();
     }
@@ -324,7 +324,7 @@ function Show({ entity, handleChange, handleSave, diasSeleccionados, setDiasSele
                             <div className="col_datos">
                                 <label>Days:</label>
                                 <div className="datos">
-                                    {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'].map((day) => (
+                                    {['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'].map((day) => (
                                         <label key={day}>
                                             <input
                                                 type="checkbox"

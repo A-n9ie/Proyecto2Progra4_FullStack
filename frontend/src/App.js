@@ -105,7 +105,7 @@ function Main({ user, handleLogin }) {
                     <Route path="/" element={<Principal />} />
                     <Route path="/login" element={user.id ? <Navigate to="/" /> : <Login handleLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/profile" element={user.id ? <Profile /> : <Navigate to="/login" />} />
+                    <Route path="/profile" element={user.id ? <Profile user={user} /> : <Navigate to="/login" />} />
                 </Routes>
             </AppProvider>
         </div>

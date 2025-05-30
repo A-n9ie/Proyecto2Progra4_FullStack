@@ -47,30 +47,30 @@ public class ControllerDoctor {
         return serviceDoctor.addDoctor(medico);
     }
 
-    @GetMapping("/profile")
-    public PerfilMedicoDTO profile() {
-        Medico medico = serviceDoctor.findDoctor("111111111");
+    @GetMapping("/profile/{name}")
+    public PerfilMedicoDTO profile(@PathVariable String name) {
+        Medico medico = serviceDoctor.getDoctorbyUser(serviceUser.getUser(name));
         return new PerfilMedicoDTO(medico);
     }
 
-    @GetMapping("/profile/{cedula}")
-    public List<HorariosMedico> profile(@PathVariable String cedula) {
+    @GetMapping("/profile/days/{cedula}")
+    public List<HorariosMedico> profileDays(@PathVariable String cedula) {
         List<HorariosMedico> list = serviceDoctor.horarioMdico(serviceDoctor.findDoctor(cedula).getId());
         if(list.isEmpty())
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lista no encontrada");
         return list;
     }
 
-    @PutMapping("/profile/update/{cedula}")
-    public Medico edit(@PathVariable String cedula, @RequestBody Medico medico) {
-        if(serviceDoctor.findDoctor(cedula) == null){
+    @PutMapping("/profile/update/{name}")
+    public Medico edit(@PathVariable String name, @RequestBody Medico medico) {
+        if(serviceDoctor.findDoctor(medico.getCedula()) == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        serviceDoctor.editDoctor(serviceUser.getUser("BBanner"),medico);
-        return serviceDoctor.findDoctor(cedula);
+        serviceDoctor.editDoctor(serviceUser.getUser(name),medico);
+        return serviceDoctor.findDoctor(medico.getCedula());
     }
 
-    @PutMapping("/profile/dias/{cedula}")
+    @PutMapping("/profile/saveDays/{cedula}")
     public List<HorariosMedico> updateDias(@PathVariable String cedula, @RequestBody List<String> dias) {
         Medico medico = serviceDoctor.findDoctor(cedula);
         serviceDoctor.editDays(medico, dias);
