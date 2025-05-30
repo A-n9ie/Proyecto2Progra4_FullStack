@@ -36,7 +36,6 @@ function App() {
                     const usuario = getUser(token);
                     setUser(usuario);
 
-                    // ✅ Obtener perfil después de verificar token
                     return fetch("http://localhost:8080/usuarios/me", {
                         headers: {
                             "Authorization": "Bearer " + token

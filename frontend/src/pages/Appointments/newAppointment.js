@@ -42,7 +42,7 @@ function AgendarCitas({user}) {
     };
 
     const handleCancelar = () => {
-        // Simplemente redirige o cambia de vista, según tu lógica
+
         window.history.back(); // o navigate('/otroPath');
     };
 
