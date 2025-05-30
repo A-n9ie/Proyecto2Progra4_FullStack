@@ -1,6 +1,7 @@
 import './principal.css';
 import {AppContext} from '../AppProvider';
 import {useContext, useEffect, useState} from 'react';
+import { Link } from 'react-router-dom';
 
 function Medicos(){
     const { medicosState, setMedicosState, horariosState, setHorariosState } = useContext(AppContext);
@@ -23,6 +24,8 @@ function Medicos(){
         });
     }
 
+
+
     function handleList(){
         (async ()=>{
             const medicos = await list();
@@ -30,22 +33,6 @@ function Medicos(){
             setMedicosState({...medicosState, medicos: medicos});
             setHorariosState({...horariosState, horarios : horarios});
         })();
-    }
-
-
-     function enableSchedule(){
-        // const request = new Request(backend, {method: 'GET', headers:{ }});
-        // const response = await fetch(request);
-        // setHorariosState({...horariosState})
-        // if(!response.ok){
-        //     alert("Error: " + response.status);
-        //     return;
-        // }
-        // return await response.json();
-         (async ()=>{
-             const horarios = await listHorarios();
-             setHorariosState({...horariosState, horarios: horarios});
-         })();
     }
 
     async function list(){
@@ -60,11 +47,12 @@ function Medicos(){
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
             return;}
+        //me devuelve un
         const data = await response.json();
         // Convertir a array de objetos
         const horariosList = Object.entries(data).map(([medicoId, fechas]) => ({
             medicoId: parseInt(medicoId),
-            horarios: fechas // { fecha: [horas] }
+            horarios: fechas
         }));
         return horariosList;
     }
@@ -87,7 +75,7 @@ function List({list, listHorarios}) {
                         <input type="text" name="speciality" placeholder="" />
                         <span>City</span>
                         <input type="text" name="city" placeholder="" />
-                        <button type="submit" name="buscar">
+                        <button type="submit" name="buscar" className="btn_schedule">
                             Search
                         </button>
                     </form>
@@ -120,25 +108,28 @@ function List({list, listHorarios}) {
                                             <div className="dias_disponibles" key={horario.medicoId}>
                                                 {Object.entries(horario.horarios).map(([fecha, horas], index) => (
                                                     <div key={index} className={index >= 3 ? 'oculto' : ''}>
-                                                        <p>{fecha}</p>
+                                                        <div className="dias">
+                                                            <p>{fecha}</p>
+                                                        </div>
                                                         <div className="citas_disponibles">
-                                                            <div className="citas_disponibles">
                                                                 <form>
                                                                     {horas.map((hora, hIndex) => (
-                                                                        <button
+                                                                        <Link
                                                                             key={hIndex}
-                                                                            type="submit"
-                                                                            name="hora"
-                                                                            value={hora}
-                                                                        >
+                                                                            to= "/agendar"
+                                                                              state={{
+                                                                                  medico: m,
+                                                                                  fecha: fecha,
+                                                                                  hora: hora
+                                                                              }}
+                                                                            className="btn_schedule">
                                                                             {hora}
-                                                                        </button>
+                                                                        </Link>
                                                                     ))}
                                                                     <input type="hidden" name="fecha" value={fecha}/>
                                                                     <input type="hidden" name="medicoId"
                                                                            value={horario.medicoId}/>
                                                                 </form>
-                                                            </div>
                                                         </div>
                                                         </div>
                                                         ))}

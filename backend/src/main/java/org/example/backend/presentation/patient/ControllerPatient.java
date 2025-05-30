@@ -1,6 +1,7 @@
 package org.example.backend.presentation.patient;
 
 import org.example.backend.DTO.PerfilMedicoDTO;
+import org.example.backend.data.UsuarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,8 @@ public class ControllerPatient {
     private ServiceDoctor serviceDoctor;
     @Autowired
     private ServiceUser serviceUser;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     @PostMapping("/save")
     public Paciente save(@RequestBody Paciente paciente) {
@@ -111,6 +114,8 @@ public class ControllerPatient {
                                   @RequestParam("hora") String hora_cita,
                                   @RequestParam Integer medicoId,
                                   Model model) {
+
+
         try {
             // Obtener usuario autenticado
             String username = serviceUser.getUserAuthenticated();
@@ -154,20 +159,25 @@ public class ControllerPatient {
 
     @PostMapping("/confirmar")
     public String confirmarCita(@RequestParam(value = "si", required = false) String confirmar,
-                                @RequestParam(value = "no", required = false) String rechazar,
+//                                @RequestParam(value = "no", required = false) String rechazar,
+//                                @RequestHeader ("usuario") String usuario,
                                 @RequestParam("dia") String fecha_cita,
                                 @RequestParam("hora") String hora_cita,
                                 @RequestParam("medicoId") Integer medicoId,
                                 Model model) {
-
-        if (rechazar != null) {
-            return "redirect:";
-        }
+        System.out.println("Confirmar cita llamada con:");
+        System.out.println("confirmar: " + confirmar);
+        System.out.println("fecha: " + fecha_cita);
+        System.out.println("hora: " + hora_cita);
+        System.out.println("medicoId: " + medicoId);
+//        if (rechazar != null) {
+//            return "redirect:";
+//        }
 
         if(confirmar != null) {
             try {
-                String username = serviceUser.getUserAuthenticated();
-                Usuario usuario = serviceUser.getUser(username);
+
+                Usuario usuarioAutenticado = serviceUser.getUser("Glucas");
 
                 // Convertir fecha y hora
                 LocalDate fecha = LocalDate.parse(fecha_cita, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -181,7 +191,7 @@ public class ControllerPatient {
                 }
 
                 // Obtener pacientes del usuario
-                Set<Paciente> pacientes = usuario.getPacientes();
+                Set<Paciente> pacientes = usuarioAutenticado.getPacientes();
                 if (pacientes == null || pacientes.isEmpty()) {
                     model.addAttribute("error", "No hay pacientes asociados al usuario.");
                     return "redirect:";

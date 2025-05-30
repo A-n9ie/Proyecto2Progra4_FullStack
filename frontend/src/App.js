@@ -4,6 +4,8 @@ import Register from './pages/Users/Register'
 import Login from './pages/Users/Login'
 import Profile from './pages/Users/Profile'
 import Principal from "./pages/Principal/principal";
+import NewAppointment from "./pages/Appointments/newAppointment";
+
 // import {Link, BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
@@ -103,6 +105,7 @@ function Main({ user, handleLogin }) {
             <AppProvider>
                 <Routes>
                     <Route path="/" element={<Principal />} />
+                    <Route path="/agendar" element={<NewAppointment />} />
                     <Route path="/login" element={user.id ? <Navigate to="/" /> : <Login handleLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/profile" element={user.id ? <Profile user={user} /> : <Navigate to="/login" />} />

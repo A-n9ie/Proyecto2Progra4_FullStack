@@ -1,0 +1,33 @@
+
+.confirmar_cita{
+    margin: 7% auto;
+    text-align: center;
+    width: 30%;
+    padding: 10px;
+    box-shadow: #cccccc 1px 1px 1px 1px;
+    font-family: "Segoe UI";
+}
+
+.confirmar_cita button:hover{
+    background-color: lightslategrey;
+}
+
+.confirmar_cita button{
+    color: white;
+    background-color: darkcyan;
+    border: none;
+    border-radius: 15px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.confirmar_cita img{
+    border-radius: 30%;
+    width: 40%;
+    height: 40%;
+
+}
+
+.confirmar_cita i{
+    color: darkcyan;
+}
