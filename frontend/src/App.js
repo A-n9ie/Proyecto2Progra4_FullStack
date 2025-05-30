@@ -2,7 +2,7 @@ import './App.css';
 import AppProvider from './pages/AppProvider';
 import Register from './pages/Users/Register'
 import Login from './pages/Users/Login'
-import Profile from './pages/Doctor/Profile'
+import Profile from './pages/Users/Profile'
 import Principal from "./pages/Principal/principal";
 // import {Link, BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

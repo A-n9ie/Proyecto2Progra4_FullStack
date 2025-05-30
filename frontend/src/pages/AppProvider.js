@@ -43,7 +43,6 @@ function AppProvider(props) {
     const [pacientesState, setPacientesState] = useState({
         pacientes: [],
         paciente: {
-            id: '',
             cedula: '',
             nombre: '',
             usuario: '',

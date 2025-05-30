@@ -3,16 +3,21 @@ import {AppContext} from '../AppProvider';
 import './Profile.css';
 
 function Profile({ user }) {
-    const {medicosState, setMedicosState, usuariosState, setUsuariosState} = useContext(AppContext);
+    const {medicosState, setMedicosState, pacientesState, setPacientesState} = useContext(AppContext);
     const [horariosState, setHorariosState] = useState({
         horarios: [],
         horario: []
     });
     const [diasSeleccionados, setDiasSeleccionados] = useState([]);
 
-    useEffect(()=> {
-        handleDoctor();
+    useEffect(() => {
+        if (isDoctor()) {
+            handleDoctor();
+        } else {
+            handlePatient();
+        }
     }, []);
+
 
     useEffect(() => {
         if (horariosState.horario) {
@@ -23,16 +28,30 @@ function Profile({ user }) {
 
     const backend = "http://localhost:8080";
 
+    function isDoctor(){
+        return user.rol === "Medico"
+    }
+
     function handleChange(event){
         const target = event.target;
         const value = target.value;
         const name = target.name;
-        let doctorChanged = {...medicosState.medico};
-        doctorChanged[name] = value;
-        setMedicosState({
-            ...medicosState,
-            medico: doctorChanged
-        });
+        let personaChanged;
+        if(isDoctor()) {
+            personaChanged = {...medicosState.medico};
+            personaChanged[name] = value;
+            setMedicosState({
+                ...medicosState,
+                medico: personaChanged
+            });
+        } else {
+            personaChanged = {...pacientesState.paciente};
+            personaChanged[name] = value;
+            setPacientesState({
+                ...pacientesState,
+                paciente: personaChanged
+            });
+        }
     }
 
     function handleDoctor() {
@@ -64,6 +83,26 @@ function Profile({ user }) {
         return await response.json();
     }
 
+
+    function handlePatient() {
+        (async () => {
+            const paciente = await patient();
+            if (!paciente) return;
+            setPacientesState(prev => ({ ...prev, paciente }));
+        })();
+    }
+
+    async function patient(){
+        const request = new Request(`${backend}/pacientes/profile/${user.name}`, {
+            method: 'GET',
+            headers: {}
+        });
+        const response = await fetch(request);
+        if(!response.ok){alert("Error: " + response.status);
+            return;}
+        return await response.json();
+    }
+
     function handlerDias(cedula) {
         (async () => {
             const horario = await horarioDias(cedula);
@@ -84,25 +123,21 @@ function Profile({ user }) {
     }
 
     function validar() {
-        /*if (!medicosState.medico.cedula || !medicosState.medico.nombre || !medicosState.medico.especialidad
-            || !medicosState.medico.costo_consulta || !medicosState.medico.lugar_atencion
-            || !medicosState.medico.presentacion || !medicosState.medico.frecuencia_citas) {
-            alert("Todos los campos deben ser llenados.");
-            return false;
-        }*/
-        if (medicosState.medico.costoConsulta <= 0) {
-            alert("Consultation fee must be a positive value.");
-            return false;
-        }
+        if(isDoctor()) {
+            if (medicosState.medico.costoConsulta <= 0) {
+                alert("Consultation fee must be a positive value.");
+                return false;
+            }
 
-        if (!diasSeleccionados || diasSeleccionados.length === 0) {
-            alert("Please select at least one available day.");
-            return false;
-        }
+            if (!diasSeleccionados || diasSeleccionados.length === 0) {
+                alert("Please select at least one available day.");
+                return false;
+            }
 
-        if (medicosState.medico.horarioInicio >= medicosState.medico.horarioFin) {
-            alert("End time must be later than start time.");
-            return false;
+            if (medicosState.medico.horarioInicio >= medicosState.medico.horarioFin) {
+                alert("End time must be later than start time.");
+                return false;
+            }
         }
 
         return true;
@@ -121,7 +156,7 @@ function Profile({ user }) {
         }
     }
 
-    function handleSave(event) {
+    function handleSaveDoctor(event) {
         if (!validar()) return;
         const medicoUpdate = {
             cedula: medicosState.medico.cedula,
@@ -141,7 +176,7 @@ function Profile({ user }) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
         });
-        console.log("Medico enviado:", JSON.stringify(medicoUpdate, null, 2));
+
         (async () => {
             const response = await fetch(request);
             if (!response.ok) {
@@ -154,21 +189,56 @@ function Profile({ user }) {
         })();
     }
 
+    function handleSavePatient(event) {
+        if (!validar()) return;
+        const patientUpdate = {
+            cedula: pacientesState.paciente.cedula,
+            nombre: pacientesState.paciente.nombre,
+            telefono: pacientesState.paciente.telefono,
+            direccion: pacientesState.paciente.direccion
+        }
+
+        let request = new Request(`${backend}/pacientes/profile/update/${user.name}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(patientUpdate)
+        });
+
+        (async () => {
+            const response = await fetch(request);
+            if (!response.ok) {
+                alert("Error: " + response.status);
+                return;
+            }
+            handlePatient();
+            window.scrollTo(0, 0);
+        })();
+    }
+
     return (
         <>
-            <Show
-                entity={medicosState.medico}
-                handleChange={handleChange}
-                handleSave={handleSave}
-                diasSeleccionados={diasSeleccionados}
-                setDiasSeleccionados={setDiasSeleccionados}
-            />
-
+            {isDoctor() ? (
+                <ShowMedico
+                    entity={medicosState.medico}
+                    handleChange={handleChange}
+                    handleSave={handleSaveDoctor}
+                    diasSeleccionados={diasSeleccionados}
+                    setDiasSeleccionados={setDiasSeleccionados}
+                />
+            ) : (
+                <ShowPaciente
+                    entity={pacientesState.paciente}
+                    handleChange={handleChange}
+                    handleSave={handleSavePatient}
+                    user={user}
+                />
+            )}
         </>
     );
+
 }
 
-function Show({ entity, handleChange, handleSave, diasSeleccionados, setDiasSeleccionados }) {
+function ShowMedico({ entity, handleChange, handleSave, diasSeleccionados, setDiasSeleccionados }) {
     const { horariosState } = useContext(AppContext);
 
     return (
@@ -361,6 +431,92 @@ function Show({ entity, handleChange, handleSave, diasSeleccionados, setDiasSele
                         </div>
 
                         <button type="submit">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
+}
+
+
+function ShowPaciente({ entity, handleChange, handleSave, user }) {
+    return (
+        <div className="cuerpo">
+            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+                <div className="datos">
+                    <div className="col_datos">
+                        <img
+                            src={"imagenper.png"}
+                            height="512"
+                            width="512"
+                            alt="Foto de perfil"
+                        />
+
+                        <div className="datos">
+                            <div className="col_datos">
+                                <label htmlFor="username">Username:</label>
+                                <input
+                                    type="text"
+                                    id="usernameMedico"
+                                    name="username"
+                                    value={user.name}
+                                    readOnly
+                                />
+                                <br/><br/>
+                            </div>
+                        </div>
+
+                        <div className="datos">
+                            <div className="col_datos">
+                                <label htmlFor="cedula">ID:</label>
+                                <input
+                                    type="text"
+                                    id="cedula"
+                                    name="cedula"
+                                    value={entity.cedula}
+                                    readOnly
+                                />
+                                <br/><br/>
+                            </div>
+                            <div className="col_datos">
+                                <label htmlFor="nombre">Name:</label>
+                                <input
+                                    type="text"
+                                    id="nombre"
+                                    name="nombre"
+                                    value={entity.nombre}
+                                    onChange={handleChange}
+                                    required
+                                />
+                                <br/><br/>
+                            </div>
+                        </div>
+
+                        <div className="datos">
+                            <div className="col_datos">
+                                <label htmlFor="Phone">Phone-number:</label>
+                                <input
+                                    type="text"
+                                    id="phone"
+                                    name="phone"
+                                    value={entity.telefono}
+                                    onChange={handleChange}
+                                />
+                                <br/><br/>
+                            </div>
+                            <div className="col_datos">
+                                <label htmlFor="direccion">Address:</label>
+                                <input
+                                    type="text"
+                                    id="direccion"
+                                    name="direccion"
+                                    value={entity.direccion}
+                                    onChange={handleChange}
+                                />
+                                <br/><br/>
+                            </div>
+                        </div>
+                        <button type="submit"> Save changes </button>
                     </div>
                 </div>
             </form>

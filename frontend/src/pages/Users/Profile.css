@@ -82,6 +82,10 @@
     align-items: center;
 }
 
+.datos input{
+    width: auto;
+}
+
 .datos label {
     display: inline-flex;
     align-items: center;  /* Alinea verticalmente el contenido (checkbox y texto) */

@@ -1,5 +1,6 @@
 package org.example.backend.presentation.patient;
 
+import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,23 +37,21 @@ public class ControllerPatient {
         return servicePatient.addPatient(paciente);
     }
 
-    @GetMapping("/presentation/pacientes/show")
-    public String show(Model model) {
-        model.addAttribute("usuarios", servicePatient.pacientesFindAll());
-        return "presentation/usuarios/register";
+
+    @GetMapping("/profile/{name}")
+    public Paciente profile(@PathVariable String name) {
+        Paciente paciente = servicePatient.getPatientByUser(serviceUser.getUser(name));
+        return paciente;
     }
 
-    @GetMapping("/presentation/patient/profile")
-    public String profile(@ModelAttribute("usuario") Usuario user, Model model) {
-        Paciente patient = servicePatient.getPatientByUser(user);
-        model.addAttribute("paciente", patient);
-        return "presentation/usuarios/profile";
-    }
-
-    @GetMapping("/presentation/patient/edit")
-    public String edit(@ModelAttribute("usuario") Usuario user, @ModelAttribute("paciente") Paciente patient) {
-        servicePatient.editPatient(user, patient);
-        return "redirect:/presentation/perfil/show";
+    @PutMapping("/profile/update/{name}")
+    public Paciente edit(@PathVariable String name, @RequestBody Paciente paciente) {
+        Paciente p = servicePatient.findPatient(paciente.getCedula());
+        if(p == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        servicePatient.editPatient(serviceUser.getUser(name),paciente);
+        return servicePatient.findPatient(paciente.getCedula());
     }
 
     @GetMapping("/presentation/patient/history/show")

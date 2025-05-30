@@ -1,5 +1,6 @@
 package org.example.backend.logic;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ public class Paciente {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario;
 
     @Size(max = 20)
@@ -44,6 +46,7 @@ public class Paciente {
     private String fotoUrl;
 
     @OneToMany(mappedBy = "paciente")
+    @JsonIgnore
     private Set<Cita> citas = new LinkedHashSet<>();
 
     //public Paciente(Persona persona) {super(persona);}
