@@ -50,21 +50,6 @@ public class ControllerUsuarios {
         return "/presentation/error";
     }
 
-    @GetMapping("/presentation/usuarios/show")
-    public String show(Model model) {
-        model.addAttribute("usuarios", serviceUser.usuariosFindAll());
-        return "/presentation/usuarios/register";
-    }
-
-    //Modelo vacio para colocar al inicio de la pagina
-    @GetMapping("/presentation/usuarios/registerSys")
-    public String register(Model model) {
-        model.addAttribute("usuario", new Usuario());
-        model.addAttribute("persona", new Persona());
-        return "/presentation/usuarios/register";
-    }
-
-
     @PostMapping("/presentation/usuarios/create")
     public String create(@Valid @ModelAttribute Usuario usuario,
                          @Valid @ModelAttribute Persona persona,
@@ -128,41 +113,6 @@ public class ControllerUsuarios {
     }
 
 
-    @GetMapping("/presentation/perfil/show")
-    public String profile(RedirectAttributes redirect) {
-        String username = serviceUser.getUserAuthenticated();
-        Usuario usuario = serviceUser.getUser(username);
-        if (usuario.getRol().equals("Medico")) {
-            redirect.addFlashAttribute("usuario", usuario);
-            return "redirect:/presentation/doctor/profile";
-        } else {
-            redirect.addFlashAttribute("usuario", usuario);
-            return "redirect:/presentation/patient/profile";
-        }
-    }
-
-    @PostMapping("/presentation/perfil/edit")
-    public String edit(RedirectAttributes redirect,
-                       @ModelAttribute("medico") Medico medico,
-                       @ModelAttribute("paciente") Paciente paciente,
-                       @RequestParam(value = "days", required = false) List<String> selectedDays,
-                       @RequestParam(value = "numero", required = false) Integer numero,
-                       @RequestParam(value = "frecuencia", required = false) String frecuencia) {
-        String username = serviceUser.getUserAuthenticated();
-        Usuario usuario = serviceUser.getUser(username);
-        redirect.addFlashAttribute("usuario", usuario);
-        if (usuario.getRol().equals("Medico")) {
-            redirect.addFlashAttribute("medico", medico);
-            redirect.addFlashAttribute("numero", numero);
-            redirect.addFlashAttribute("frecuencia", frecuencia);
-            redirect.addFlashAttribute("days", selectedDays);
-            return "redirect:/presentation/doctor/edit";
-        } else {
-            redirect.addFlashAttribute("paciente", paciente);
-            return "redirect:/presentation/patient/edit";
-        }
-    }
-
     @GetMapping("/presentation/usuarios/history")
     public String historyShow(
             @RequestParam(value = "show", required = false) Long showId,
@@ -207,6 +157,16 @@ public class ControllerUsuarios {
 
         return ResponseEntity.ok(usuarioLoggeado);
     }
+//
+//    @GetMapping("/profile")
+//    public ResponseEntity<?> profile(Authentication authentication) {
+//        System.out.println("Authentication principal: " + authentication.getPrincipal().getClass().getName());
+//        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
+//        Usuario usuario = userDetails.getUsuario();
+//        System.out.println("Usuario: " + usuario.getUsuario());
+//        return ResponseEntity.ok(usuario);
+//    }
+
 
 
 

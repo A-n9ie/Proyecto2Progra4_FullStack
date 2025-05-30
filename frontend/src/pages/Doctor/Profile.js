@@ -11,7 +11,7 @@ function Profile() {
     const [diasSeleccionados, setDiasSeleccionados] = useState([]);
 
     useEffect(()=> {
-        handleDoctor();
+        handleUser();
     }, []);
 
     useEffect(() => {
@@ -21,7 +21,7 @@ function Profile() {
         }
     }, [horariosState.horario]);
 
-    const backend = "http://localhost:8080/medicos/profile";
+    const backend = "http://localhost:8080";
 
     function handleChange(event){
         const target = event.target;
@@ -35,7 +35,7 @@ function Profile() {
         });
     }
 
-    function handleDoctor() {
+    function handleUser() {
         (async () => {
             const medico = await doctor();
             if (!medico) return;
@@ -53,7 +53,11 @@ function Profile() {
     }
 
     async function doctor(){
-        const request = new Request(backend, {method: 'GET', headers:{ }});
+        const request = new Request(`${backend}/medicos/profile`, {
+            method: 'GET',
+            headers: {}
+        });
+
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
             return;}
@@ -70,7 +74,7 @@ function Profile() {
     }
 
     async function horarioDias(cedula) {
-        const request = new Request(`${backend}/${cedula}`, { method: 'GET' });
+        const request = new Request(`${backend}/medicos/profile/${cedula}`, { method: 'GET' });
         const response = await fetch(request);
         if (!response.ok) {
             alert("Error: " + response.status);
@@ -105,7 +109,7 @@ function Profile() {
     }
 
     async function saveDias(cedula, dias) {
-        const request = new Request(`${backend}/dias/${cedula}`, {
+        const request = new Request(`${backend}/medicos/profile/dias/${cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(dias)
@@ -132,7 +136,7 @@ function Profile() {
             horarioFin: medicosState.medico.horarioFin
         };
 
-        let request = new Request(`${backend}/update/${medicosState.medico.cedula}`, {
+        let request = new Request(`${backend}/medicos/profile/update/${medicosState.medico.cedula}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(medicoUpdate)
@@ -145,7 +149,7 @@ function Profile() {
                 return;
             }
             await saveDias(medicosState.medico.cedula, diasSeleccionados);
-            handleDoctor();
+            handleUser();
             window.scrollTo(0, 0);
         })();
     }

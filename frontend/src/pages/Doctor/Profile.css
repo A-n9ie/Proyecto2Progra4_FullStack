@@ -5,7 +5,7 @@
     width: 50%;
     display: flex;
     justify-content: center;
-    margin: 10% 0 4% 25%;
+    margin: 5% auto;
     box-shadow: 0 -4px 8px rgba(149, 89, 5, 0.1), 0 4px 8px rgba(9, 9, 215, 0.1);
 }
 

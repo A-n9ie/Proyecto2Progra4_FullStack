@@ -80,7 +80,8 @@ public class SecurityConfig {
                                 "/usuarios/registerSys",
                                 "/usuarios/create",
                                 "/medicos",
-                                "/medicos/horarios"
+                                "/medicos/horarios",
+                                "/**"
                         ).permitAll()
                         .requestMatchers("/doctor/**").hasAuthority("Medico")
                         .requestMatchers("/patient/**").hasAuthority("Paciente")
