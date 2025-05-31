@@ -5,6 +5,8 @@ import org.example.backend.data.UsuarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -40,20 +42,22 @@ public class ControllerPatient {
         return servicePatient.addPatient(paciente);
     }
 
-
-    @GetMapping("/profile/{name}")
-    public Paciente profile(@PathVariable String name) {
-        Paciente paciente = servicePatient.getPatientByUser(serviceUser.getUser(name));
+    @GetMapping("/me")
+    public Paciente profile(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Paciente paciente = servicePatient.getPatientByUser(usuario);
         return paciente;
     }
 
-    @PutMapping("/profile/update/{name}")
-    public Paciente edit(@PathVariable String name, @RequestBody Paciente paciente) {
-        Paciente p = servicePatient.findPatient(paciente.getCedula());
-        if(p == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        servicePatient.editPatient(serviceUser.getUser(name),paciente);
+    @PutMapping("/update")
+    public Paciente edit(@RequestBody Paciente paciente, Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+
+        servicePatient.editPatient(usuario, paciente);
         return servicePatient.findPatient(paciente.getCedula());
     }
 

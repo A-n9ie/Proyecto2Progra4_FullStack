@@ -1,9 +1,11 @@
 package org.example.backend.DTO;
 
+import org.example.backend.logic.HorariosMedico;
 import org.example.backend.logic.Medico;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.util.List;
 
 public class PerfilMedicoDTO {
     private String cedula;
@@ -19,7 +21,9 @@ public class PerfilMedicoDTO {
     private String fotoUrl;
     private String presentacion;
 
-    public PerfilMedicoDTO(Medico medico) {
+    List<HorariosMedico> dias;
+
+    public PerfilMedicoDTO(Medico medico, List<HorariosMedico> horarios) {
         this.cedula = medico.getCedula();
         this.nombre = medico.getNombre();
         this.usuario = medico.getUsuario().getUsername();
@@ -32,6 +36,8 @@ public class PerfilMedicoDTO {
         this.frecuenciaCitas = medico.getFrecuenciaCitas();
         this.fotoUrl = medico.getFotoUrl();
         this.presentacion = medico.getPresentacion();
+
+        dias = horarios;
     }
 
     public String getCedula() {

@@ -2,21 +2,16 @@ import './App.css';
 import AppProvider from './pages/AppProvider';
 import Register from './pages/Users/Register'
 import Login from './pages/Users/Login'
-import Profile from './pages/Users/Profile'
+import ProfileDoctor from './pages/Doctor/Profile'
+import ProfilePatient from './pages/Patient/Profile'
 import Principal from "./pages/Principal/principal";
 import NewAppointment from "./pages/Appointments/newAppointment";
-
-// import {Link, BrowserRouter, Routes, Route, useNavigate} from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import React, { useState, useEffect } from 'react';
 import { Link, BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 
-//Authorization: 'Bearer ' + localStorage.getItem('token')
-//Para obtener los datos se usa eso
-
-// const backend = "http://localhost:8080";
 
 function App() {
     const [user, setUser] = useState({ id: null, rol: '', name: '' });
@@ -107,7 +102,16 @@ function Main({ user, handleLogin }) {
                     <Route path="/agendar" element={<NewAppointment />} />
                     <Route path="/login" element={user.id ? <Navigate to="/" /> : <Login handleLogin={handleLogin} />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/profile" element={user.id ? <Profile user={user} /> : <Navigate to="/login" />} />
+                    <Route path="/profileDoctor" element={<ProfileDoctor />} />
+                    <Route path="/profilePatient" element={<ProfilePatient user={user} />} />
+                    <Route path="/profile" element={
+                        user.id
+                            ? (user.rol === 'Medico'
+                                ? <Navigate to="/profileDoctor" />
+                                : <Navigate to="/profilePatient" />)
+                            : <Navigate to="/login" />
+                    } />
+
                 </Routes>
             </AppProvider>
         </div>

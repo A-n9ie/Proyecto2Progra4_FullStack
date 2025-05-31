@@ -11,7 +11,7 @@ function AppProvider(props) {
 
     const [usuariosState, setUsuariosState] = useState({
         usuarios: [],
-        usuario: { id: '', username: '', clave: '', rol: '' }
+        usuario: {username: '', clave: '', rol: '' }
     });
 
     const [medicosState, setMedicosState] = useState({
@@ -31,7 +31,8 @@ function AppProvider(props) {
             frecuencia_cantidad: 0,
             frecuencia_tipo: '',
             foto_url: '',
-            presentacion: ''
+            presentacion: '',
+            dias: []
         }
     });
 

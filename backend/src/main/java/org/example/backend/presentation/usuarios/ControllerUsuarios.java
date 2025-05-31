@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -149,7 +150,9 @@ public class ControllerUsuarios {
 
     @GetMapping("/me")
     public ResponseEntity<?> userLogin(Authentication authentication) {
-        Usuario usuario = (Usuario) authentication.getPrincipal();
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
         Map<String, Object> usuarioLoggeado = new HashMap<>();
         usuarioLoggeado.put("id", usuario.getId());
         usuarioLoggeado.put("username", usuario.getUsuario());
@@ -157,15 +160,6 @@ public class ControllerUsuarios {
 
         return ResponseEntity.ok(usuarioLoggeado);
     }
-//
-//    @GetMapping("/profile")
-//    public ResponseEntity<?> profile(Authentication authentication) {
-//        System.out.println("Authentication principal: " + authentication.getPrincipal().getClass().getName());
-//        UserDetailsImp userDetails = (UserDetailsImp) authentication.getPrincipal();
-//        Usuario usuario = userDetails.getUsuario();
-//        System.out.println("Usuario: " + usuario.getUsuario());
-//        return ResponseEntity.ok(usuario);
-//    }
 
 
 

@@ -1,0 +1,110 @@
+.cuerpo{
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    /*border: 2px solid yellow;*/
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    margin: 5% auto;
+    box-shadow: 0 -4px 8px rgba(149, 89, 5, 0.1), 0 4px 8px rgba(9, 9, 215, 0.1);
+}
+
+.cuerpo :first-child{
+    margin: 5px;
+}
+.col_datos {
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid blue;
+    background-color: whitesmoke;*/
+    width: 100%;
+    height: auto;
+}
+
+.col_datos button{
+    display: flex;
+    width: 15%;
+    height: auto;
+    color: white;
+    background: #4E598C;
+    border-radius: 8px;
+    border: none;
+    margin: 0;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.col_datos button:hover {
+    background: #1ec0ca;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    bottom: 20%;
+}
+
+#numero {
+    width: 60px;
+    position: relative;
+    top: 5px;
+}
+
+.col_datos input[id="frecuencia"] {
+    padding-left: 55px;
+}
+
+.col_datos textarea {
+    width: 95%;
+    min-height: 40px;
+    padding: 8px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #4E598C;
+    resize: none;
+}
+
+.col_datos label {
+    margin-bottom: 5px;
+}
+.col_datos input {
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.datos {
+    display: flex;
+    flex-direction: row;
+    /*border: 1px solid violet;*/
+    color: black;
+    font-family: "Arial Black";
+    align-items: center;
+}
+
+.datos input{
+    width: auto;
+}
+
+.datos label {
+    display: inline-flex;
+    align-items: center;  /* Alinea verticalmente el contenido (checkbox y texto) */
+    margin: 2%;
+}
+
+.datos img{
+    width: 14%;
+    height: auto;
+    border-radius: 40%;
+    object-fit: cover;
+}
+
+/* Estilo de los títulos (etiquetas) */
+.col_datos label {
+    margin-bottom: 5px;
+    background-color: #FF8C42;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+}

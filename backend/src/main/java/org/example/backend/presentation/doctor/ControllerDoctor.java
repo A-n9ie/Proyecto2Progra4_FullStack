@@ -5,11 +5,15 @@ import org.example.backend.data.HorarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,34 +51,24 @@ public class ControllerDoctor {
         return serviceDoctor.addDoctor(medico);
     }
 
-    @GetMapping("/profile/{name}")
-    public PerfilMedicoDTO profile(@PathVariable String name) {
-        Medico medico = serviceDoctor.getDoctorbyUser(serviceUser.getUser(name));
-        return new PerfilMedicoDTO(medico);
+    @GetMapping("/me")
+    public PerfilMedicoDTO profile(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Medico medico = serviceDoctor.getDoctorbyUser(usuario);
+        List<HorariosMedico> list = serviceDoctor.horarioMdico(medico.getId());
+        return new PerfilMedicoDTO(medico, list);
     }
 
-    @GetMapping("/profile/days/{cedula}")
-    public List<HorariosMedico> profileDays(@PathVariable String cedula) {
-        List<HorariosMedico> list = serviceDoctor.horarioMdico(serviceDoctor.findDoctor(cedula).getId());
-        if(list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Lista no encontrada");
-        return list;
-    }
+    @PutMapping("/update")
+    public Medico edit(@RequestBody Medico medico, Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
 
-    @PutMapping("/profile/update/{name}")
-    public Medico edit(@PathVariable String name, @RequestBody Medico medico) {
-        if(serviceDoctor.findDoctor(medico.getCedula()) == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        serviceDoctor.editDoctor(serviceUser.getUser(name),medico);
+        serviceDoctor.editDoctor(usuario, medico);
         return serviceDoctor.findDoctor(medico.getCedula());
-    }
-
-    @PutMapping("/profile/saveDays/{cedula}")
-    public List<HorariosMedico> updateDias(@PathVariable String cedula, @RequestBody List<String> dias) {
-        Medico medico = serviceDoctor.findDoctor(cedula);
-        serviceDoctor.editDays(medico, dias);
-        return serviceDoctor.horarioMdico(medico.getId());
     }
 
     @GetMapping("/appointment/show")
