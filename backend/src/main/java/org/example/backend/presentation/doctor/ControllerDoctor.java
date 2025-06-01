@@ -1,5 +1,6 @@
 package org.example.backend.presentation.doctor;
 
+import org.example.backend.DTO.PacienteCitasDTO;
 import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.data.HorarioRepository;
 import org.example.backend.logic.*;
@@ -71,73 +72,41 @@ public class ControllerDoctor {
         return serviceDoctor.findDoctor(medico.getCedula());
     }
 
-    @GetMapping("/appointment/show")
-    public String historyShow(@ModelAttribute("usuario") Usuario user,
-                              Model model) {
-        Medico medico = serviceDoctor.getDoctorbyUser(user);
+    @GetMapping("/history")
+    public ResponseEntity<?> history(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Medico medico = serviceDoctor.getDoctorbyUser(usuario);
 
         List<Cita> citas = serviceAppointment.citasMedico(medico);
-        model.addAttribute("citas", citas);
-        model.addAttribute("nombre", medico.getNombre());
 
-        return "/presentation/doctor/appointment";
+        List<PacienteCitasDTO> citaDTOs = citas.stream()
+                .map(PacienteCitasDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(citaDTOs);
     }
 
-    @GetMapping("/history/filter")
-    public String historyEstado(
-            @RequestParam(value = "status", required = false, defaultValue = "All") String status,
-            @RequestParam(value = "patient", required = false, defaultValue = "") String paciente,
-            @RequestParam(value = "show", required = false) Integer show,
-            @RequestParam(value = "approve", required = false) Integer approve,
-            @RequestParam(value = "cancel", required = false) Integer cancel,
-            Model model) {
-
-        String username = serviceUser.getUserAuthenticated();
-        Usuario user = serviceUser.getUser(username);
-        Medico medico = serviceDoctor.getDoctorbyUser(user);
-
-        if (show != null) {
-            Cita citaSeleccionada = serviceAppointment.getCitaById(show);
-            model.addAttribute("citaSeleccionada", citaSeleccionada);
+    @PutMapping("/cancel")
+    public void cancel(Authentication authentication, @RequestBody Map<String, Integer> body) {
+        Integer citaId = body.get("citaId");
+        Cita citaSeleccionada = serviceAppointment.getCitaById(citaId);
+        if (citaSeleccionada != null) {
+            serviceAppointment.deleteAppointment(citaSeleccionada);
         }
-        if (approve != null) {
-            Cita citaSeleccionada = serviceAppointment.getCitaById(approve);
-            if (citaSeleccionada != null) {
-                serviceAppointment.saveAppointment(citaSeleccionada);
-                model.addAttribute("citaAprovada", citaSeleccionada);
-            }
-        }
-        if (cancel != null) {
-            Cita citaSeleccionada = serviceAppointment.getCitaById(cancel);
-            if (citaSeleccionada != null) {
-                serviceAppointment.deleteAppointment(citaSeleccionada);
-            }
-        }
-
-        List<Cita> citasFiltradas = serviceAppointment.citasMedicoFiltradas(medico, status, paciente);
-        if(status.equals("All") && paciente.isEmpty()) {
-            citasFiltradas = serviceAppointment.citasMedico(medico);
-        }
-        model.addAttribute("citas", citasFiltradas);
-        model.addAttribute("nombre", medico.getNombre());
-
-
-        return "/presentation/doctor/appointment";
     }
 
-    @PostMapping("/history/saveNote")
-    public String saveNote(
-            @RequestParam("citaId") Integer citaId,
-            @RequestParam("anotaciones") String anotaciones) {
-
+    @PutMapping("/saveNote")
+    public void saveNote(Authentication authentication, @RequestBody Map<String, Object> datos) {
+        Integer citaId = (Integer) datos.get("citaId");
+        String anotaciones = (String) datos.get("notas");
         Cita cita = serviceAppointment.getCitaById(citaId);
         if (cita != null) {
             cita.setAnotaciones(anotaciones);
             cita.setEstado("Atendida");
             serviceAppointment.saveAppointment(cita);
         }
-
-        return "redirect:/presentation/doctor/history/filter";
     }
 
     @GetMapping("/patient/schedule/{id}")

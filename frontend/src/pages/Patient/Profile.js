@@ -3,7 +3,7 @@ import {AppContext} from '../AppProvider';
 import './Profile.css';
 
 function Profile({user}) {
-    const {pacientesState, setPacientesState,} = useContext(AppContext);
+    const {pacientesState, setPacientesState} = useContext(AppContext);
 
     useEffect(() => {
         handlePatient();

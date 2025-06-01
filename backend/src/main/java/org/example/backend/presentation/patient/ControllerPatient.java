@@ -1,10 +1,12 @@
 package org.example.backend.presentation.patient;
 
+import org.example.backend.DTO.PacienteCitasDTO;
 import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.data.UsuarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.ui.Model;
@@ -18,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/pacientes")
@@ -61,46 +64,20 @@ public class ControllerPatient {
         return servicePatient.findPatient(paciente.getCedula());
     }
 
-    @GetMapping("/presentation/patient/history/show")
-    public String historyShow(
-            @RequestParam(value = "show", required = false) Long showId,
-            Model model) {
-        String username = serviceUser.getUserAuthenticated();
-        Usuario usuario = serviceUser.getUser(username);
+    @GetMapping("/history")
+    public ResponseEntity<?> history(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
         Paciente paciente = servicePatient.getPatientByUser(usuario);
 
         List<Cita> citas = serviceAppointment.citasPaciente(paciente);
-        model.addAttribute("citas", citas);
-        model.addAttribute("nombre", paciente.getNombre());
-        model.addAttribute("mostrarId", showId);
 
-        return "/presentation/patient/history";
-    }
+        List<PacienteCitasDTO> citaDTOs = citas.stream()
+                .map(PacienteCitasDTO::new)
+                .collect(Collectors.toList());
 
-    @GetMapping("/presentation/patient/history/filter")
-    public String historyEstado(
-            @RequestParam(value = "status", required = false, defaultValue = "All") String status,
-            @RequestParam(value = "doctor", required = false, defaultValue = "") String doctor,
-            @RequestParam(value = "show", required = false) Integer show, // Mostrar cita seleccionada
-            Model model) {
-        String username = serviceUser.getUserAuthenticated();
-        Usuario usuario = serviceUser.getUser(username);
-        Paciente paciente = servicePatient.getPatientByUser(usuario);
-
-        // Filtrar las citas
-        List<Cita> citasFiltradas = serviceAppointment.citasPacienteFiltradas(paciente, status, doctor);
-        if(status.equals("All") && doctor.isEmpty())
-            citasFiltradas = serviceAppointment.citasPaciente(paciente);
-        model.addAttribute("citas", citasFiltradas);
-        model.addAttribute("nombre", paciente.getNombre());
-
-        // Si se pasa el ID de la cita, obtener los detalles
-        if (show != null) {
-            Cita citaSeleccionada = serviceAppointment.getCitaById(show);
-            model.addAttribute("citaSeleccionada", citaSeleccionada);
-        }
-
-        return "/presentation/patient/history";
+        return ResponseEntity.ok(citaDTOs);
     }
 
     @GetMapping("/search")
@@ -118,8 +95,6 @@ public class ControllerPatient {
                                   @RequestParam("hora") String hora_cita,
                                   @RequestParam Integer medicoId,
                                   Model model) {
-
-
         try {
             // Obtener usuario autenticado
             String username = serviceUser.getUserAuthenticated();

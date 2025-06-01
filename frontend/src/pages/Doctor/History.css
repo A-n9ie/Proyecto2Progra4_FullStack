@@ -1,0 +1,60 @@
+.cuerpo{
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    width: 50%;
+    padding: 0;
+    margin: 5% auto;
+    box-shadow: 0 -4px 8px rgba(149, 89, 5, 0.1), 0 4px 8px rgba(9, 9, 215, 0.1);
+}
+
+.cuerpo :first-child{
+    margin: 5px;
+}
+
+#fila_historial{
+    box-shadow: 0 -2px 4px rgba(1, 0, 0, 0.1), 0 2px 4px rgba(1, 0, 0, 0.1);
+}
+
+.historial_col{
+    justify-content: space-evenly;
+    box-shadow: 0 -1px 4px rgba(1, 0, 0, 0.1), 0 1px 2px rgba(1, 0, 0, 0.1);
+    width: 100%;
+    font-size: 16px;
+}
+.historial_col img{
+    border-radius: 50%;
+    width: 10%;
+    height: 10%;
+}
+
+.historial_col button[name="estado_cita"]{
+    width: auto;
+    border-radius: 60%;
+    color: #323131;
+    cursor: default;
+}
+
+.historial_col h1:nth-child(2){
+    font-style: italic;
+    color: darkcyan;
+}
+
+#Pendiente {
+    background: lightyellow;
+}
+
+#Atendida {
+    background: lightgreen;
+}
+
+.estado_y_icono {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+}
+
+.icono-ojo{
+    color: blue;
+}

@@ -161,33 +161,6 @@ public class ControllerUsuarios {
         return ResponseEntity.ok(usuarioLoggeado);
     }
 
-
-
-
-//    @GetMapping("/home")
-//    public String home(HttpSession session, Model model) {
-//        // Obtener el usuario autenticado desde SecurityContext
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username = "";
-//
-//        if (principal instanceof UserDetails) {
-//            username = ((UserDetails) principal).getUsername();
-//        }
-//
-//        // Guardar en la sesión si no está presente
-//        if (session.getAttribute("username") == null) {
-//            session.setAttribute("username", username);
-//        }
-//
-//        // Pasar el nombre de usuario a la vista
-//        model.addAttribute("username", username);
-//        return "/presentation/fragments/fragments";
-//    }
-
-
-
-
-
     @GetMapping("/home")
     public String home(HttpSession session, Model model) {
         // Obtener el usuario autenticado desde SecurityContext

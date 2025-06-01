@@ -55,16 +55,19 @@ public class ServiceAppointment {
                     filtrada.add(c);
             return filtrada;
         }
+        else
         if (paciente.isEmpty() && !estado.isEmpty()){
             for(Cita c: citasPaciente)
                 if(c.getEstado().toLowerCase().contains(estado.toLowerCase()))
                     filtrada.add(c);
             return filtrada;
         }
+        else
         for(Cita c: citasPaciente)
             if(c.getPaciente().getNombre().toLowerCase().contains(paciente.toLowerCase()) &&
                     c.getEstado().toLowerCase().contains(estado.toLowerCase()))
                 filtrada.add(c);
+
         return filtrada;
     }
 

@@ -11,6 +11,8 @@ import { faPhoneAlt } from '@fortawesome/free-solid-svg-icons';
 import { faTwitter, faFacebookF, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import React, { useState, useEffect } from 'react';
 import { Link, BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
+import History from "./pages/Patient/History";
+import Appointment from "./pages/Doctor/Appointment";
 
 
 function App() {
@@ -111,6 +113,15 @@ function Main({ user, handleLogin }) {
                                 : <Navigate to="/profilePatient" />)
                             : <Navigate to="/login" />
                     } />
+                    <Route path="/historyPatient" element={<History/>} />
+                    <Route path="/appointments" element={<Appointment/>} />
+                    <Route path="/history" element={
+                        user.id
+                            ? (user.rol === 'Medico'
+                                ? <Navigate to="/appointments" />
+                                : <Navigate to="/historyPatient" />)
+                            : <Navigate to="/login" />
+                    } />
 
                 </Routes>
             </AppProvider>
@@ -156,6 +167,7 @@ function Header({ user, handleLogout }) {
                                     <label htmlFor="user-toggle" className="dropbtn">{user.name}</label>
                                     <ul className="dropdown-content">
                                         <li><Link to="/profile">Profile</Link></li>
+                                        <li><Link to="/history">History</Link></li>
                                         <li><button onClick={onLogout}>Logout</button></li>
                                     </ul>
                                 </li>

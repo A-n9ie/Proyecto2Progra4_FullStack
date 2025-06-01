@@ -44,6 +44,7 @@ function AppProvider(props) {
     const [pacientesState, setPacientesState] = useState({
         pacientes: [],
         paciente: {
+            id: '',
             cedula: '',
             nombre: '',
             usuario: '',
@@ -57,8 +58,14 @@ function AppProvider(props) {
         citas: [],
         cita: {
             id: '',
-            medico_id: '',
-            paciente_id: '',
+            medico: {
+                nombre: '',
+                especialidad: '',
+                costo_consulta: 0,
+                lugar_atencion: '',
+                foto_url: ''
+            },
+            paciente: '',
             fecha_cita: '',
             hora_cita: '',
             estado: 'Pendiente',
