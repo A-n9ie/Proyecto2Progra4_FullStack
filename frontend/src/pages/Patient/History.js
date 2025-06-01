@@ -44,7 +44,7 @@ function History(){
     return (
         <>
             <Show
-                citas={citas} />
+                citas={citas}
             />
         </>
     );
