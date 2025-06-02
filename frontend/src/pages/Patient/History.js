@@ -6,6 +6,9 @@ import '../Principal/principal.css';
 
 function History(){
     const [citas, setCitas] = useState([]);
+    const [nombrePaciente, setNombrePaciente] = useState('');
+    const [status, setStatus] = useState('');
+    const [doctor, setDoctor] = useState('');
 
     useEffect(() => {
         handleCitas();
@@ -24,7 +27,9 @@ function History(){
                 });
                 if (!res.ok) throw new Error("Error en la petición");
                 const data = await res.json();
-                return data;
+
+                setNombrePaciente(data.paciente);
+                return data.citas;
             } catch (err) {
                 console.error("Error al cargar citas... ", err);
                 return null;
@@ -41,17 +46,55 @@ function History(){
         })();
     }
 
+    async function filtrarCitas(statusFiltro, doctorFiltro) {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const params = new URLSearchParams();
+        if (statusFiltro) params.append("status", statusFiltro);
+        if (doctorFiltro) params.append("doctor", doctorFiltro);
+
+        try {
+            const res = await fetch(`${backend}/history/filter?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error("Error al filtrar las citas");
+            }
+
+            const data = await res.json();
+            setCitas(data);
+        } catch (error) {
+            console.error("Error en el filtrado:", error);
+        }
+    }
+
+    async function handleSearch(e) {
+        e.preventDefault();
+        await filtrarCitas(status, doctor);
+    }
+
     return (
         <>
             <Show
                 citas={citas}
+                nombrePaciente={nombrePaciente}
+                status={status}
+                setStatus={setStatus}
+                doctor={doctor}
+                setDoctor={setDoctor}
+                handleSearch={handleSearch}
             />
         </>
     );
 }
 
 
-function Show({ citas }) {
+function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombrePaciente }) {
     const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
     return (
@@ -59,17 +102,19 @@ function Show({ citas }) {
             <div className="cuerpo historial_col">
                 <div className="datos">
                     <h1>Patient - </h1>
-                    <h1>{citas[0]?.nombrePaciente} </h1>
+                    <h1>{nombrePaciente} </h1>
                     <h1> - appointment history</h1>
                 </div>
 
                 <div className="datos" id="fila_historial">
                     <div className="buscador">
-                        <form className="buscar_especialidad_lugar">
+                        <form className="buscar_especialidad_lugar" onSubmit={handleSearch}>
                             <span>Status</span>
-                            <input type="text" name="status" placeholder="All" />
+                            <input type="text" name="status" placeholder="All" value={status}
+                                   onChange={(e) => setStatus(e.target.value)}/>
                             <span>Doctor</span>
-                            <input type="text" name="doctor" placeholder="" />
+                            <input type="text" name="doctor" placeholder="" value={doctor}
+                                   onChange={(e) => setDoctor(e.target.value)}/>
                             <button type="submit" name="buscar">
                                 Search
                             </button>

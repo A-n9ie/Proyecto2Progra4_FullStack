@@ -85,6 +85,30 @@ public class ControllerDoctor {
                 .map(PacienteCitasDTO::new)
                 .collect(Collectors.toList());
 
+        Map<String, Object> response = new HashMap<>();
+        response.put("medico", medico.getNombre());
+        response.put("citas", citaDTOs);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/history/filter")
+    public ResponseEntity<?> filterHistory(
+            Authentication authentication,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String patient
+    ) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Medico medico = serviceDoctor.getDoctorbyUser(usuario);
+
+        List<Cita> citas = serviceAppointment.citasMedicoFiltradas(medico, status, patient);
+
+        List<PacienteCitasDTO> citaDTOs = citas.stream()
+                .map(PacienteCitasDTO::new)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(citaDTOs);
     }
 

@@ -6,6 +6,7 @@ import '../Principal/principal.css';
 
 function History(){
     const [citas, setCitas] = useState([]);
+    const [nombreMedico, setNombreMedico] = useState('');
     const [status, setStatus] = useState('');
     const [patient, setPatient] = useState('');
 
@@ -26,13 +27,15 @@ function History(){
                 });
                 if (!res.ok) throw new Error("Error en la petición");
                 const data = await res.json();
-                return data;
+
+                setNombreMedico(data.medico);
+                return data.citas;
             } catch (err) {
                 console.error("Error al cargar citas... ", err);
-                return null;
+                return [];
             }
         } else {
-            return null;
+            return [];
         }
     }
 
@@ -72,7 +75,6 @@ function History(){
         }
     }
 
-
     async function attend(citaId, notas, onSuccess){
         const token = localStorage.getItem("token");
 
@@ -102,36 +104,87 @@ function History(){
         }
     }
 
+    async function filtrarCitas(statusFiltro, pacienteFiltro) {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const params = new URLSearchParams();
+        if (statusFiltro) params.append("status", statusFiltro);
+        if (pacienteFiltro) params.append("patient", pacienteFiltro);
+
+        try {
+            const res = await fetch(`${backend}/history/filter?${params.toString()}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                }
+            });
+
+            if (!res.ok) {
+                throw new Error("Error al filtrar las citas");
+            }
+
+            const data = await res.json();
+            setCitas(data);
+        } catch (error) {
+            console.error("Error en el filtrado:", error);
+        }
+    }
+
+    async function handleSearch(e) {
+        e.preventDefault();
+        await filtrarCitas(status, patient);
+    }
+
     return (
         <>
             <Show
                 citas={citas}
+                nombreMedico={nombreMedico}
                 cancel={cancel}
                 attend={attend}
+                status={status}
+                setStatus={setStatus}
+                patient={patient}
+                setPatient={setPatient}
+                handleSearch={handleSearch}
             />
         </>
     );
+
 }
 
 
-function Show({ citas, cancel, attend }) {
+function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, handleSearch, nombreMedico }) {
     const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
     return (
         <div className="cuerpo historial_col">
             <div className="datos">
                 <h1>Doctor - </h1>
-                <h1>{citas[0]?.nombreMedico}</h1>
+                <h1>{nombreMedico}</h1>
                 <h1> - appointment history</h1>
             </div>
 
             <div className="datos" id="fila_historial">
                 <div className="buscador">
-                    <form className="buscar_especialidad_lugar">
+                <form className="buscar_especialidad_lugar" onSubmit={handleSearch}>
                         <span>Status</span>
-                        <input type="text" name="status" placeholder="All" />
+                        <input
+                            type="text"
+                            name="status"
+                            placeholder="All"
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        />
                         <span>Patient</span>
-                        <input type="text" name="patient" placeholder="" />
+                        <input
+                            type="text"
+                            name="patient"
+                            placeholder=""
+                            value={patient}
+                            onChange={(e) => setPatient(e.target.value)}
+                        />
                         <button type="submit" name="buscar">Search</button>
                     </form>
                 </div>
@@ -139,7 +192,7 @@ function Show({ citas, cancel, attend }) {
 
             {citas.map((c) => (
                 <div className="informacion_medico historial_col" key={c.id}>
-                    <img src={`/fotosPerfil/${c.fotoUrl}`} height="512" width="512" alt="Foto de perfil" />
+                    <img src={`/fotosPerfil/${c.fotoUrl}`} height="512" width="512" alt="Foto de perfil"/>
                     <div className="informacion_personal">
                         <div className="separacion">
                             <h5 className="nombre_medico">
@@ -149,7 +202,7 @@ function Show({ citas, cancel, attend }) {
                     </div>
 
                     <div className="cada_cita">
-                        <div className="dias">
+                    <div className="dias">
                             <p>{c.fechaCita} - {c.horaCita}</p>
                         </div>
 

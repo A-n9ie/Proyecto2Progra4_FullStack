@@ -17,9 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -72,6 +70,30 @@ public class ControllerPatient {
         Paciente paciente = servicePatient.getPatientByUser(usuario);
 
         List<Cita> citas = serviceAppointment.citasPaciente(paciente);
+
+        List<PacienteCitasDTO> citaDTOs = citas.stream()
+                .map(PacienteCitasDTO::new)
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("paciente", paciente.getNombre());
+        response.put("citas", citaDTOs);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/history/filter")
+    public ResponseEntity<?> filterHistory(
+            Authentication authentication,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String doctor
+    ) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Paciente paciente = servicePatient.getPatientByUser(usuario);
+
+        List<Cita> citas = serviceAppointment.citasPacienteFiltradas(paciente, status, doctor);
 
         List<PacienteCitasDTO> citaDTOs = citas.stream()
                 .map(PacienteCitasDTO::new)

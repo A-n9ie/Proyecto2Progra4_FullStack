@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service("serviceAppointment")
 public class ServiceAppointment {
@@ -25,51 +26,55 @@ public class ServiceAppointment {
 
     public List<Cita> citasMedico(Medico doctor){return citaRepository.findCitaByMedicoOrderByFechaCitaDescHoraCitaDesc(doctor);}
 
-    public List<Cita> citasPacienteFiltradas(Paciente paciente, String estado, String doctor) {
-        List<Cita> citasPaciente = citasPaciente(paciente);
-        List<Cita> filtrada = new ArrayList<>();
-        if ("All".equalsIgnoreCase(estado) && !doctor.isEmpty()) {
-            for(Cita c: citasPaciente)
-                if(c.getMedico().getNombre().toLowerCase().contains(doctor.toLowerCase()))
-                    filtrada.add(c);
-            return filtrada;
+    public List<Cita> citasPacienteFiltradas(Paciente paciente, String status, String doctor) {
+        List<Cita> citas = citasPaciente(paciente);
+        if ((status == null || status.isEmpty()) && (doctor == null || doctor.isEmpty())) {
+            return citas;
         }
-        if (doctor.isEmpty() && !estado.isEmpty()){
-            for(Cita c: citasPaciente)
-                if(c.getEstado().toLowerCase().contains(estado.toLowerCase()))
-                    filtrada.add(c);
-            return filtrada;
-        }
-        for(Cita c: citasPaciente)
-            if(c.getMedico().getNombre().toLowerCase().contains(doctor.toLowerCase()) &&
-                    c.getEstado().toLowerCase().contains(estado.toLowerCase()))
-                filtrada.add(c);
-        return filtrada;
-    }
-    public List<Cita> citasMedicoFiltradas(Medico medico, String estado, String paciente) {
-        List<Cita> citasPaciente = citasMedico(medico);
-        List<Cita> filtrada = new ArrayList<>();
-        if ("All".equalsIgnoreCase(estado) && !paciente.isEmpty()) {
-            for(Cita c: citasPaciente)
-                if(c.getPaciente().getNombre().toLowerCase().contains(paciente.toLowerCase()))
-                    filtrada.add(c);
-            return filtrada;
-        }
-        else
-        if (paciente.isEmpty() && !estado.isEmpty()){
-            for(Cita c: citasPaciente)
-                if(c.getEstado().toLowerCase().contains(estado.toLowerCase()))
-                    filtrada.add(c);
-            return filtrada;
-        }
-        else
-        for(Cita c: citasPaciente)
-            if(c.getPaciente().getNombre().toLowerCase().contains(paciente.toLowerCase()) &&
-                    c.getEstado().toLowerCase().contains(estado.toLowerCase()))
-                filtrada.add(c);
 
-        return filtrada;
+        return citas.stream()
+                .filter(c -> {
+                    boolean matchesStatus = true;
+                    boolean matchesPatient = true;
+
+                    if (status != null && !status.isEmpty()) {
+                        matchesStatus = c.getEstado().toLowerCase().contains(status.toLowerCase());
+                    }
+
+                    if (doctor != null && !doctor.isEmpty()) {
+                        matchesPatient = c.getMedico().getNombre().toLowerCase().contains(doctor.toLowerCase());
+                    }
+
+                    return matchesStatus && matchesPatient;
+                })
+                .collect(Collectors.toList());
     }
+
+    public List<Cita> citasMedicoFiltradas(Medico medico, String status, String patient) {
+        List<Cita> citas = citasMedico(medico);
+
+        if ((status == null || status.isEmpty()) && (patient == null || patient.isEmpty())) {
+            return citas;
+        }
+
+        return citas.stream()
+                .filter(c -> {
+                    boolean matchesStatus = true;
+                    boolean matchesPatient = true;
+
+                    if (status != null && !status.isEmpty()) {
+                        matchesStatus = c.getEstado().toLowerCase().contains(status.toLowerCase());
+                    }
+
+                    if (patient != null && !patient.isEmpty()) {
+                        matchesPatient = c.getPaciente().getNombre().toLowerCase().contains(patient.toLowerCase());
+                    }
+
+                    return matchesStatus && matchesPatient;
+                })
+                .collect(Collectors.toList());
+    }
+
 
     public Cita getCitaById(Integer show) {
         return citaRepository.getReferenceById(show);
