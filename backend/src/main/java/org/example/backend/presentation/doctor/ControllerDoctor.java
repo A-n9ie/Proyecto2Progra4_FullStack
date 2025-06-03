@@ -99,30 +99,6 @@ public class ControllerDoctor {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/history/filter")
-    public ResponseEntity<?> filterHistory(
-            Authentication authentication,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String patient
-    ) {
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        String nombre = jwt.getClaim("name");
-        Usuario usuario = serviceUser.getUser(nombre);
-        Medico medico = serviceDoctor.getDoctorbyUser(usuario);
-
-        List<Cita> citas = serviceAppointment.citasMedicoFiltradas(medico, status, patient);
-
-        List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(c -> {
-                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
-                    dto.setFotoUrlPaciente(serviceUser.cargarFoto(dto.getFotoUrlPaciente()));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(citaDTOs);
-    }
-
     @PutMapping("/cancel")
     public void cancel(Authentication authentication, @RequestBody Map<String, Integer> body) {
         Integer citaId = body.get("citaId");

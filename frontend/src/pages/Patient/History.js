@@ -6,6 +6,7 @@ import '../Principal/principal.css';
 
 function History(){
     const [citas, setCitas] = useState([]);
+    const [citasFiltradas, setCitasFiltradas] = useState([]);
     const [nombrePaciente, setNombrePaciente] = useState('');
     const [status, setStatus] = useState('');
     const [doctor, setDoctor] = useState('');
@@ -43,45 +44,42 @@ function History(){
         (async () => {
             const appointments = await citasMedicas();
             setCitas(appointments);
+            setCitasFiltradas(appointments);
         })();
     }
 
-    async function filtrarCitas(statusFiltro, doctorFiltro) {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const params = new URLSearchParams();
-        if (statusFiltro) params.append("status", statusFiltro);
-        if (doctorFiltro) params.append("doctor", doctorFiltro);
-
-        try {
-            const res = await fetch(`${backend}/history/filter?${params.toString()}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                }
-            });
-
-            if (!res.ok) {
-                throw new Error("Error al filtrar las citas");
-            }
-
-            const data = await res.json();
-            setCitas(data);
-        } catch (error) {
-            console.error("Error en el filtrado:", error);
+    function filtrarCitas(statusFiltro, doctorFiltro) {
+        if (!statusFiltro && !doctorFiltro) {
+            setCitasFiltradas(citas);
+            return;
         }
+
+        let filtradas = citas;
+
+        if (statusFiltro) {
+            filtradas = filtradas.filter(cita =>
+                cita.estado.toLowerCase().includes(statusFiltro.toLowerCase())
+            );
+        }
+
+        if (doctorFiltro) {
+            filtradas = filtradas.filter(cita =>
+                cita.nombreMedico.toLowerCase().includes(doctorFiltro.toLowerCase())
+            );
+        }
+
+        setCitasFiltradas(filtradas);
     }
 
-    async function handleSearch(e) {
+    function handleSearch(e) {
         e.preventDefault();
-        await filtrarCitas(status, doctor);
+        filtrarCitas(status, doctor);
     }
 
     return (
         <>
             <Show
-                citas={citas}
+                citas={citasFiltradas}
                 nombrePaciente={nombrePaciente}
                 status={status}
                 setStatus={setStatus}

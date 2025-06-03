@@ -6,6 +6,7 @@ import '../Principal/principal.css';
 
 function History(){
     const [citas, setCitas] = useState([]);
+    const [citasFiltradas, setCitasFiltradas] = useState([]);
     const [nombreMedico, setNombreMedico] = useState('');
     const [status, setStatus] = useState('');
     const [patient, setPatient] = useState('');
@@ -43,6 +44,7 @@ function History(){
         (async () => {
             const appointments = await citasMedicas();
             setCitas(appointments);
+            setCitasFiltradas(appointments);
         })();
     }
 
@@ -104,42 +106,38 @@ function History(){
         }
     }
 
-    async function filtrarCitas(statusFiltro, pacienteFiltro) {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
-        const params = new URLSearchParams();
-        if (statusFiltro) params.append("status", statusFiltro);
-        if (pacienteFiltro) params.append("patient", pacienteFiltro);
-
-        try {
-            const res = await fetch(`${backend}/history/filter?${params.toString()}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + token,
-                }
-            });
-
-            if (!res.ok) {
-                throw new Error("Error al filtrar las citas");
-            }
-
-            const data = await res.json();
-            setCitas(data);
-        } catch (error) {
-            console.error("Error en el filtrado:", error);
+    function filtrarCitas(statusFiltro, pacienteFiltro) {
+        if (!statusFiltro && !pacienteFiltro) {
+            setCitasFiltradas(citas);
+            return;
         }
+
+        let filtradas = citas;
+
+        if (statusFiltro) {
+            filtradas = filtradas.filter(cita =>
+                cita.estado.toLowerCase().includes(statusFiltro.toLowerCase())
+            );
+        }
+
+        if (pacienteFiltro) {
+            filtradas = filtradas.filter(cita =>
+                cita.nombrePaciente.toLowerCase().includes(pacienteFiltro.toLowerCase())
+            );
+        }
+
+        setCitasFiltradas(filtradas);
     }
 
-    async function handleSearch(e) {
+    function handleSearch(e) {
         e.preventDefault();
-        await filtrarCitas(status, patient);
+        filtrarCitas(status, patient);
     }
 
     return (
         <>
             <Show
-                citas={citas}
+                citas={citasFiltradas}
                 nombreMedico={nombreMedico}
                 cancel={cancel}
                 attend={attend}

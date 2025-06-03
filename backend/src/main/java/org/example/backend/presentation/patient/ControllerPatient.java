@@ -78,30 +78,6 @@ public class ControllerPatient {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/history/filter")
-    public ResponseEntity<?> filterHistory(
-            Authentication authentication,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String doctor
-    ) {
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        String nombre = jwt.getClaim("name");
-        Usuario usuario = serviceUser.getUser(nombre);
-        Paciente paciente = servicePatient.getPatientByUser(usuario);
-
-        List<Cita> citas = serviceAppointment.citasPacienteFiltradas(paciente, status, doctor);
-
-        List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(c -> {
-                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
-                    dto.setFotoUrlMedico(serviceUser.cargarFoto(dto.getFotoUrlMedico()));
-                    return dto;
-                })
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(citaDTOs);
-    }
-
     @GetMapping("/search")
     public String search(@RequestParam(value = "speciality", required = false) String speciality,
                          @RequestParam(value = "city", required = false) String city, Model model) {
