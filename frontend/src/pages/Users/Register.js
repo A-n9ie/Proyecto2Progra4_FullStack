@@ -4,11 +4,13 @@ import './Register.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faIdCard, faUser, faUserCircle, faKey, faLock, faUserTag, faFolder} from '@fortawesome/free-solid-svg-icons';
 import {AppContext} from "../AppProvider";
+import { useRef } from 'react';
 
 function Register() {
     const {personasState, setPersonasState } = useContext(AppContext);
     const [error, setError] = useState();
     const [password, setPassword] = useState({password_c: ''});
+    const photoInput = useRef();
 
     const backend = "http://localhost:8080";
 
@@ -56,6 +58,9 @@ function Register() {
             }
         });
         setPassword({ password_c: '' });
+        if (photoInput.current) {
+            photoInput.current.value = null;
+        }
     }
 
 
@@ -210,6 +215,7 @@ function Register() {
                         required
                         accept="image/*"
                         onChange={handleChange}
+                        ref={photoInput}
                     />
                 </div>
 
