@@ -34,21 +34,13 @@ public class ControllerPatient {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @PostMapping("/save")
-    public Paciente save(@RequestBody Paciente paciente) {
-        if(servicePatient.findPatient(paciente.getCedula()) != null){
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Patient Already Exist");
-        }
-        serviceUser.addUser(paciente.getUsuario());
-        return servicePatient.addPatient(paciente);
-    }
-
     @GetMapping("/me")
     public Paciente profile(Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         String nombre = jwt.getClaim("name");
         Usuario usuario = serviceUser.getUser(nombre);
         Paciente paciente = servicePatient.getPatientByUser(usuario);
+        paciente.setFotoUrl(serviceUser.cargarFoto(paciente.getFotoUrl()));
         return paciente;
     }
 
@@ -72,7 +64,11 @@ public class ControllerPatient {
         List<Cita> citas = serviceAppointment.citasPaciente(paciente);
 
         List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(PacienteCitasDTO::new)
+                .map(c -> {
+                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
+                    dto.setFotoUrlMedico(serviceUser.cargarFoto(dto.getFotoUrlMedico()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
@@ -96,7 +92,11 @@ public class ControllerPatient {
         List<Cita> citas = serviceAppointment.citasPacienteFiltradas(paciente, status, doctor);
 
         List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(PacienteCitasDTO::new)
+                .map(c -> {
+                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
+                    dto.setFotoUrlMedico(serviceUser.cargarFoto(dto.getFotoUrlMedico()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(citaDTOs);

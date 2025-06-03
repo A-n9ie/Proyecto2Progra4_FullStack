@@ -83,10 +83,11 @@ public class Medico {
 
     public Medico() {super();}
 
-    public Medico(String nombre, String cedula, Usuario usuario){
+    public Medico(String nombre, String cedula, String fotoUrl, Usuario usuario){
         this.nombre = nombre;
         this.cedula = cedula;
         this.usuario = usuario;
+        this.fotoUrl = fotoUrl;
     }
 
     public Integer getId() {

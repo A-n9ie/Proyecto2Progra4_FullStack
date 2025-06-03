@@ -159,7 +159,6 @@ function Header({ user, handleLogout }) {
                     <p>Search</p>
                     <nav>
                         <ul className="Menu">
-                            <li><Link to="/">Inicio</Link></li>
                             {!user.id && <li><Link to="/login">Login</Link></li>}
                             {user.id && (
                                 <li className="dropdown">

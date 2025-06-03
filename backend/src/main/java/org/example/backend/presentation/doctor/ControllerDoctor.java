@@ -31,10 +31,11 @@ public class ControllerDoctor {
     @Autowired
     private ServiceUser serviceUser;
 
-
     @GetMapping
     public List<Medico> getMedicos() {
-        return serviceDoctor.medicosFindAll();
+        List<Medico> medicos = serviceDoctor.medicosFindAll();
+        medicos.forEach(m -> m.setFotoUrl(serviceUser.cargarFoto(m.getFotoUrl())));
+        return medicos;
     }
 
 
@@ -58,6 +59,8 @@ public class ControllerDoctor {
         String nombre = jwt.getClaim("name");
         Usuario usuario = serviceUser.getUser(nombre);
         Medico medico = serviceDoctor.getDoctorbyUser(usuario);
+        medico.setFotoUrl(serviceUser.cargarFoto(medico.getFotoUrl()));
+
         List<HorariosMedico> list = serviceDoctor.horarioMdico(medico.getId());
         return new PerfilMedicoDTO(medico, list);
     }
@@ -82,7 +85,11 @@ public class ControllerDoctor {
         List<Cita> citas = serviceAppointment.citasMedico(medico);
 
         List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(PacienteCitasDTO::new)
+                .map(c -> {
+                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
+                    dto.setFotoUrlPaciente(serviceUser.cargarFoto(dto.getFotoUrlPaciente()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         Map<String, Object> response = new HashMap<>();
@@ -106,7 +113,11 @@ public class ControllerDoctor {
         List<Cita> citas = serviceAppointment.citasMedicoFiltradas(medico, status, patient);
 
         List<PacienteCitasDTO> citaDTOs = citas.stream()
-                .map(PacienteCitasDTO::new)
+                .map(c -> {
+                    PacienteCitasDTO dto = new PacienteCitasDTO(c);
+                    dto.setFotoUrlPaciente(serviceUser.cargarFoto(dto.getFotoUrlPaciente()));
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(citaDTOs);

@@ -51,10 +51,11 @@ public class Paciente {
 
     //public Paciente(Persona persona) {super(persona);}
 
-    public Paciente(String nombre, String cedula, Usuario usuario){
+    public Paciente(String nombre, String cedula, String fotoUrl, Usuario usuario){
         this.nombre = nombre;
         this.cedula = cedula;
         this.usuario = usuario;
+        this.fotoUrl = fotoUrl;
     }
 
     public Paciente() {super();}

@@ -192,7 +192,7 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
 
             {citas.map((c) => (
                 <div className="informacion_medico historial_col" key={c.id}>
-                    <img src={`/fotosPerfil/${c.fotoUrl}`} height="512" width="512" alt="Foto de perfil"/>
+                    <img src={`${c.fotoUrlPaciente}`} height="512" width="512" alt="Foto de perfil"/>
                     <div className="informacion_personal">
                         <div className="separacion">
                             <h5 className="nombre_medico">

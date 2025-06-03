@@ -1,5 +1,6 @@
 package org.example.backend.presentation.usuarios;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.*;
 import org.example.backend.DTO.PerfilMedicoDTO;
@@ -7,7 +8,9 @@ import org.example.backend.logic.*;
 import org.example.backend.presentation.security.TokenService;
 import org.example.backend.presentation.security.UserDetailsImp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,9 +22,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,82 +56,57 @@ public class ControllerUsuarios {
         return "/presentation/error";
     }
 
-    @PostMapping("/presentation/usuarios/create")
-    public String create(@Valid @ModelAttribute Usuario usuario,
-                         @Valid @ModelAttribute Persona persona,
-                         BindingResult result,
-                         @RequestParam("password_c") String passwordConfirm,
-                         @RequestParam("photo") MultipartFile photo,
-                         Model model) {
-
-        if (result.hasErrors()) {
-            model.addAttribute("error", "Error en los datos de entrada");
-            return "/presentation/usuarios/register";
-        }
+    @PostMapping("/register")
+    public ResponseEntity<String> registrarUsuario(
+            @RequestParam("cedula") String cedula,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("username") String username,
+            @RequestParam("clave") String clave,
+            @RequestParam("rol") String rol,
+            @RequestParam(value = "foto", required = false) MultipartFile foto) {
 
         try {
-            if ("Medico".equals(usuario.getRol()) && serviceDoctor.findDoctor(persona.getCedula()) != null) {
-                throw new IllegalArgumentException("Doctor ya existe");
-            }
-
-            if ("Paciente".equals(usuario.getRol()) && servicePatient.findPatient(persona.getCedula()) != null) {
-                throw new IllegalArgumentException("Paciente ya existe");
-            }
-
+            if(rol.equals("Medico"))
+                if(serviceDoctor.findDoctor(cedula) != null)
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor Already Exist");
+            else
+                if(servicePatient.findPatient(cedula) != null)
+                    throw new ResponseStatusException(HttpStatus.CONFLICT, "Patient Already Exist");
+            Usuario usuario = new Usuario();
+            usuario.setUsuario(username);
+            usuario.setClave(clave);
+            usuario.setRol(rol);
             serviceUser.addUser(usuario);
-            usuario = serviceUser.getLastUser();
-            persona.setUsuario(usuario);
 
-            // **Guardar en una carpeta dentro del proyecto llamada "uploads/fotosPerfil"**
-            String directoryPath = new File("uploads/fotosPerfil").getAbsolutePath();
-
-            // Crear la carpeta si no existe
-            File directory = new File(directoryPath);
-            if (!directory.exists()) {
-                directory.mkdirs();  // Crear directorio si no existe
+            String nombreArchivo = null;
+            if (foto != null && !foto.isEmpty()) {
+                String originalFilename = foto.getOriginalFilename();
+                String extension = originalFilename.substring(originalFilename.lastIndexOf('.') + 1);
+                nombreArchivo = username + "." + extension;
+                serviceUser.guardarFoto(foto, nombreArchivo);
             }
 
-            // Generar un nombre único para evitar sobrescribir archivos
-            String fileName = UUID.randomUUID().toString() + "_" + photo.getOriginalFilename();
-            String photoPath = directoryPath + "/" + fileName;
 
-            // Guardar la foto en la carpeta
-            photo.transferTo(new File(photoPath));
+            if(rol.equals("Medico"))
+                serviceDoctor.addDoctor(new Medico(nombre, cedula, nombreArchivo, usuario));
+            else
+                servicePatient.addPatient(new Paciente(nombre, cedula, nombreArchivo, usuario));
 
-            // Guardamos solo el nombre del archivo en la base de datos
-            if ("Medico".equals(usuario.getRol())) {
-                Medico doctor = new Medico(persona.getNombre(), persona.getCedula(), persona.getUsuario());
-                doctor.setAprobado(false);
-                doctor.setFotoUrl(fileName);
-                serviceDoctor.addDoctor(doctor);
-            } else {
-                Paciente patient = new Paciente(persona.getNombre(), persona.getCedula(), persona.getUsuario());
-                patient.setFotoUrl(fileName);
-                servicePatient.addPatient(patient);
-            }
-
-        } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "/presentation/usuarios/register";
+            return ResponseEntity.ok("Usuario registrado con éxito.");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al subir imagen.");
         }
-
-        return "/presentation/usuarios/login";
     }
 
+    @GetMapping("/foto/{nombreArchivo}")
+    public ResponseEntity<Resource> verImagen(@PathVariable String nombreArchivo) throws IOException {
+        String ruta = System.getProperty("user.dir") + "/fotosPerfil/" + nombreArchivo;
+        File archivo = new File(ruta);
+        if (!archivo.exists()) return ResponseEntity.notFound().build();
 
-    @GetMapping("/presentation/usuarios/history")
-    public String historyShow(
-            @RequestParam(value = "show", required = false) Long showId,
-            RedirectAttributes redirect) {
-        String username = serviceUser.getUserAuthenticated();
-        Usuario usuario = serviceUser.getUser(username);
-        redirect.addFlashAttribute("usuario", usuario);
-        if (usuario.getRol().equals("Paciente"))
-            return "redirect:/presentation/patient/history/show";
-        else
-            return "redirect:/presentation/doctor/appointment/show";
+        Resource recurso = (Resource) new UrlResource(archivo.toURI());
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(recurso);
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario user) {

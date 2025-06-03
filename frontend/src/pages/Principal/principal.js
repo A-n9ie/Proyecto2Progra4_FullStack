@@ -89,7 +89,7 @@ function List({list, listHorarios}) {
                         <div className="cada_medico" key={m.cedula}>
                             <div className="info_citas">
                                 <div className="informacion_medico">
-                                    <img src={`/fotosPerfil/${m.fotoUrl}`} height="512" width="512"
+                                    <img src={`${m.fotoUrl}`} height="512" width="512"
                                          alt="Foto de perfil"/>
                                     <div className="informacion_personal">
                                         <div className="separacion">

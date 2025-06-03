@@ -6,13 +6,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class PacienteCitasDTO {
+    private String fotoUrlPaciente;
     private String nombrePaciente;
     //Medico
     private String nombreMedico;
     private String especialidad;
     private BigDecimal costoConsulta;
     private String lugarAtencion;
-    private String fotoUrl;
+    private String fotoUrlMedico;
     // citas
     private Integer id;
     private LocalDate fechaCita;
@@ -29,6 +30,7 @@ public class PacienteCitasDTO {
 
         if (cita.getPaciente() != null) {
             this.nombrePaciente = cita.getPaciente().getNombre();
+            this.fotoUrlPaciente = cita.getPaciente().getFotoUrl();
         }
 
         if (cita.getMedico() != null) {
@@ -36,7 +38,7 @@ public class PacienteCitasDTO {
             this.especialidad = cita.getMedico().getEspecialidad();
             this.costoConsulta = cita.getMedico().getCostoConsulta();
             this.lugarAtencion = cita.getMedico().getLugarAtencion();
-            this.fotoUrl = cita.getMedico().getFotoUrl();
+            this.fotoUrlMedico = cita.getMedico().getFotoUrl();
         }
     }
 
@@ -80,12 +82,20 @@ public class PacienteCitasDTO {
         this.lugarAtencion = lugarAtencion;
     }
 
-    public String getFotoUrl() {
-        return fotoUrl;
+    public String getFotoUrlPaciente() {
+        return fotoUrlPaciente;
     }
 
-    public void setFotoUrl(String fotoUrl) {
-        this.fotoUrl = fotoUrl;
+    public void setFotoUrlPaciente(String fotoUrlPaciente) {
+        this.fotoUrlPaciente = fotoUrlPaciente;
+    }
+
+    public String getFotoUrlMedico() {
+        return fotoUrlMedico;
+    }
+
+    public void setFotoUrlMedico(String fotoUrlMedico) {
+        this.fotoUrlMedico = fotoUrlMedico;
     }
 
     public Integer getId() {

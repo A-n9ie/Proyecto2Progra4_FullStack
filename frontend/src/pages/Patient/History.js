@@ -125,7 +125,7 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
                 {citas.map((c) => (
                     <div key={c.id} className="informacion_medico historial_col">
                         <img
-                            src={`/fotosPerfil/${c.fotoUrl}`}
+                            src={`${c.fotoUrlMedico}`}
                             height="512"
                             width="512"
                             alt="Foto de perfil"

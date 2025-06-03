@@ -30,8 +30,8 @@ function Register() {
         } else if (name === "photo") {
             const file = files[0];
             if (file) {
-                updatedPersona.foto_file = file; // Archivo real
-                updatedPersona.foto_url = URL.createObjectURL(file); // Previsualización (opcional)
+                updatedPersona.foto_file = file;
+                updatedPersona.foto_url = URL.createObjectURL(file);
             }
         }
 
@@ -77,43 +77,38 @@ function Register() {
     function handleSave(event) {
         event.preventDefault();
         if (!validar()) return;
-        const userAdd = {
-            cedula: personasState.persona.cedula,
-            nombre: personasState.persona.nombre,
-            foto_url: personasState.persona.foto_url,
-            usuario: personasState.persona.usuario
-        };
-        let request
-        if(userAdd.usuario.rol === "Paciente") {
-            request = new Request(`${backend}/pacientes/save`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(userAdd)
-            });
-        }
-        else{
-            request = new Request(`${backend}/medicos/save`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(userAdd)
-            });
-        }
-        (async () => {
-            try {
-                const response = await fetch(request);
 
+        const formData = new FormData();
+        const persona = personasState.persona;
+
+        formData.append("cedula", persona.cedula);
+        formData.append("nombre", persona.nombre);
+        formData.append("username", persona.usuario.username);
+        formData.append("clave", persona.usuario.clave);
+        formData.append("rol", persona.usuario.rol);
+
+        if (persona.foto_file) {
+            formData.append("foto", persona.foto_file);
+        }
+
+        const endpoint = backend + "/usuarios/register"
+
+        fetch(endpoint, {
+            method: "POST",
+            body: formData, // NO headers here; browser sets correct boundary for multipart/form-data
+        })
+            .then(async (response) => {
                 if (!response.ok) {
                     const errorData = await response.json();
                     setError(errorData.message);
                     return;
                 }
-
                 setError(null);
-
-            } catch (err) {
+                clear();
+            })
+            .catch(() => {
                 setError("Error de red o del servidor");
-            }
-        })();
+            });
     }
 
     return (
@@ -212,6 +207,7 @@ function Register() {
                         type="file"
                         id="photo"
                         name="photo"
+                        required
                         accept="image/*"
                         onChange={handleChange}
                     />

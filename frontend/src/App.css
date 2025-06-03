@@ -82,7 +82,7 @@ header {
 .header-content img{
   margin-right: 10px;
   border-radius: 60px;
-  width: 50%;
+  width: 60%;
   height: auto;
   object-fit: cover;
 }
