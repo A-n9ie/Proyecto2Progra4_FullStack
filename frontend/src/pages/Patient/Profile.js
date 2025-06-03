@@ -152,11 +152,11 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="Phone">Phone-number:</label>
+                                <label htmlFor="telefono">Phone-number:</label>
                                 <input
                                     type="text"
-                                    id="phone"
-                                    name="phone"
+                                    id="telefono"
+                                    name="telefono"
                                     value={entity.telefono}
                                     onChange={handleChange}
                                 />
