@@ -1,15 +1,17 @@
 package org.example.backend.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.time.LocalTime;
 
 public class HorariosMedicosDTO {
     private Integer medicoId;
     private String diaSemana;
-    private LocalTime horarioInicio;
-    private LocalTime horarioFin;
+    private String horarioInicio;
+    private String horarioFin;
     private Integer frecuencia;
 
-    public HorariosMedicosDTO(Integer medicoId, String diaSemana, LocalTime horarioInicio, LocalTime horarioFin, Integer frecuencia) {
+    public HorariosMedicosDTO(Integer medicoId, String diaSemana, String horarioInicio, String horarioFin, Integer frecuencia) {
         this.medicoId = medicoId;
         this.diaSemana = diaSemana;
         this.horarioInicio = horarioInicio;
@@ -25,11 +27,11 @@ public class HorariosMedicosDTO {
         this.diaSemana = diaSemana;
     }
 
-    public LocalTime getHorarioInicio() {
+    public String getHorarioInicio() {
         return horarioInicio;
     }
 
-    public void setHorarioInicio(LocalTime horarioInicio) {
+    public void setHorarioInicio(String horarioInicio) {
         this.horarioInicio = horarioInicio;
     }
 
@@ -41,11 +43,11 @@ public class HorariosMedicosDTO {
         this.frecuencia = frecuenciaCitas;
     }
 
-    public LocalTime getHorarioFin() {
+    public String getHorarioFin() {
         return horarioFin;
     }
 
-    public void setHorarioFin(LocalTime horarioFin) {
+    public void setHorarioFin(String horarioFin) {
         this.horarioFin = horarioFin;
     }
 

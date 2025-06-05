@@ -1,19 +1,22 @@
 package org.example.backend.logic;
 
 import jakarta.transaction.Transactional;
-import org.example.backend.DTO.EditMedicoHorarioDTO;
 import org.example.backend.DTO.HorariosMedicosDTO;
+import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.data.CitaRepository;
 import org.example.backend.data.DoctorRepository;
 import org.example.backend.data.HorarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.awt.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service("serviceDoctor")
@@ -48,8 +51,8 @@ public class ServiceDoctor {
                 .map(h -> new HorariosMedicosDTO(
                         h.getMedico().getId(),
                         h.getDiaSemana().name(),
-                        h.getHoraInicio(),
-                        h.getHoraFin(),
+                        h.getHoraInicio().toString(),
+                        h.getHoraFin().toString(),
                         h.getFrecuenciaCitas()
                 ))
                 .collect(Collectors.toList());
@@ -62,40 +65,34 @@ public class ServiceDoctor {
                 .map(h -> new HorariosMedicosDTO(
                         h.getMedico().getId(),
                         h.getDiaSemana().name(),
-                        h.getHoraInicio(),
-                        h.getHoraFin(),
+                        h.getHoraInicio().toString(),
+                        h.getHoraFin().toString(),
                         h.getFrecuenciaCitas()
                 ))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void editHorariosMedico(EditMedicoHorarioDTO dto, Usuario user) {
+    public void editHorariosMedico(PerfilMedicoDTO dto, Usuario user) {
         Medico existing = getDoctorbyUser(user);
 
         if (existing != null) {
-            Medico edited = dto.getMedico();
-
-            // Solo actualiza los campos que se pueden cambiar
-            existing.setNombre(edited.getNombre());
-            existing.setEspecialidad(edited.getEspecialidad());
-            existing.setCostoConsulta(edited.getCostoConsulta());
-            existing.setLugarAtencion(edited.getLugarAtencion());
-            existing.setPresentacion(edited.getPresentacion());
-            existing.setFotoUrl(edited.getFotoUrl());
-
+            dto.updateMedicoMedico(existing); // actualiza el existente con los datos del DTO
             doctorRepository.save(existing);
 
             horarioRepository.deleteAllByMedico(existing);
-            List<HorariosMedicosDTO> nuevosHorariosDto = dto.getHorarios();
+            List<HorariosMedicosDTO> nuevosHorariosDto = dto.getDias();
 
             if (nuevosHorariosDto != null) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
                 for (HorariosMedicosDTO horarioDto : nuevosHorariosDto) {
                     HorariosMedico horario = new HorariosMedico();
                     horario.setMedico(existing);
                     horario.setDiaSemana(DiasSemana.valueOf(horarioDto.getDiaSemana()));
-                    horario.setHoraInicio(horarioDto.getHorarioInicio());
-                    horario.setHoraFin(horarioDto.getHorarioFin());
+                    LocalTime inicio = LocalTime.parse(horarioDto.getHorarioInicio(), formatter);
+                    LocalTime fin = LocalTime.parse(horarioDto.getHorarioFin(), formatter);
+                    horario.setHoraInicio(inicio);
+                    horario.setHoraFin(fin);
                     horario.setFrecuenciaCitas(horarioDto.getFrecuenciaCitas());
 
                     horarioRepository.save(horario);
@@ -155,13 +152,16 @@ public class ServiceDoctor {
         return result;
     }
 
-    private List<String> calcularHoras(LocalTime inicio, LocalTime fin, Integer frecuenciaMinutos) {
+    private List<String> calcularHoras(String horaInicio, String horaFin, Integer frecuenciaMinutos) {
         List<String> horas = new ArrayList<>();
-        LocalTime horaActual = inicio;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        while (!horaActual.isAfter(fin.minusMinutes(frecuenciaMinutos))) {
-            horas.add(horaActual.toString());
-            horaActual = horaActual.plusMinutes(frecuenciaMinutos);
+        LocalTime inicio = LocalTime.parse(horaInicio, formatter);
+        LocalTime fin = LocalTime.parse(horaFin, formatter);
+
+        while (!inicio.isAfter(fin.minusMinutes(frecuenciaMinutos))) {
+            horas.add(inicio.format(formatter));
+            inicio = inicio.plusMinutes(frecuenciaMinutos);
         }
 
         return horas;

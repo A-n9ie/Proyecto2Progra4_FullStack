@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,8 +65,8 @@ public class ControllerDoctor {
                 .map(h -> new HorariosMedicosDTO(
                         id,
                         h.getDiaSemana().name(),
-                        h.getHoraInicio(),
-                        h.getHoraFin(),
+                        h.getHoraInicio().toString(),
+                        h.getHoraFin().toString(),
                         h.getFrecuenciaCitas()
                 )).collect(Collectors.toList());
     }
@@ -91,13 +93,14 @@ public class ControllerDoctor {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<String> edit(@RequestBody EditMedicoHorarioDTO dto, Authentication authentication) {
+    public ResponseEntity<String> edit(@RequestBody PerfilMedicoDTO dto, Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         String nombre = jwt.getClaim("name");
         Usuario usuario = serviceUser.getUser(nombre);
 
         serviceDoctor.editHorariosMedico(dto, usuario);
         return ResponseEntity.ok("Doctor actualizado");
+
     }
 
     @GetMapping("/history")

@@ -20,11 +20,12 @@ public class PerfilMedicoDTO {
     private String lugarAtencion;
     private String fotoUrl;
     private String presentacion;
+    private List<HorariosMedicosDTO> dias;
 
-    @JsonIgnore
-    private List<HorariosMedicosDTO> horarios;
+    public PerfilMedicoDTO() {
+    }
 
-    public PerfilMedicoDTO(Medico medico, List<HorariosMedicosDTO> horarios) {
+    public PerfilMedicoDTO(Medico medico, List<HorariosMedicosDTO> dias) {
         this.id = medico.getId();
         this.cedula = medico.getCedula();
         this.nombre = medico.getNombre();
@@ -34,18 +35,18 @@ public class PerfilMedicoDTO {
         this.lugarAtencion = medico.getLugarAtencion();
         this.fotoUrl = medico.getFotoUrl();
         this.presentacion = medico.getPresentacion();
-        this.horarios = horarios;
+        this.dias = dias;
     }
 
-    public PerfilMedicoDTO(Medico medico) {
-        this.nombre = medico.getNombre();
-        this.especialidad = medico.getEspecialidad();
-        this.costoConsulta = medico.getCostoConsulta();
-        this.lugarAtencion = medico.getLugarAtencion();
-        this.fotoUrl = medico.getFotoUrl();
-        this.presentacion = medico.getPresentacion();
+    public Medico updateMedicoMedico(Medico medico) {
+        medico.setNombre(this.nombre);
+        medico.setEspecialidad(this.especialidad);
+        medico.setCostoConsulta(this.costoConsulta);
+        medico.setLugarAtencion(this.lugarAtencion);
+        medico.setFotoUrl(this.fotoUrl);
+        medico.setPresentacion(this.presentacion);
+    return medico;
     }
-
 
     public String getCedula() {
         return cedula;
@@ -120,10 +121,10 @@ public class PerfilMedicoDTO {
     }
 
     public List<HorariosMedicosDTO> getDias() {
-        return horarios;
+        return dias;
     }
 
     public void setDias(List<HorariosMedicosDTO> horarios) {
-        this.horarios = horarios;
+        this.dias = horarios;
     }
 }
