@@ -12,27 +12,22 @@ function Medicos(){
 
     const backend = "http://localhost:8080/medicos";
 
-    function handleChange(event){
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        let medicoChanged = {...medicosState.medico};
-        medicoChanged[name] = value;
-        setMedicosState({
-            ...medicosState,
-            medico: medicoChanged
-        });
-    }
+    async function handleList() {
+        const data = await listHorarios();
 
+        if (!data) {
+            console.error("No se pudo cargar la información de los médicos y horarios.");
+            return;
+        }
 
+        // const perfiles = data.map(item => item.perfilMedico);
+        // const horarios = data.map(item => ({
+        //     medicoId: item.perfilMedico.id,
+        //     horarios: item.horariosMedicos || {}
+        // }));
 
-    function handleList(){
-        (async ()=>{
-            const medicos = await list();
-            const horarios = await listHorarios();
-            setMedicosState({...medicosState, medicos: medicos});
-            setHorariosState({...horariosState, horarios : horarios});
-        })();
+        setMedicosState({medicos: data});
+        //setHorariosState({...horariosState, horarios});
     }
 
     async function list(){
@@ -42,30 +37,26 @@ function Medicos(){
             return;}
         return await response.json();
     }
+
     async function listHorarios(){
         const request = new Request(backend+'/horarios', {method: 'GET', headers:{ }});
         const response = await fetch(request);
         if(!response.ok){alert("Error: " + response.status);
-            return;}
-        //me devuelve un
+            return;
+        }
         const data = await response.json();
-        // Convertir a array de objetos
-        const horariosList = Object.entries(data).map(([medicoId, fechas]) => ({
-            medicoId: parseInt(medicoId),
-            horarios: fechas
-        }));
-        return horariosList;
+
+        return data;
     }
 
     return (
         <List
             list={medicosState.medicos}
-            listHorarios={horariosState.horarios}
         />
     );
 }
 
-function List({list, listHorarios}) {
+function List({ list }) {
     return (
         <div id="cuerpo_div_index" className="cuerpoIndex">
             <div className="buscar_lugar_especialidad">
@@ -83,14 +74,15 @@ function List({list, listHorarios}) {
             </div>
 
             <div className="medicos">
-                {list
-                    .filter(m => m.aprobado)
-                    .map((m) => (
-                        <div className="cada_medico" key={m.cedula}>
+                {list.filter(item => item && item.nombre)
+                    .map((m) => {
+                        const horarios = m.horarios;
+
+                    return (
+                        <div key={m.id} className="cada_medico">
                             <div className="info_citas">
                                 <div className="informacion_medico">
-                                    <img src={`${m.fotoUrl}`} height="512" width="512"
-                                         alt="Foto de perfil"/>
+                                    <img src={`http://localhost:8080/fotosPerfil/${m.fotoUrl || 'default.jpg'}`}/>
                                     <div className="informacion_personal">
                                         <div className="separacion">
                                             <h5 className="nombre_medico">
@@ -102,47 +94,39 @@ function List({list, listHorarios}) {
                                         <p className="lugar_atencion">
                                             <span>{m.lugarAtencion}</span>
                                         </p>
-                                        </div>
+                                    </div>
                                     <div className="cada_cita">
-                                        {listHorarios.filter(h => h.medicoId === m.id).map ((horario) => (
-                                            <div className="dias_disponibles" key={horario.medicoId}>
-                                                {Object.entries(horario.horarios).map(([fecha, horas], index) => (
-                                                    <div key={index} className={index >= 3 ? 'oculto' : ''}>
-                                                        <div className="dias">
-                                                            <p>{fecha}</p>
-                                                        </div>
-                                                        <div className="citas_disponibles">
-                                                                <form>
-                                                                    {horas.map((hora, hIndex) => (
-                                                                        <Link
-                                                                            key={hIndex}
-                                                                            to= "/agendar"
-                                                                              state={{
-                                                                                  medico: m,
-                                                                                  fecha: fecha,
-                                                                                  hora: hora
-                                                                              }}
-                                                                            className="btn_schedule">
-                                                                            {hora}
-                                                                        </Link>
-                                                                    ))}
-                                                                    <input type="hidden" name="fecha" value={fecha}/>
-                                                                    <input type="hidden" name="medicoId"
-                                                                           value={horario.medicoId}/>
-                                                                </form>
-                                                        </div>
-                                                        </div>
-                                                        ))}
+                                        {horarios &&
+                                            Object.entries(horarios).map(([fecha, horas], index) => (
+                                                <div key={fecha} className={index >= 3 ? "oculto" : ""}>
+                                                    <div className="dias">
+                                                        <p>{fecha}</p>
                                                     </div>
-                                                ))}
-                                            </div>
-                                            </div>
-                                            </div>
-                                            </div>
+                                                    <div className="citas_disponibles">
+                                                        <form>
+                                                            {Array.isArray(horas) &&
+                                                                horas.map((hora, hIndex) => (
+                                                                    <Link
+                                                                        key={hIndex}
+                                                                        to="/agendar"
+                                                                        state={{medico: m, fecha: fecha, hora: hora}}
+                                                                        className="btn_schedule"
+                                                                    >
+                                                                        {hora}
+                                                                    </Link>
+                                                                ))}
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             ))}
                                     </div>
                                 </div>
-                                );
-                                }
-
+                            </div>
+                        </div>
+                    );
+                    })}
+            </div>
+        </div>
+    );
+}
 export default Medicos;

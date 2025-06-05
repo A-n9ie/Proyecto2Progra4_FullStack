@@ -1,14 +1,18 @@
 package org.example.backend.logic;
 
 import jakarta.transaction.Transactional;
+import org.example.backend.DTO.EditMedicoHorarioDTO;
+import org.example.backend.DTO.HorariosMedicosDTO;
 import org.example.backend.data.CitaRepository;
 import org.example.backend.data.DoctorRepository;
 import org.example.backend.data.HorarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,123 +41,156 @@ public class ServiceDoctor {
 
     public List<HorariosMedico> horarioMdico(Integer id){return horarioRepository.findByMedicoId(id);}
 
+    public List<HorariosMedicosDTO> listarHorariosPorMedico(Medico medico) {
+        List<HorariosMedico> entidades = horarioRepository.findAllByMedico(medico);
 
-    public void editDoctor(Usuario user, Medico doctor){
-        Medico u = getDoctorbyUser(user);
-        if (u != null){
-            u.setNombre(doctor.getNombre());
-            u.setEspecialidad(doctor.getEspecialidad());
-            u.setCostoConsulta(doctor.getCostoConsulta());
-            u.setFrecuenciaCitas(doctor.getFrecuenciaCitas());
-            u.setHorarioInicio(doctor.getHorarioInicio());
-            u.setHorarioFin(doctor.getHorarioFin());
-            u.setLugarAtencion(doctor.getLugarAtencion());
-            u.setPresentacion(doctor.getPresentacion());
+        return entidades.stream()
+                .map(h -> new HorariosMedicosDTO(
+                        h.getMedico().getId(),
+                        h.getDiaSemana().name(),
+                        h.getHoraInicio(),
+                        h.getHoraFin(),
+                        h.getFrecuenciaCitas()
+                ))
+                .collect(Collectors.toList());
+    }
 
-            doctorRepository.save(u);
-        }
+    public List<HorariosMedicosDTO> listarHorarios() {
+        List<HorariosMedico> entidades = horarioRepository.findAll();
+
+        return entidades.stream()
+                .map(h -> new HorariosMedicosDTO(
+                        h.getMedico().getId(),
+                        h.getDiaSemana().name(),
+                        h.getHoraInicio(),
+                        h.getHoraFin(),
+                        h.getFrecuenciaCitas()
+                ))
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public void editDays(Medico doctor, List<String> dias){
-        Medico u = findDoctor(doctor.getCedula());
-        horarioRepository.deleteAllByMedico(u);
-        for(String d: dias) {
-            HorariosMedico horario = new HorariosMedico();
-            horario.setMedico(u);
-            horario.setDia(d);
-            horarioRepository.save(horario);
+    public void editHorariosMedico(EditMedicoHorarioDTO dto, Usuario user) {
+        Medico existing = getDoctorbyUser(user);
+
+        if (existing != null) {
+            Medico edited = dto.getMedico();
+
+            // Solo actualiza los campos que se pueden cambiar
+            existing.setNombre(edited.getNombre());
+            existing.setEspecialidad(edited.getEspecialidad());
+            existing.setCostoConsulta(edited.getCostoConsulta());
+            existing.setLugarAtencion(edited.getLugarAtencion());
+            existing.setPresentacion(edited.getPresentacion());
+            existing.setFotoUrl(edited.getFotoUrl());
+
+            doctorRepository.save(existing);
+
+            horarioRepository.deleteAllByMedico(existing);
+            List<HorariosMedicosDTO> nuevosHorariosDto = dto.getHorarios();
+
+            if (nuevosHorariosDto != null) {
+                for (HorariosMedicosDTO horarioDto : nuevosHorariosDto) {
+                    HorariosMedico horario = new HorariosMedico();
+                    horario.setMedico(existing);
+                    horario.setDiaSemana(DiasSemana.valueOf(horarioDto.getDiaSemana()));
+                    horario.setHoraInicio(horarioDto.getHorarioInicio());
+                    horario.setHoraFin(horarioDto.getHorarioFin());
+                    horario.setFrecuenciaCitas(horarioDto.getFrecuenciaCitas());
+
+                    horarioRepository.save(horario);
+                }
         }
     }
+    }
 
-    public Iterable<HorariosMedico> horariosMedicosFindAll() {
+
+    public List<HorariosMedico> horariosMedicosFindAll() {
         return horarioRepository.findAll();
     }
 
-    public Map<Integer, List<String>> obtenerMedicosConHorariosFechas() {
-        List<HorariosMedico> horarios = (List<HorariosMedico>) horariosMedicosFindAll();
-        Map<Integer, List<String>> medicosConHorarios = new HashMap<>();
-
-       //hoy
-        LocalDate fechaBase = LocalDate.now();
-        LocalDate fechaLimite = fechaBase.plusDays(14);
-        //dia, id
-        Map<String, Integer> diasDeLaSemana = new HashMap<>();
-        diasDeLaSemana.put("Lunes", 1);
-        diasDeLaSemana.put("Martes", 2);
-        diasDeLaSemana.put("Miércoles", 3);
-        diasDeLaSemana.put("Jueves", 4);
-        diasDeLaSemana.put("Viernes", 5);
-        diasDeLaSemana.put("Sábado", 6);
-        diasDeLaSemana.put("Domingo", 7);
-
-        for (LocalDate fecha = fechaBase; !fecha.isAfter(fechaLimite); fecha = fecha.plusDays(1)) {
-            String nombreDia = fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.forLanguageTag("es"));
-
-            for (HorariosMedico horario : horarios) {
-                if (horario.getDia().toLowerCase().equals(nombreDia.toLowerCase())) {
-                    Integer medicoId = horario.getMedico().getId();
-
-                    // Agregar al mapa
-                    medicosConHorarios.putIfAbsent(medicoId, new ArrayList<>());
-                    List<String> diasDelMedico = medicosConHorarios.get(medicoId);
-
-                    // Solo agregar si no está repetido
-                    if (!diasDelMedico.contains(fecha.toString())) {
-                        diasDelMedico.add(fecha.toString());
-                    }
-                }
-            }
-        }
-        return medicosConHorarios;
+    public Optional<HorariosMedico> obtenerHorarioPorMedico(Integer medicoId, String dia) { //puede no tener un horario un dia
+        List<HorariosMedico> horarios = horarioRepository.findByMedicoId(medicoId);
+        return horarios.stream()
+                .filter(h -> h.getDiaSemana().equals(dia))
+                .findFirst();
     }
 
-    /// ////////// PRUEBBBBBAAAAA///////////////
-    public Map<Integer, Map<String, List<String>>> obtenerMedicosConFechasYHoras() {
-        Map<Integer, List<String>> fechasPorMedico = obtenerMedicosConHorariosFechas();
-        Map<Integer, Map<String, List<String>>> resultado = new HashMap<>();
+    public Map<Integer, Map<String, List<String>>> listarHorariosAgrupados() {
 
-        for (Map.Entry<Integer, List<String>> entry : fechasPorMedico.entrySet()) {
-            Integer medicoId = entry.getKey();
-            List<String> fechas = entry.getValue();
+        LocalDate hoy = LocalDate.now();
+        LocalDate fechaFin = hoy.plusWeeks(2);
 
-            Medico medico = doctorRepository.findById(medicoId).orElse(null);
-            if (medico == null) continue;
+        List<HorariosMedicosDTO> lista = listarHorarios();
 
-            Map<String, List<String>> fechasConHoras = new LinkedHashMap<>();
+        Map<Integer, Map<String, List<String>>> result = new HashMap<>();
 
-            for (String fechaStr : fechas) {
-                LocalDate fecha = LocalDate.parse(fechaStr);
-                List<LocalTime> horas = medico.citasDisponibles(fecha);
+        LocalTime ahora = LocalTime.now();
 
-                if (!horas.isEmpty()) {
-                    List<String> horasFormateadas = horas.stream()
-                            .map(LocalTime::toString)
+        for (HorariosMedicosDTO dto : lista) {
+            result.putIfAbsent(dto.getMedicoId(), new TreeMap<>());
+            Map<String, List<String>> fechasMap = result.get(dto.getMedicoId());
+
+            List<String> fechas = generarFechas(hoy, fechaFin, dto.getDiaSemana());
+            List<String> horasDisponibles = calcularHoras(dto.getHorarioInicio(), dto.getHorarioFin(), dto.getFrecuenciaCitas());
+
+            for (String fecha : fechas) {
+                LocalDate fechaActual = LocalDate.parse(fecha);
+                List<String> horasParaFecha;
+
+                if (fechaActual.isEqual(hoy)) {
+                    horasParaFecha = horasDisponibles.stream()
+                            .filter(hora -> LocalTime.parse(hora).compareTo(ahora) >= 0)
                             .collect(Collectors.toList());
 
-                    fechasConHoras.put(fechaStr, horasFormateadas);
+                    if (!horasParaFecha.isEmpty()) {
+                        fechasMap.put(fecha, horasParaFecha);
+                    }
+                } else if (fechaActual.isAfter(hoy)) {
+                    fechasMap.put(fecha, horasDisponibles);
                 }
             }
+        }
 
-            if (!fechasConHoras.isEmpty()) {
-                resultado.put(medicoId, fechasConHoras);
+        return result;
+    }
+
+    private List<String> calcularHoras(LocalTime inicio, LocalTime fin, Integer frecuenciaMinutos) {
+        List<String> horas = new ArrayList<>();
+        LocalTime horaActual = inicio;
+
+        while (!horaActual.isAfter(fin.minusMinutes(frecuenciaMinutos))) {
+            horas.add(horaActual.toString());
+            horaActual = horaActual.plusMinutes(frecuenciaMinutos);
+        }
+
+        return horas;
+    }
+
+    private List<String> generarFechas(LocalDate inicio, LocalDate fin, String diaSemana) {
+        List<String> fechas = new ArrayList<>();
+
+        Map<String, DayOfWeek> dias = Map.of(
+                "LUNES", DayOfWeek.MONDAY,
+                "MARTES", DayOfWeek.TUESDAY,
+                "MIERCOLES", DayOfWeek.WEDNESDAY,
+                "JUEVES", DayOfWeek.THURSDAY,
+                "VIERNES", DayOfWeek.FRIDAY,
+                "SABADO", DayOfWeek.SATURDAY,
+                "DOMINGO", DayOfWeek.SUNDAY
+        );
+        DayOfWeek targetDay = dias.get(diaSemana.toUpperCase());
+
+        LocalDate actual = inicio;
+        while (!actual.isAfter(fin)) {
+            if (actual.getDayOfWeek().equals(targetDay)) {
+                fechas.add(actual.toString()); // formato YYYY-MM-DD
             }
+            actual = actual.plusDays(1);
         }
-
-        return resultado;
+        return fechas;
     }
 
-    private LocalDate calcularFechaParaDiaSemana(LocalDate hoy, int diaSemana) {
-        //hoy
-        LocalDate fecha = hoy;
-
-        int diasHastaDia = diaSemana - fecha.getDayOfWeek().getValue();
-        if (diasHastaDia < 0) {
-            diasHastaDia += 7;
-        }
-
-        return fecha.plusDays(diasHastaDia);
-    }
 
     public Map<Integer, List<String>> obtenerHorariosDeMedicoEspecifico(Integer medicoId) {
 
@@ -176,7 +213,7 @@ public class ServiceDoctor {
             String nombreDia = fecha.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault());
 
             for (HorariosMedico horario : horarios) {
-                if (horario.getDia().equalsIgnoreCase(nombreDia)) {
+                if (horario.getDiaSemana().equals(nombreDia)) {
                     medicoId = horario.getMedico().getId();
 
                     // Agregar al mapa

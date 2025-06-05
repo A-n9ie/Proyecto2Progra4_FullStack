@@ -22,9 +22,6 @@ CREATE TABLE medicos (
     especialidad VARCHAR(30),
     costo_consulta DECIMAL(10, 2),
     lugar_atencion VARCHAR(80),
-    horario_inicio TIME,
-    horario_fin TIME,
-    frecuencia_citas varchar (20),
     foto_url VARCHAR(255),
     presentacion TEXT,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) 
@@ -33,7 +30,10 @@ CREATE TABLE medicos (
 CREATE TABLE horarios_medicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     medico_id INT,
-    dia ENUM('Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'),
+    dia ENUM('LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO', 'DOMINGO'),
+    hora_inicio TIME NOT NULL,
+    hora_fin TIME NOT NULL,
+    frecuencia_minutos INT DEFAULT 30,
     FOREIGN KEY (medico_id) REFERENCES medicos(id)
 );
 
@@ -76,17 +76,14 @@ values ('LKjero', '333', 'Medico');
 
 /* medicos */
 insert into medicos (usuario_id, cedula, nombre, aprobado, especialidad, 
-costo_consulta, lugar_atencion, horario_inicio, horario_fin, frecuencia_citas,
- foto_url, presentacion) values (2, '111111111', 'Bruce Branner', true, 'Dermatology', 50000, 'Cima Hospital, San Jose',
- '08:00:00', '16:00:00', '30 minutos',  'BBanner.jpg', 'Médico altamente capacitado');
+costo_consulta, lugar_atencion,
+ foto_url, presentacion) values (2, '111111111', 'Bruce Branner', true, 'Dermatology', 50000, 'Cima Hospital, San Jose','BBanner.jpg', 'Médico altamente capacitado');
 insert into medicos (usuario_id, cedula, nombre, aprobado, especialidad, 
-costo_consulta, lugar_atencion, horario_inicio, horario_fin, frecuencia_citas,
- foto_url, presentacion) values (3, '222222222', 'Juan José Perez', true, 'Cardiology', 60800, 'Medical Center, Alajuela',
- '08:00:00', '16:00:00', '1 horas',  'JPerez.jpg', 'Médico altamente capacitado en cirugía cardiovascular');
+costo_consulta, lugar_atencion,
+ foto_url, presentacion) values (3, '222222222', 'Juan José Perez', true, 'Cardiology', 60800, 'Medical Center, Alajuela','JPerez.jpg', 'Médico altamente capacitado en cirugía cardiovascular');
 insert into medicos (usuario_id, cedula, nombre, aprobado, especialidad, 
-costo_consulta, lugar_atencion, horario_inicio, horario_fin, frecuencia_citas,
- foto_url, presentacion) values (4, '333333333', 'Luis Alfoncso Kajero', true, 'Cardiology', 70000, 'Heart Care Center, Alajuela',
- '11:00:00', '19:00:00', '1 horas',  'LKjero.jpg', 'Profesional dedicado a la atención');
+costo_consulta, lugar_atencion,
+ foto_url, presentacion) values (4, '333333333', 'Luis Alfoncso Kajero', true, 'Cardiology', 70000, 'Heart Care Center, Alajuela','LKjero.jpg', 'Profesional dedicado a la atención');
  
  /* usuarios pacientes */
 insert into usuarios (usuario, clave, rol) values ('GLucas', '444', 'Paciente');
@@ -99,26 +96,26 @@ insert into pacientes (usuario_id, cedula, nombre, telefono, direccion, foto_url
  values (6, '5555555555', 'Stan Lee', '665-1245', 'San Jose', 'Slee.jpg');
  
 
-insert into horarios_medicos (medico_id, dia) 
-values (1, 'Lunes');
-insert into horarios_medicos (medico_id, dia) 
-values (1, 'Martes');
-insert into horarios_medicos (medico_id, dia) 
-values (1, 'Miercoles');
-insert into horarios_medicos (medico_id, dia) 
-values (1, 'Jueves');
-insert into horarios_medicos (medico_id, dia) 
-values (1, 'Viernes');
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (1, 'LUNES', '08:00:00', '12:00:00', 60);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (1, 'MARTES', '09:00:00', '16:00:00', 60);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (1, 'MIERCOLES','08:00:00', '18:00:00', 30);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (1, 'JUEVES', '10:00:00', '17:00:00', 30);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (1, 'VIERNES', '08:00:00', '12:00:00', 30);
 
-insert into horarios_medicos (medico_id, dia) 
-values (2, 'Martes');
-insert into horarios_medicos (medico_id, dia) 
-values (2, 'Jueves');
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (2, 'MARTES', '10:00:00', '14:00:00', 60);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (2, 'JUEVES', '10:00:00', '14:00:00', 30);
 
-insert into horarios_medicos (medico_id, dia) 
-values (3, 'Sabado');
-insert into horarios_medicos (medico_id, dia) 
-values (3, 'Domingo');
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (3, 'SABADO', '09:00:00', '11:00:00', 120);
+insert into horarios_medicos (medico_id, dia, hora_inicio, hora_fin, frecuencia_minutos) 
+values (3, 'DOMINGO', '09:00:00', '11:00:00', 60);
 
 
 UPDATE usuarios SET clave = '$2a$10$Rg4.yW64RMNp/iwzsToyceC5soZsAPkXZ2oQBNin60rfqh6a0N6Ei' WHERE usuario = 'Admin';

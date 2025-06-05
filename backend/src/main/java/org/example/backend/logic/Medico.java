@@ -7,13 +7,11 @@ import org.hibernate.annotations.ColumnDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "medicos")
@@ -55,17 +53,17 @@ public class Medico {
     @Column(name = "lugar_atencion", length = 80)
     private String lugarAtencion;
 
-    @Column(name = "horario_inicio")
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime horarioInicio;
-
-    @Column(name = "horario_fin")
-    @DateTimeFormat(pattern = "HH:mm")
-    private LocalTime horarioFin;
-
-    @Size(max = 20)
-    @Column(name = "frecuencia_citas", length = 20)
-    private String frecuenciaCitas;
+//    @Column(name = "horario_inicio")
+//    @DateTimeFormat(pattern = "HH:mm")
+//    private LocalTime horarioInicio;
+//
+//    @Column(name = "horario_fin")
+//    @DateTimeFormat(pattern = "HH:mm")
+//    private LocalTime horarioFin;
+//
+//    @Size(max = 20)
+//    @Column(name = "frecuencia_citas", length = 20)
+//    private String frecuenciaCitas;
 
     @Size(max = 255)
     @Column(name = "foto_url")
@@ -74,6 +72,9 @@ public class Medico {
     @Lob
     @Column(name = "presentacion")
     private String presentacion;
+
+    @OneToMany(mappedBy = "medico")
+    private Set<HorariosMedico> horarios = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "medico")
     @JsonIgnore
@@ -154,29 +155,29 @@ public class Medico {
         this.lugarAtencion = lugarAtencion;
     }
 
-    public LocalTime getHorarioInicio() {
-        return horarioInicio;
-    }
-
-    public void setHorarioInicio(LocalTime horarioInicio) {
-        this.horarioInicio = horarioInicio;
-    }
-
-    public LocalTime getHorarioFin() {
-        return horarioFin;
-    }
-
-    public void setHorarioFin(LocalTime horarioFin) {
-        this.horarioFin = horarioFin;
-    }
-
-    public String getFrecuenciaCitas() {
-        return frecuenciaCitas;
-    }
-
-    public void setFrecuenciaCitas(String frecuenciaCitas) {
-        this.frecuenciaCitas = frecuenciaCitas;
-    }
+//    public LocalTime getHorarioInicio() {
+//        return horarioInicio;
+//    }
+//
+//    public void setHorarioInicio(LocalTime horarioInicio) {
+//        this.horarioInicio = horarioInicio;
+//    }
+//
+//    public LocalTime getHorarioFin() {
+//        return horarioFin;
+//    }
+//
+//    public void setHorarioFin(LocalTime horarioFin) {
+//        this.horarioFin = horarioFin;
+//    }
+//
+//    public String getFrecuenciaCitas() {
+//        return frecuenciaCitas;
+//    }
+//
+//    public void setFrecuenciaCitas(String frecuenciaCitas) {
+//        this.frecuenciaCitas = frecuenciaCitas;
+//    }
 
     public String getFotoUrl() {
         return fotoUrl;
@@ -202,6 +203,14 @@ public class Medico {
         this.citas = citas;
     }
 
+    public Set<HorariosMedico> getHorarios() {
+        return horarios;
+    }
+
+    public void setHorarios(Set<HorariosMedico> horarios) {
+        this.horarios = horarios;
+    }
+
     @Override
     public String toString() {
         return "Medico{" +
@@ -209,61 +218,50 @@ public class Medico {
                 '}';
     }
 
-    /*
-    public List<LocalTime> citasDisponibles() {
-        List<LocalTime> horasDisponibles = new ArrayList<>(); //lista de horas
-        LocalTime horaActual = horarioInicio;
-
-        int frecuenciaEnMinutos = frecuenciaEnMinutos(this.frecuenciaCitas);
-
-        while (!horaActual.isAfter(horarioFin)) {
-            horasDisponibles.add(horaActual);
-            horaActual = horaActual.plusMinutes(frecuenciaEnMinutos);
-        }
-
-        return horasDisponibles;
-    }
-     */
-
     public List<LocalTime> citasDisponibles(LocalDate fechaConsulta) {
         List<LocalTime> horasDisponibles = new ArrayList<>();
-        LocalTime horaActual = horarioInicio;
+
+        DayOfWeek dia = fechaConsulta.getDayOfWeek();
+        DiasSemana diaEnum = DiasSemana.valueOf(dia.name());
+        Optional<HorariosMedico> horarioOpt = horarios.stream()
+                .filter(h -> h.getDiaSemana().equals(diaEnum))
+                .findFirst();
+
+        if (horarioOpt.isEmpty()) {
+            return horasDisponibles; //No trabaja ese dia
+        }
+
+        HorariosMedico horario = horarioOpt.get();
+        LocalTime horaActual = horario.getHoraInicio();
+        LocalTime horaFin = horario.getHoraFin();
+        int frecuenciaEnMinutos = horario.getFrecuenciaCitas();
 
         List<LocalDateTime> horarioOcupado = obtenerHorayFecha();
-        int frecuenciaEnMinutos = frecuenciaEnMinutos(this.frecuenciaCitas);//convertir
 
-        while (!horaActual.isAfter(horarioFin)) {
-          //fecha de consulta
+        while (!horaActual.isAfter(horaFin)) {
             LocalDateTime fechaHoraActual = LocalDateTime.of(fechaConsulta, horaActual);
 
-            boolean ocupada = false;
-            for (LocalDateTime fechaHoraOcupada : horarioOcupado) {
-
-                if (fechaHoraOcupada.equals(fechaHoraActual)) {
-                    ocupada = true; //Si la hora ya está ocupada en la fecha, la marcamos como ocupada
-                    break;
-                }
-            }
-
+            boolean ocupada = horarioOcupado.contains(fechaHoraActual);
 
             if (!ocupada) {
                 horasDisponibles.add(horaActual);
             }
+
             horaActual = horaActual.plusMinutes(frecuenciaEnMinutos);
         }
 
         return horasDisponibles;
     }
 
-    private int frecuenciaEnMinutos(String frecuencia) {
-        if (frecuencia.contains("minutos")) {
-            return Integer.parseInt(frecuencia.split(" ")[0]);
-        } else if (frecuencia.contains("horas")) {
-            return Integer.parseInt(frecuencia.split(" ")[0]) * 60;
-        } else {
-            return 30;
-        }
-    }
+//    private int frecuenciaEnMinutos(String frecuencia) {
+//        if (frecuencia.contains("minutos")) {
+//            return Integer.parseInt(frecuencia.split(" ")[0]);
+//        } else if (frecuencia.contains("horas")) {
+//            return Integer.parseInt(frecuencia.split(" ")[0]) * 60;
+//        } else {
+//            return 30;
+//        }
+//    }
 
     public List<Cita> obtenerCitas(){
         List<Cita> citasMedico = new ArrayList<>();
@@ -275,25 +273,11 @@ public class Medico {
         return citasMedico;
     }
 
-//    public List<LocalTime> obtenerHora(){
-//        List<Cita> citas = obtenerCitas();
-//        List<LocalTime> horas = new ArrayList<>();
-//         for(Cita cita : citas){
-//             LocalTime hora = cita.getHoraCita();
-//             horas.add(hora);
-//         }
-//         return horas;
-//    }
-
     public List<LocalDateTime> obtenerHorayFecha(){
       List<Cita> citas = obtenerCitas();
         List<LocalDateTime> horasyFechas = new ArrayList<>();
          for(Cita cita : citas){
-             LocalTime hora = cita.getHoraCita();
-             LocalDate fecha = cita.getFechaCita();
-
-             LocalDateTime fechaHora = LocalDateTime.of(fecha, hora);
-             horasyFechas.add(fechaHora);
+             horasyFechas.add(LocalDateTime.of(cita.getFechaCita(), cita.getHoraCita()));
          }
          return horasyFechas;
     }

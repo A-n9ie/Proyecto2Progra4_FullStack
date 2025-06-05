@@ -1,7 +1,6 @@
 package org.example.backend.presentation.doctor;
 
-import org.example.backend.DTO.PacienteCitasDTO;
-import org.example.backend.DTO.PerfilMedicoDTO;
+import org.example.backend.DTO.*;
 import org.example.backend.data.HorarioRepository;
 import org.example.backend.logic.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +30,43 @@ public class ControllerDoctor {
     @Autowired
     private ServiceUser serviceUser;
 
-    @GetMapping
-    public List<Medico> getMedicos() {
-        List<Medico> medicos = serviceDoctor.medicosFindAll();
-        medicos.forEach(m -> m.setFotoUrl(serviceUser.cargarFoto(m.getFotoUrl())));
-        return medicos;
-    }
-
+//    @GetMapping
+//    public List<Medico> getMedicos() {
+//        List<Medico> medicos = serviceDoctor.medicosFindAll();
+//        medicos.forEach(m -> m.setFotoUrl(serviceUser.cargarFoto(m.getFotoUrl())));
+//        return medicos;
+//    }
+//    @GetMapping("/medicos")
+//    public List<PerfilMedicoDTO> obtenerMedicos() {
+//        List<Medico> medicos = serviceDoctor.medicosFindAll();
+//        return medicos.stream()
+//                .map(m -> new PerfilMedicoDTO(m))
+//                .collect(Collectors.toList());
+//    }
 
     @GetMapping("/horarios")
-    public Map<Integer, Map<String, List<String>>> getMedicosConHorarios() {
-        return serviceDoctor.obtenerMedicosConFechasYHoras();
+    public List<MedicosConHorariosDTO> getMedicosConHorarios() {
+        List<Medico> medicos = serviceDoctor.medicosFindAll();
+        Map<Integer, Map<String, List<String>>> horariosAgrupados = serviceDoctor.listarHorariosAgrupados();
+
+        return medicos.stream()
+                .map(medico -> new MedicosConHorariosDTO(
+                        medico,
+                        horariosAgrupados.getOrDefault(medico.getId(), Map.of())
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/medicos/{id}/dias")
+    public List<HorariosMedicosDTO> getDias(@PathVariable int id) {
+        return serviceDoctor.horarioMdico(id).stream()
+                .map(h -> new HorariosMedicosDTO(
+                        id,
+                        h.getDiaSemana().name(),
+                        h.getHoraInicio(),
+                        h.getHoraFin(),
+                        h.getFrecuenciaCitas()
+                )).collect(Collectors.toList());
     }
 
     @PostMapping("/save")
@@ -61,18 +86,18 @@ public class ControllerDoctor {
         Medico medico = serviceDoctor.getDoctorbyUser(usuario);
         medico.setFotoUrl(serviceUser.cargarFoto(medico.getFotoUrl()));
 
-        List<HorariosMedico> list = serviceDoctor.horarioMdico(medico.getId());
-        return new PerfilMedicoDTO(medico, list);
+        List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedico(medico);
+        return new PerfilMedicoDTO(medico, horarios);
     }
 
     @PutMapping("/update")
-    public Medico edit(@RequestBody Medico medico, Authentication authentication) {
+    public ResponseEntity<String> edit(@RequestBody EditMedicoHorarioDTO dto, Authentication authentication) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         String nombre = jwt.getClaim("name");
         Usuario usuario = serviceUser.getUser(nombre);
 
-        serviceDoctor.editDoctor(usuario, medico);
-        return serviceDoctor.findDoctor(medico.getCedula());
+        serviceDoctor.editHorariosMedico(dto, usuario);
+        return ResponseEntity.ok("Doctor actualizado");
     }
 
     @GetMapping("/history")

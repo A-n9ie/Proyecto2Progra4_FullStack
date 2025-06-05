@@ -1,13 +1,16 @@
 package org.example.backend.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.example.backend.logic.HorariosMedico;
 import org.example.backend.logic.Medico;
+import org.example.backend.logic.Usuario;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.util.List;
 
 public class PerfilMedicoDTO {
+    private int id;
     private String cedula;
     private String nombre;
     private String usuario;
@@ -15,30 +18,34 @@ public class PerfilMedicoDTO {
     private String especialidad;
     private BigDecimal costoConsulta;
     private String lugarAtencion;
-    private LocalTime horarioInicio;
-    private LocalTime horarioFin;
-    private String frecuenciaCitas;
     private String fotoUrl;
     private String presentacion;
 
-    List<HorariosMedico> dias;
+    @JsonIgnore
+    private List<HorariosMedicosDTO> horarios;
 
-    public PerfilMedicoDTO(Medico medico, List<HorariosMedico> horarios) {
+    public PerfilMedicoDTO(Medico medico, List<HorariosMedicosDTO> horarios) {
+        this.id = medico.getId();
         this.cedula = medico.getCedula();
         this.nombre = medico.getNombre();
-        this.usuario = medico.getUsuario().getUsername();
-
+        this.usuario = medico.getUsuario().getUsuario();
         this.especialidad = medico.getEspecialidad();
         this.costoConsulta = medico.getCostoConsulta();
         this.lugarAtencion = medico.getLugarAtencion();
-        this.horarioInicio = medico.getHorarioInicio();
-        this.horarioFin = medico.getHorarioFin();
-        this.frecuenciaCitas = medico.getFrecuenciaCitas();
         this.fotoUrl = medico.getFotoUrl();
         this.presentacion = medico.getPresentacion();
-
-        dias = horarios;
+        this.horarios = horarios;
     }
+
+    public PerfilMedicoDTO(Medico medico) {
+        this.nombre = medico.getNombre();
+        this.especialidad = medico.getEspecialidad();
+        this.costoConsulta = medico.getCostoConsulta();
+        this.lugarAtencion = medico.getLugarAtencion();
+        this.fotoUrl = medico.getFotoUrl();
+        this.presentacion = medico.getPresentacion();
+    }
+
 
     public String getCedula() {
         return cedula;
@@ -60,7 +67,7 @@ public class PerfilMedicoDTO {
         return usuario;
     }
 
-    public void setUsuario(String usuario) {
+    public void setUsuario(String  usuario) {
         this.usuario = usuario;
     }
 
@@ -88,30 +95,6 @@ public class PerfilMedicoDTO {
         this.lugarAtencion = lugarAtencion;
     }
 
-    public LocalTime getHorarioInicio() {
-        return horarioInicio;
-    }
-
-    public void setHorarioInicio(LocalTime horarioInicio) {
-        this.horarioInicio = horarioInicio;
-    }
-
-    public LocalTime getHorarioFin() {
-        return horarioFin;
-    }
-
-    public void setHorarioFin(LocalTime horarioFin) {
-        this.horarioFin = horarioFin;
-    }
-
-    public String getFrecuenciaCitas() {
-        return frecuenciaCitas;
-    }
-
-    public void setFrecuenciaCitas(String frecuenciaCitas) {
-        this.frecuenciaCitas = frecuenciaCitas;
-    }
-
     public String getFotoUrl() {
         return fotoUrl;
     }
@@ -126,5 +109,21 @@ public class PerfilMedicoDTO {
 
     public void setPresentacion(String presentacion) {
         this.presentacion = presentacion;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<HorariosMedicosDTO> getDias() {
+        return horarios;
+    }
+
+    public void setDias(List<HorariosMedicosDTO> horarios) {
+        this.horarios = horarios;
     }
 }

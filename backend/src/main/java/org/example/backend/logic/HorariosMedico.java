@@ -3,6 +3,8 @@ package org.example.backend.logic;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalTime;
+
 @Entity
 @Table(name = "horarios_medicos")
 public class HorariosMedico {
@@ -16,9 +18,18 @@ public class HorariosMedico {
     @JsonIgnore
     private Medico medico;
 
-    @Lob
-    @Column(name = "dia")
-    private String dia;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia", nullable = false)
+    private DiasSemana diadelaSemana;
+
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio;
+
+    @Column(name = "hora_fin", nullable = false)
+    private LocalTime horaFin;
+
+    @Column(name = "frecuencia_minutos")
+    private Integer frecuenciaCitas;
 
     public Integer getId() {
         return id;
@@ -36,12 +47,36 @@ public class HorariosMedico {
         this.medico = medico;
     }
 
-    public String getDia() {
-        return dia;
+    public DiasSemana getDiaSemana() {
+        return diadelaSemana;
     }
 
-    public void setDia(String dia) {
-        this.dia = dia;
+    public void setDiaSemana(DiasSemana diaSemana) {
+        this.diadelaSemana = diaSemana;
+    }
+
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public Integer getFrecuenciaCitas() {
+        return frecuenciaCitas;
+    }
+
+    public void setFrecuenciaCitas(Integer frecuenciaCitas) {
+        this.frecuenciaCitas = frecuenciaCitas;
     }
 
     @Override
@@ -49,10 +84,18 @@ public class HorariosMedico {
         return "HorariosMedico{" +
                 "id=" + id +
                 ", medico=" + medico +
-                ", dia='" + dia + '\'' +
+                ", diaSemana=" + diadelaSemana +
+                ", horaInicio=" + horaInicio +
+                ", horaFin=" + horaFin +
+                ", frecuenciaCitas=" + frecuenciaCitas +
                 '}';
     }
 
-
-
+    public String getFrecuenciaFormateada() {
+        if (frecuenciaCitas % 60 == 0) {
+            return (frecuenciaCitas / 60) + " hora(s)";
+        } else {
+            return frecuenciaCitas + " minutos";
+        }
+    }
 }

@@ -71,16 +71,16 @@ function Profile() {
         let updatedDias;
         if (checked) {
             // Añadir el día con horarios por defecto si no existe
-            if (!medicosState.medico.dias.some(d => d.dia === day)) {
+            if (!medicosState.medico.dias.some(d => d.diaSemana === day)) {
                 updatedDias = [
                     ...medicosState.medico.dias,
-                    { dia: day, horarioInicio: '08:00', horarioFin: '17:00' } // horarios default, puedes cambiar
+                    { diaSemana: day, horarioInicio: '08:00', horarioFin: '17:00' } // horarios default, puedes cambiar
                 ];
             } else {
                 updatedDias = [...medicosState.medico.dias];
             }
         } else {
-            updatedDias = medicosState.medico.dias.filter(d => d.dia !== day);
+            updatedDias = medicosState.medico.dias.filter(d => d.diaSemana !== day);
         }
 
         setMedicosState(prev => ({
@@ -188,18 +188,18 @@ return (
 }
 
 function Show({ entity, handleChange, handleSave, handleHorarioDiaChange}) {
-
+    if (!entity) return <div>Loading...</div>;
     return (
         <div className="cuerpo">
             <form onSubmit={handleSave}>
                 <div className="datos">
                     <div className="col_datos">
-                        <img
-                            src={entity.fotoUrl}
-                            height="512"
-                            width="512"
-                            alt="Foto de perfil"
-                        />
+                        {/*<img*/}
+                        {/*    src={`http://localhost:8080/fotosPerfil/${entity.fotoUrl}`}*/}
+                        {/*    height="512"*/}
+                        {/*    width="512"*/}
+                        {/*    alt="Foto de perfil"*/}
+                        {/*/>*/}
 
                         <div className="datos">
                             <div className="col_datos">
@@ -208,7 +208,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange}) {
                                     type="text"
                                     id="usernameMedico"
                                     name="username"
-                                    value={entity.usuario}
+                                    value={entity.usuario || ''}
                                     readOnly
                                 />
                                 <br/><br/>
@@ -342,15 +342,15 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange}) {
                             <div className="col_datos">
                                 <label>Days:</label>
                                 <div className="datos">
-                                    {(entity.dias || []).map(({dia, horarioInicio, horarioFin}, idx) => (
-                                        <div key={dia}>
-                                            <label>{dia} Start:</label>
+                                    {(entity.dias || []).map(({diaSemana, horarioInicio, horarioFin}, idx) => (
+                                        <div key={diaSemana}>
+                                            <label>{diaSemana} Start:</label>
                                             <input
                                                 type="time"
                                                 value={horarioInicio}
                                                 onChange={(e) => handleHorarioDiaChange(idx, 'horarioInicio', e.target.value)}
                                             />
-                                            <label>{dia} End:</label>
+                                            <label>{diaSemana} End:</label>
                                             <input
                                                 type="time"
                                                 value={horarioFin}
