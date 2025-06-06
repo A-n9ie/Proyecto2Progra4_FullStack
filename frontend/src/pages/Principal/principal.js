@@ -41,24 +41,15 @@ function Medicos(){
 
         return data;
     }
-    function getFotoUrl(fotoUrl) {
-        if (!fotoUrl) return null;
-        if (fotoUrl.startsWith("http")) {
-            return fotoUrl; // Ya es URL completa
-        } else {
-            return `http://localhost:8080/imagenes/ver/${fotoUrl}`; // Agrega base si es nombre archivo
-        }
-    }
 
     return (
         <List
             list={medicosState.medicos}
-            getFotoUrl={getFotoUrl}
         />
     );
 }
 
-function List({ list , getFotoUrl}) {
+function List({ list }) {
     return (
         <div id="cuerpo_div_index" className="cuerpoIndex">
             <div className="buscar_lugar_especialidad">
@@ -83,7 +74,7 @@ function List({ list , getFotoUrl}) {
                         <div key={m.id} className="cada_medico">
                             <div className="info_citas">
                                 <div className="informacion_medico">
-                                        <img src={getFotoUrl(m.fotoUrl)} alt="Foto del médico"
+                                        <img src={`http://localhost:8080/imagenes/ver/${m.fotoUrl}`} alt="Foto del médico"
                                         alt="Foto del médico"
                                         />
                                     <div className="informacion_personal">
