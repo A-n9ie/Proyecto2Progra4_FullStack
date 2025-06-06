@@ -4,7 +4,7 @@ import {useContext, useEffect, useState} from 'react';
 import { Link } from 'react-router-dom';
 
 function Medicos(){
-    const { medicosState, setMedicosState, horariosState, setHorariosState } = useContext(AppContext);
+    const { medicosState, setMedicosState} = useContext(AppContext);
 
     useEffect(()=> {
         handleList();
@@ -19,24 +19,16 @@ function Medicos(){
             console.error("No se pudo cargar la información de los médicos y horarios.");
             return;
         }
-
-        // const perfiles = data.map(item => item.perfilMedico);
-        // const horarios = data.map(item => ({
-        //     medicoId: item.perfilMedico.id,
-        //     horarios: item.horariosMedicos || {}
-        // }));
-
         setMedicosState({medicos: data});
-        //setHorariosState({...horariosState, horarios});
     }
 
-    async function list(){
-        const request = new Request(backend, {method: 'GET', headers:{ }});
-        const response = await fetch(request);
-        if(!response.ok){alert("Error: " + response.status);
-            return;}
-        return await response.json();
-    }
+    // async function list(){
+    //     const request = new Request(backend, {method: 'GET', headers:{ }});
+    //     const response = await fetch(request);
+    //     if(!response.ok){alert("Error: " + response.status);
+    //         return;}
+    //     return await response.json();
+    // }
 
     async function listHorarios(){
         const request = new Request(backend+'/horarios', {method: 'GET', headers:{ }});
@@ -77,7 +69,6 @@ function List({ list }) {
                 {list.filter(item => item && item.nombre)
                     .map((m) => {
                         const horarios = m.horarios;
-
                     return (
                         <div key={m.id} className="cada_medico">
                             <div className="info_citas">
@@ -86,7 +77,7 @@ function List({ list }) {
                                     <div className="informacion_personal">
                                         <div className="separacion">
                                             <h5 className="nombre_medico">
-                                                <span>{m.nombre}</span>
+                                                <span>{m.nombre} </span>
                                                 <span className="id_medico">{m.costoConsulta}</span>
                                             </h5>
                                             <small className="especialidad_medico">{m.especialidad}</small>
@@ -98,7 +89,7 @@ function List({ list }) {
                                     <div className="cada_cita">
                                         {horarios &&
                                             Object.entries(horarios).map(([fecha, horas], index) => (
-                                                <div key={fecha} className={index >= 3 ? "oculto" : ""}>
+                                                <div key={fecha} className={index >= 4 ? "oculto" : ""}>
                                                     <div className="dias">
                                                         <p>{fecha}</p>
                                                     </div>

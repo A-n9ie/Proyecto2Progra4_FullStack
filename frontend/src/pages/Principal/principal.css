@@ -12,7 +12,7 @@
 }
 
 .buscador {
-    padding: 10px 0px;
+    padding: 1%;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -27,17 +27,17 @@
 .buscar_especialidad_lugar input {
     background-color: white;
     border: 1px solid #FCAF58;
-    border-radius: 50px;
+    border-radius: 0 50px 50px 0;
     padding: 10px;
     width: 200px;
     outline: none;
 }
+
 .citas_disponibles form {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     font-size: 15px;
-    margin-left: 10%;
 }
 
 .buscar_especialidad_lugar span {
@@ -49,6 +49,7 @@
     color: #424242;
     border-radius: 10px 0px 0px 10px;
 }
+
 .medicos{
     margin-top: 10px;
     border-radius: 10px;
@@ -58,7 +59,6 @@
 .informacion_medico{
     display: flex;
     align-items: center;
-    width: fit-content;
 }
 
 .medicos h5{
@@ -75,60 +75,54 @@
 }
 
 .id_medico{
-    color: #007bff;
+    color: darkorange;
 }
 
 .medicos img{
-    width: 10%;
-    height: 10%;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
-    margin-right: 10px;
+    object-fit: cover;
+    margin: 1%;
 }
+
 .informacion_personal{
     width: max-content;
     min-width: 220px;
     white-space: normal;
 }
-
 .dias{
-    display: flex;
-    margin-top: 10px;
-    padding: 20px;
-    justify-content: center;
+    align-content: space-between;
 }
 .dias p{
-    font-size: 20px;
+    color: #FCAF58;
+    font-size: large;
+    font-family: Arial, sans-serif;
     font-weight: bold;
-    color: darkorange;
 }
-.cada_cita{
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    width: 80%;
-}
-
-.dias_disponibles {
+.cada_cita {
+    margin: 3%;
     display: flex;
     flex-direction: row;
+    height: 250px;
+    padding:1%;
 }
 
-.info_citas{
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    padding: 10px;
+.citas_disponibles {
+    height: 270px;
+    width: 250px;
+    padding-top: 3%;
+    border-radius: 10%;
 }
 
 .btn_schedule{
+    margin: 1%;
     padding: 8px 15px;
     background-color: #4E598C;
     color: white;
-    text-decoration: white;
+    text-decoration: none;
     border-radius: 20px;
     text-align: center;
-    margin: 0.5%;
 }
 
 #cuerpo_div_index button, .historial_col button{
@@ -151,4 +145,17 @@
 
 .toggleDias:checked ~ div .oculto {
     display: block;
+}
+
+.btn_toggle {
+    margin-top: 10px;
+    background-color: transparent;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn_toggle:hover {
+    text-decoration: underline;
 }

@@ -71,11 +71,10 @@ function Profile() {
     function handleDiaChange(day, checked) {
         let updatedDias;
         if (checked) {
-            // Añadir el día con horarios por defecto si no existe
             if (!medicosState.medico.dias.some(d => d.diaSemana === day)) {
                 updatedDias = [
                     ...medicosState.medico.dias,
-                    { diaSemana: day, horarioInicio: '08:00', horarioFin: '17:00' } // horarios default, puedes cambiar
+                    { diaSemana: day, horarioInicio: '00:00', horarioFin: '00:00' }
                 ];
             } else {
                 updatedDias = [...medicosState.medico.dias];
@@ -92,6 +91,7 @@ function Profile() {
             }
         }));
     }
+
     function handleHorarioDiaChange(idx, field, value) {
         setMedicosState(prev => {
             const newDias = [...prev.medico.dias];
@@ -117,9 +117,11 @@ function Profile() {
                 return false;
             }
 
-            if (medicosState.medico.horarioInicio >= medicosState.medico.horarioFin) {
-                alert("End time must be later than start time.");
-                return false;
+            for (const dia of medicosState.medico.dias) {
+                if (dia.horarioInicio >= dia.horarioFin) {
+                    alert(`End time must be later than start time for ${dia.diaSemana}.`);
+                    return false;
+                }
             }
 
         return true;
@@ -128,6 +130,7 @@ function Profile() {
     async function handleSaveDoctor(event) {
         event.preventDefault();
 
+        //crer el objeto con la info para enviar al servidor
         const medicoUpdate = {
                 nombre: medicosState.medico.nombre,
                 especialidad: medicosState.medico.especialidad,
@@ -135,7 +138,7 @@ function Profile() {
                 lugarAtencion: medicosState.medico.lugarAtencion,
                 fotoUrl: medicosState.medico.fotoUrl,
                 presentacion: medicosState.medico.presentacion,
-            dias: medicosState.medico.dias
+                dias: medicosState.medico.dias
         };
 
         const token = localStorage.getItem('token');
@@ -145,6 +148,9 @@ function Profile() {
         }
 
         try {
+            if(!validar())
+                return;
+
             const response = await fetch(backend + "/update", {
                 method: 'PUT',
                 headers: {
@@ -156,7 +162,6 @@ function Profile() {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                console.error("Error al actualizar el perfil:", errorData);
                 alert("Error al actualizar el perfil: " + errorData.message);
                 return;
             }
@@ -165,7 +170,6 @@ function Profile() {
             window.scrollTo(0, 0);
 
         } catch (error) {
-            console.error("Error al realizar la solicitud:", error);
             alert("Error al realizar la solicitud: " + error.message);
         }
     }
@@ -186,7 +190,7 @@ return (
 }
 
 function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSemana, handleDiaChange}) {
-    if (!entity) return <div>Loading...</div>;
+        //dias seleccionados
     const isDiaSelected = (dia) => entity.dias?.some(d => d.diaSemana === dia);
     return (
         <div className="cuerpo">
@@ -205,7 +209,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <label htmlFor="username">Username:</label>
                                 <input
                                     type="text"
-                                    id="usernameMedico"
+                                    id="datos"
                                     name="username"
                                     value={entity.usuario || ''}
                                     readOnly
@@ -219,7 +223,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <label htmlFor="cedula">ID:</label>
                                 <input
                                     type="text"
-                                    id="cedula"
+                                    id="datos"
                                     name="cedula"
                                     value={entity.cedula}
                                     readOnly
@@ -230,7 +234,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <label htmlFor="nombre">Name:</label>
                                 <input
                                     type="text"
-                                    id="nombre"
+                                    id="datos"
                                     name="nombre"
                                     value={entity.nombre}
                                     onChange={handleChange}
@@ -245,7 +249,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <label htmlFor="especialidad">Speciality:</label>
                                 <input
                                     type="text"
-                                    id="especialidad"
+                                    id="datos"
                                     name="especialidad"
                                     value={entity.especialidad}
                                     onChange={handleChange}
@@ -267,7 +271,6 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                             </div>
                         </div>
 
-
                         <div className="datos">
                             <div className="col_datos">
                                 <label htmlFor="lugar_atencion">Location:</label>
@@ -282,95 +285,30 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <br/><br/>
                             </div>
                         </div>
-
-                        {/*<div className="col_datos">*/}
-                        {/*    <label>Service hours</label>*/}
-                        {/*    <div className="datos">*/}
-                        {/*        <div className="col_datos">*/}
-                        {/*            <label htmlFor="horarioInicio">Start time:</label>*/}
-                        {/*            <input*/}
-                        {/*                type="time"*/}
-                        {/*                id="horarioInicio"*/}
-                        {/*                name="horarioInicio"*/}
-                        {/*                value={entity.horarioInicio}*/}
-                        {/*                onChange={handleChange}*/}
-                        {/*                required*/}
-                        {/*            />*/}
-                        {/*            <br/><br/>*/}
-                        {/*        </div>*/}
-                        {/*        <div className="col_datos">*/}
-                        {/*            <label htmlFor="horarioFin">End time:</label>*/}
-                        {/*            <input*/}
-                        {/*                type="time"*/}
-                        {/*                id="horarioFin"*/}
-                        {/*                name="horarioFin"*/}
-                        {/*                value={entity.horarioFin}*/}
-                        {/*                onChange={handleChange}*/}
-                        {/*                required*/}
-                        {/*            />*/}
-                        {/*            <br/><br/>*/}
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-
-                        {/*    <div className="col_datos">*/}
-                        {/*        <label htmlFor="frecuencia_citas">Frequency:</label>*/}
-                        {/*        <div className="input-container">*/}
-                        {/*            <span className="prefix">Every</span>*/}
-                        {/*            <input*/}
-                        {/*                type="number"*/}
-                        {/*                id="frecuenciaCantidad"*/}
-                        {/*                name="frecuenciaCantidad"*/}
-                        {/*                value={entity.frecuenciaCantidad ?? ''}*/}
-                        {/*                onChange={handleChange}*/}
-                        {/*                required*/}
-                        {/*            />*/}
-                        {/*            <br/><br/>*/}
-                        {/*            <select*/}
-                        {/*                id="frecuenciaTipo"*/}
-                        {/*                name="frecuenciaTipo"*/}
-                        {/*                value={entity.frecuenciaTipo || 'minutes'}*/}
-                        {/*                onChange={handleChange}*/}
-                        {/*                required*/}
-                        {/*            >*/}
-                        {/*                <option value="horas">hours</option>*/}
-                        {/*                <option value="minutos">minutes</option>*/}
-                        {/*            </select>*/}
-
-                        {/*        </div>*/}
-                        {/*    </div>*/}
-
+                        {/*los que ya tiene*/}
+                        <div className="datos">
                             <div className="col_datos">
-                                <label>Days:</label>
+                                <label>Current Schedule</label>
                                 <div className="datos">
-                                    {(entity.dias || []).map(({diaSemana, horarioInicio, horarioFin, frecuenciaCitas}, idx) => (
+                                    {(entity.dias || []).map(({
+                                                                  diaSemana,
+                                                                  horarioInicio,
+                                                                  horarioFin,
+                                                                  frecuenciaCitas
+                                                              }, idx) => (
                                         <div key={diaSemana}>
-                                            <label>{diaSemana} Start:</label>
-                                            <input
-                                                type="time"
-                                                value={horarioInicio}
-                                                onChange={(e) => handleHorarioDiaChange(idx, 'horarioInicio', e.target.value)}
-                                            />
-                                            <label>{diaSemana} End:</label>
-                                            <input
-                                                type="time"
-                                                value={horarioFin}
-                                                onChange={(e) => handleHorarioDiaChange(idx, 'horarioFin', e.target.value)}
-                                            />
-                                            <label>{diaSemana} Frequency (minutes):</label>
-                                            <input
-                                                type="number"
-                                                value={frecuenciaCitas || ''}
-                                                min="5"
-                                                step="5"
-                                                onChange={(e) => handleHorarioDiaChange(idx, 'frecuenciaCitas', parseInt(e.target.value))}
-                                            />
+                                            <div key={diaSemana}>
+                                                <label>{diaSemana} <br/> START {horarioInicio} <br/> END: {horarioFin}
+                                                </label>
+                                            </div>
+                                            <label>Frequency (minutes): {frecuenciaCitas}</label>
                                         </div>
-
                                     ))}
                                     <br/><br/>
                                 </div>
                             </div>
-
+                        </div>
+                        <div className="datos">
                             <div className="col_datos">
                                 <div id="perfil_in">
                                     <label htmlFor="presentacion">Presentation:</label>
@@ -385,68 +323,72 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 </div>
                             </div>
                         </div>
-                        <div className="col_datos">
-                            <label>Días disponibles:</label>
-                            <div className="datos">
-                                {diasSemana.map(dia => (
-                                    <div key={dia} style={{marginBottom: '8px'}}>
-                                        <label>
-                                            <input
-                                                type="checkbox"
-                                                checked={isDiaSelected(dia)}
-                                                onChange={(e) => handleDiaChange(dia, e.target.checked)}
-                                            />
-                                            {dia}
-                                        </label>
-                                        {isDiaSelected(dia) && (
-                                            <div style={{marginLeft: '20px', marginTop: '4px'}}>
-                                                <label>
-                                                    Inicio:
-                                                    <input
+
+                        <div className="datos">
+                            <div className="col_datos">
+                                <label>Days:</label>
+                                <div className="datos">
+                                    {diasSemana.map(dia => (
+                                        <div key={dia}>
+                                            <label>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isDiaSelected(dia)}
+                                                    onChange={(e) => handleDiaChange(dia, e.target.checked)}
+                                                />
+                                                {dia}
+                                            </label>
+                                            {isDiaSelected(dia) && (
+                                                <div>
+                                                    <label>
+                                                        START:</label>
+                                                    <input id={"tiempo"}
                                                         type="time"
-                                                        value={entity.dias.find(d => d.diaSemana === dia)?.horarioInicio || '08:00'}
+                                                        value={entity.dias.find(d => d.diaSemana === dia)?.horarioInicio || '00:00'}
                                                         onChange={(e) => {
                                                             const idx = entity.dias.findIndex(d => d.diaSemana === dia);
                                                             handleHorarioDiaChange(idx, 'horarioInicio', e.target.value);
                                                         }}
                                                     />
-                                                </label>
-                                                <label style={{marginLeft: '10px'}}>
-                                                    Fin:
-                                                    <input
+
+                                                    <label>
+                                                        END:
+                                                    </label>
+                                                    <input id={"tiempo"}
                                                         type="time"
-                                                        value={entity.dias.find(d => d.diaSemana === dia)?.horarioFin || '17:00'}
+                                                        value={entity.dias.find(d => d.diaSemana === dia)?.horarioFin || '00:00'}
                                                         onChange={(e) => {
                                                             const idx = entity.dias.findIndex(d => d.diaSemana === dia);
                                                             handleHorarioDiaChange(idx, 'horarioFin', e.target.value);
                                                         }}
                                                     />
-                                                </label>
-                                                <label style={{marginLeft: '10px'}}>
-                                                    Frecuencia:
-                                                    <input
-                                                        type="number"
-                                                        min="5"
-                                                        step="5"
-                                                        value={entity.dias.find(d => d.diaSemana === dia)?.frecuenciaCitas || ''}
-                                                        onChange={(e) => {
-                                                            const idx = entity.dias.findIndex(d => d.diaSemana === dia);
-                                                            handleHorarioDiaChange(idx, 'frecuenciaCitas', parseInt(e.target.value));
-                                                        }}
-                                                    />
-                                                </label>
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
+                                                    <label>
+                                                        Frecuencia:
+                                                        <input id={"frecuencia"}
+                                                            type="number"
+                                                            min="5"
+                                                            step="5"
+                                                            value={entity.dias.find(d => d.diaSemana === dia)?.frecuenciaCitas || ''}
+                                                            onChange={(e) => {
+                                                                const idx = entity.dias.findIndex(d => d.diaSemana === dia);
+                                                                handleHorarioDiaChange(idx, 'frecuenciaCitas', parseInt(e.target.value));
+                                                            }}
+                                                        />
+                                                    </label>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                <button type="submit">Save changes</button>
                             </div>
                         </div>
-
-                    <button type="submit">Save changes</button>
-                </div>
+                    </div>
+                    </div>
             </form>
         </div>
-    );
+)
+    ;
 }
 
-                                        export default Profile;
+export default Profile;

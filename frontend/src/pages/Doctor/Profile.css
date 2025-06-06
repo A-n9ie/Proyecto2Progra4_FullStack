@@ -15,21 +15,16 @@
 .col_datos {
     display: flex;
     flex-direction: column;
-    /* border: 1px solid blue;
-    background-color: whitesmoke;*/
     width: 100%;
     height: auto;
 }
 
 .col_datos button{
     display: flex;
-    width: 15%;
-    height: auto;
     color: white;
     background: #4E598C;
     border-radius: 8px;
-    border: none;
-    margin: 0;
+    padding: 2%;
     cursor: pointer;
     transition: background 0.3s ease;
 }
@@ -45,45 +40,42 @@
     bottom: 20%;
 }
 
-#numero {
-    width: 60px;
-    position: relative;
-    top: 5px;
-}
-
 .col_datos input[id="frecuencia"] {
-    padding-left: 55px;
+        padding: 3px;
+        width: 40px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 2%;
 }
 
-.col_datos textarea {
-    width: 95%;
+.col_datos input[id="tiempo"] {
+    padding: 3px;
+    width: 70px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 2%;
+}
+.col_datos input[id="costoConsulta"] {
+    width: 98%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+textarea {
+    width: 100%;
     min-height: 40px;
     padding: 8px;
     font-size: 16px;
     font-family: Arial, sans-serif;
-    border: 1px solid #4E598C;
-    resize: none;
-}
-
-.col_datos label {
-    margin-bottom: 5px;
-}
-.col_datos input {
-    padding: 5px;
-    margin-bottom: 10px;
+    border-radius: 4px;
 }
 
 .datos {
     display: flex;
     flex-direction: row;
-    /*border: 1px solid violet;*/
+    width: 100%;
     color: black;
-    font-family: "Arial Black";
     align-items: center;
-}
-
-.datos input{
-    width: auto;
 }
 
 .datos label {
@@ -98,10 +90,8 @@
     border-radius: 40%;
     object-fit: cover;
 }
-
 /* Estilo de los títulos (etiquetas) */
 .col_datos label {
-    margin-bottom: 5px;
     background-color: #FF8C42;
     color: white;
     padding: 5px 10px;
