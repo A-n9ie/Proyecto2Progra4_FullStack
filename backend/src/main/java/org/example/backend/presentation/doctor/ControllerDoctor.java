@@ -87,7 +87,7 @@ public class ControllerDoctor {
         Usuario usuario = serviceUser.getUser(nombre);
         Medico medico = serviceDoctor.getDoctorbyUser(usuario);
         medico.setFotoUrl(serviceUser.cargarFoto(medico.getFotoUrl()));
-
+        System.out.println(medico.getFotoUrl());
         List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedico(medico);
         return new PerfilMedicoDTO(medico, horarios);
     }

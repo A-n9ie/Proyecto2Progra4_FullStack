@@ -30,6 +30,7 @@ function Medicos(){
     //     return await response.json();
     // }
 
+
     async function listHorarios(){
         const request = new Request(backend+'/horarios', {method: 'GET', headers:{ }});
         const response = await fetch(request);
@@ -40,15 +41,24 @@ function Medicos(){
 
         return data;
     }
+    function getFotoUrl(fotoUrl) {
+        if (!fotoUrl) return null;
+        if (fotoUrl.startsWith("http")) {
+            return fotoUrl; // Ya es URL completa
+        } else {
+            return `http://localhost:8080/imagenes/ver/${fotoUrl}`; // Agrega base si es nombre archivo
+        }
+    }
 
     return (
         <List
             list={medicosState.medicos}
+            getFotoUrl={getFotoUrl}
         />
     );
 }
 
-function List({ list }) {
+function List({ list , getFotoUrl}) {
     return (
         <div id="cuerpo_div_index" className="cuerpoIndex">
             <div className="buscar_lugar_especialidad">
@@ -73,7 +83,9 @@ function List({ list }) {
                         <div key={m.id} className="cada_medico">
                             <div className="info_citas">
                                 <div className="informacion_medico">
-                                    <img src={`http://localhost:8080/fotosPerfil/${m.fotoUrl || 'default.jpg'}`}/>
+                                        <img src={getFotoUrl(m.fotoUrl)} alt="Foto del médico"
+                                        alt="Foto del médico"
+                                        />
                                     <div className="informacion_personal">
                                         <div className="separacion">
                                             <h5 className="nombre_medico">

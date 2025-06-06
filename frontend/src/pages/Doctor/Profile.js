@@ -136,7 +136,6 @@ function Profile() {
                 especialidad: medicosState.medico.especialidad,
                 costoConsulta: medicosState.medico.costoConsulta,
                 lugarAtencion: medicosState.medico.lugarAtencion,
-                fotoUrl: medicosState.medico.fotoUrl,
                 presentacion: medicosState.medico.presentacion,
                 dias: medicosState.medico.dias
         };
@@ -190,6 +189,7 @@ return (
 }
 
 function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSemana, handleDiaChange}) {
+    if (!entity) return <p>Cargando datos del médico...</p>;
         //dias seleccionados
     const isDiaSelected = (dia) => entity.dias?.some(d => d.diaSemana === dia);
     return (
@@ -198,7 +198,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                 <div className="datos">
                     <div className="col_datos">
                         <img
-                            src={`http://localhost:8080/fotosPerfil/${entity.fotoUrl}`}
+                            src={entity.fotoUrl}
                             height="512"
                             width="512"
                             alt="Foto de perfil"

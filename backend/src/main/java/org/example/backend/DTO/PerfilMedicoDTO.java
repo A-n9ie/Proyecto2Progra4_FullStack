@@ -43,7 +43,6 @@ public class PerfilMedicoDTO {
         medico.setEspecialidad(this.especialidad);
         medico.setCostoConsulta(this.costoConsulta);
         medico.setLugarAtencion(this.lugarAtencion);
-        medico.setFotoUrl(this.fotoUrl);
         medico.setPresentacion(this.presentacion);
     return medico;
     }
