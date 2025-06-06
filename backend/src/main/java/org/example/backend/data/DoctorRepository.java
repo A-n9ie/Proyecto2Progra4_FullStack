@@ -28,6 +28,8 @@ public interface DoctorRepository extends JpaRepository<Medico, Integer> {
 
     List<Medico> findAll();
 
+    List<Medico> findByAprobadoFalse();
+
     //Iterable<Medico> findByAprobado(boolean aprovado);
 
 }

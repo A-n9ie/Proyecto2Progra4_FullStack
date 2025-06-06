@@ -13,6 +13,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import History from "./pages/Patient/History";
 import Appointment from "./pages/Doctor/Appointment";
+import Management from "./pages/Admin/management";
 
 
 function App() {
@@ -100,29 +101,50 @@ function Main({ user, handleLogin }) {
         <div className={"App-main"}>
             <AppProvider>
                 <Routes>
+                    {/* Página principal accesible para todos */}
                     <Route path="/" element={<Principal />} />
-                    <Route path="/agendar" element={<NewAppointment />} />
-                    <Route path="/login" element={user.id ? <Navigate to="/" /> : <Login handleLogin={handleLogin} />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/profileDoctor" element={<ProfileDoctor />} />
-                    <Route path="/profilePatient" element={<ProfilePatient user={user} />} />
-                    <Route path="/profile" element={
+
+                    {/* Login: redirecciona al rol correspondiente */}
+                    <Route path="/login" element={
                         user.id
-                            ? (user.rol === 'Medico'
-                                ? <Navigate to="/profileDoctor" />
-                                : <Navigate to="/profilePatient" />)
-                            : <Navigate to="/login" />
-                    } />
-                    <Route path="/historyPatient" element={<History/>} />
-                    <Route path="/appointments" element={<Appointment/>} />
-                    <Route path="/history" element={
-                        user.id
-                            ? (user.rol === 'Medico'
-                                ? <Navigate to="/appointments" />
-                                : <Navigate to="/historyPatient" />)
-                            : <Navigate to="/login" />
+                            ? (user.rol === 'Administrador'
+                                ? <Navigate to="/management" />
+                                : <Navigate to="/" />)
+                            : <Login handleLogin={handleLogin} />
                     } />
 
+                    {/* Registro accesible para todos */}
+                    <Route path="/register" element={<Register />} />
+
+                    {/* Si el usuario no es Admin, mostrarle sus rutas */}
+                    {user.rol !== 'Administrador' && (
+                        <>
+                            <Route path="/agendar" element={<NewAppointment />} />
+                            <Route path="/profileDoctor" element={<ProfileDoctor />} />
+                            <Route path="/profilePatient" element={<ProfilePatient user={user} />} />
+                            <Route path="/profile" element={
+                                user.id
+                                    ? (user.rol === 'Medico'
+                                        ? <Navigate to="/profileDoctor" />
+                                        : <Navigate to="/profilePatient" />)
+                                    : <Navigate to="/login" />
+                            } />
+                            <Route path="/historyPatient" element={<History />} />
+                            <Route path="/appointments" element={<Appointment />} />
+                            <Route path="/history" element={
+                                user.id
+                                    ? (user.rol === 'Medico'
+                                        ? <Navigate to="/appointments" />
+                                        : <Navigate to="/historyPatient" />)
+                                    : <Navigate to="/login" />
+                            } />
+                        </>
+                    )}
+
+                    {/* Ruta exclusiva para admin */}
+                    {user.rol === 'Administrador' && (
+                        <Route path="/management" element={<Management />} />
+                    )}
                 </Routes>
             </AppProvider>
         </div>
@@ -160,18 +182,27 @@ function Header({ user, handleLogout }) {
                     <nav>
                         <ul className="Menu">
                             {!user.id && <li><Link to="/login">Login</Link></li>}
+
                             {user.id && (
                                 <li className="dropdown">
                                     <input type="checkbox" id="user-toggle" className="dropdown-toggle" />
                                     <label htmlFor="user-toggle" className="dropbtn">{user.name}</label>
                                     <ul className="dropdown-content">
-                                        <li><Link to="/profile">Profile</Link></li>
-                                        <li><Link to="/history">History</Link></li>
+                                        {/* Mostrar solo si NO es administrador */}
+                                        {user.rol !== 'Administrador' && (
+                                            <>
+                                                <li><Link to="/profile">Profile</Link></li>
+                                                <li><Link to="/history">History</Link></li>
+                                            </>
+                                        )}
+                                        {/* Mostrar solo si ES administrador */}
+                                        {user.rol === 'Administrador' && (
+                                            <li><Link to="/management">Gestión</Link></li>
+                                        )}
                                         <li><button onClick={onLogout}>Logout</button></li>
                                     </ul>
                                 </li>
                             )}
-
                         </ul>
                     </nav>
                 </div>
@@ -179,6 +210,7 @@ function Header({ user, handleLogout }) {
         </header>
     );
 }
+
 
 function Footer() {
     return (

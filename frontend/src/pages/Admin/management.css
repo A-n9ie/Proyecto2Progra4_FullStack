@@ -1,0 +1,99 @@
+.cuerpoAdmin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+
+.medicosAdmin {
+    display: flex;
+    align-items: center;
+    background: white;
+    width: 60%;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+.imagenAqui {
+    margin-right: 15px;
+}
+
+.SolicitanteFoto {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ccc;
+}
+
+
+.nombreSolicitante {
+    flex-grow: 1;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+
+.BotonesAprobar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.BotonesAprobar button {
+    margin: 20px;
+}
+
+.imagenAqui img {
+    width: 20%;
+    height: 20%;
+    max-width: 20%;
+    max-height: 20%;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.BotonesAprobar span {
+    font-size: 16px;
+    font-weight: bold;
+    color: green;
+}
+
+.BotonesAprobar div {
+    display: flex;
+    gap: 10px;
+}
+
+
+.aprobar{
+    background: dodgerblue;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.desaprobar{
+    background: indianred;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}

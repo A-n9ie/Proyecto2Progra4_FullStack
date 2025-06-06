@@ -268,4 +268,8 @@ public class ServiceDoctor {
         return medicos;
     }
 
+    public List<Medico> findMedicosPendientes() {
+        return doctorRepository.findByAprobadoFalse();
+    }
+
 }
