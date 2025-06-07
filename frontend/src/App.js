@@ -14,6 +14,7 @@ import { Link, BrowserRouter, Routes, Route, useNavigate, Navigate } from 'react
 import History from "./pages/Patient/History";
 import Appointment from "./pages/Doctor/Appointment";
 import Management from "./pages/Admin/management";
+import Schedule from "./pages/Principal/schedule";
 
 
 function App() {
@@ -129,6 +130,7 @@ function Main({ user, handleLogin }) {
                                         : <Navigate to="/profilePatient" />)
                                     : <Navigate to="/login" />
                             } />
+                            <Route path="/horarios_medico" element={<Schedule/>} />
                             <Route path="/historyPatient" element={<History />} />
                             <Route path="/appointments" element={<Appointment />} />
                             <Route path="/history" element={
@@ -138,7 +140,7 @@ function Main({ user, handleLogin }) {
                                         : <Navigate to="/historyPatient" />)
                                     : <Navigate to="/login" />
                             } />
-                        </>
+                            </>
                     )}
 
                     {/* Ruta exclusiva para admin */}

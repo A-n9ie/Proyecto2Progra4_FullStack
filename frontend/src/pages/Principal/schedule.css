@@ -1,0 +1,24 @@
+.horario-medico {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.info-medico img {
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.fecha-block {
+    margin-top: 20px;
+}
+
+.horas button {
+    margin: 5px;
+}
+
+.navegacion {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}

@@ -273,11 +273,20 @@ footer{
 
 /* Opciones dentro del menú */
 .dropdown-content li {
+  font-family: Cambria, serif;
   padding: 6px 12px;
   font-size: 14px;
-  font-family: Arial, sans-serif;
   text-align: left;
 }
+
+.dropdown-content li button {
+  font-family: Cambria, serif;
+  padding: 6px 12px;
+  font-size: 14px;
+  text-align: left;
+}
+
+
 
 .dropdown-content li:hover {
   background-color: #ddd;

@@ -22,15 +22,6 @@ function Medicos(){
         setMedicosState({medicos: data});
     }
 
-    // async function list(){
-    //     const request = new Request(backend, {method: 'GET', headers:{ }});
-    //     const response = await fetch(request);
-    //     if(!response.ok){alert("Error: " + response.status);
-    //         return;}
-    //     return await response.json();
-    // }
-
-
     async function listHorarios(){
         const request = new Request(backend+'/horarios', {method: 'GET', headers:{ }});
         const response = await fetch(request);
@@ -75,7 +66,6 @@ function List({ list }) {
                 {list.filter(item => item && item.nombre)
                     .map((m) => {
                         const horarios = m.horarios;
-
                     return (
                         <div key={m.id} className="cada_medico">
                             <div className="info_citas">
@@ -102,23 +92,35 @@ function List({ list }) {
                                                     <div className="dias">
                                                         <p>{fecha}</p>
                                                     </div>
-                                                    <div className="citas_disponibles">
-                                                        <form>
-                                                            {Array.isArray(horas) &&
-                                                                horas.map((hora, hIndex) => (
-                                                                    <Link
-                                                                        key={hIndex}
-                                                                        to="/agendar"
-                                                                        state={{medico: m, fecha: fecha, hora: hora}}
-                                                                        className="btn_schedule"
-                                                                    >
-                                                                        {hora}
-                                                                    </Link>
-                                                                ))}
-                                                        </form>
-                                                    </div>
+                                                    <form>
+                                                        {Array.isArray(horas) &&
+                                                            horas.map((hora, hIndex) => (
+                                                                <Link
+                                                                    key={hIndex}
+                                                                    to="/agendar"
+                                                                    state={{medico: m, fecha: fecha, hora: hora}}
+                                                                    className="btn_schedule"
+                                                                >
+                                                                    {hora}
+                                                                </Link>
+                                                            ))}
+                                                    </form>
+
                                                 </div>
+
                                             ))}
+                                            <div className={"ver_mas"}>
+                                                <Link
+                                                    to="/horarios_medico"
+                                                    state={{medico:m,
+                                                        page: 0,
+                                                        pageSize: 3
+                                                        }}
+                                                    className="btn_schedule"
+                                                >
+                                                    Ver mas horarios
+                                                </Link>
+                                            </div>
                                     </div>
                                 </div>
                             </div>
@@ -129,4 +131,5 @@ function List({ list }) {
         </div>
     );
 }
+
 export default Medicos;

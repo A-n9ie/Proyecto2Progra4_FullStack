@@ -15,9 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -75,7 +73,7 @@ public class ControllerDoctor {
         Medico medico = serviceDoctor.getDoctorbyUser(usuario);
         medico.setFotoUrl(serviceUser.cargarFoto(medico.getFotoUrl()));
         System.out.println(medico.getFotoUrl());
-        List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedicoDTO(medico);
+        List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedicoDTO(medico.getId());
         return new PerfilMedicoDTO(medico, horarios);
     }
 
@@ -135,33 +133,32 @@ public class ControllerDoctor {
         }
     }
 
-    @GetMapping("/patient/schedule/{id}")
-    public String showSchedule(@PathVariable Integer id, @RequestParam(defaultValue = "0") int page, Model model) {
-        Medico medico = serviceDoctor.findDoctorById(id);
-        if (medico == null) {
-            return "redirect:/error";
-        }
+    @GetMapping("/horarios/{medicoId}")
+    public ResponseEntity<Map<String, Object>> showSchedule(@PathVariable Integer medicoId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int pageSize) {
+            Map<String, List<String>> horarios = serviceDoctor.listarHorariosAgrupadosPorMedico(medicoId);
 
-        int pageSize = 3;
-        Map<Integer, List<String>> horarios = serviceDoctor.obtenerHorariosDeMedicoEspecifico(id);
+            List<String> fechasOrdenadas = new ArrayList<>(horarios.keySet());
+            Collections.sort(fechasOrdenadas); // ordena las fechas
 
-        List<String> fechas = horarios.get(medico.getId());
-        if (fechas == null) {
-            return "redirect:/error";
-        }
+            // paginación
+            int totalDias = fechasOrdenadas.size();
+            int totalPages = (int) Math.ceil((double) totalDias / pageSize);
 
-        int totalDias = fechas.size();
-        int totalPages = (int) Math.ceil((double) totalDias / pageSize);
+            int start = page * pageSize;
+            int end = Math.min(start + pageSize, totalDias);
 
+            Map<String, List<String>> horariosPaginados = new LinkedHashMap<>();
+            for (int i = start; i < end; i++) {
+                String fecha = fechasOrdenadas.get(i);
+                horariosPaginados.put(fecha, horarios.get(fecha));
+            }
 
-        model.addAttribute("medico", medico);
-        model.addAttribute("medicoHorarios", fechas);
-        model.addAttribute("page", page);
-        model.addAttribute("totalDias", totalDias);
-        model.addAttribute("pageSize", pageSize);
-        model.addAttribute("medicosHorarios", horarios);
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalPages", totalPages);
+        response.put("page", page);
+        response.put("horarios", horariosPaginados);
 
-        return "/presentation/patient/schedule";
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/administrador/management")

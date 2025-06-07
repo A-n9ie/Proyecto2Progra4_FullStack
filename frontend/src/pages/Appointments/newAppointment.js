@@ -24,9 +24,6 @@ function AgendarCitas() {
             formData.append('idMedico', medico.idMedico,
                 );
 
-            console.log(fecha);
-            console.log(hora);
-
             const response = await fetch(backend+'/confirmar', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
