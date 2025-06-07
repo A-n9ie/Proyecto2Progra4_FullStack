@@ -32,19 +32,6 @@ public class ControllerDoctor {
     @Autowired
     private ServiceUser serviceUser;
 
-//    @GetMapping
-//    public List<Medico> getMedicos() {
-//        List<Medico> medicos = serviceDoctor.medicosFindAll();
-//        medicos.forEach(m -> m.setFotoUrl(serviceUser.cargarFoto(m.getFotoUrl())));
-//        return medicos;
-//    }
-//    @GetMapping("/medicos")
-//    public List<PerfilMedicoDTO> obtenerMedicos() {
-//        List<Medico> medicos = serviceDoctor.medicosFindAll();
-//        return medicos.stream()
-//                .map(m -> new PerfilMedicoDTO(m))
-//                .collect(Collectors.toList());
-//    }
 
     @GetMapping("/horarios")
     public List<MedicosConHorariosDTO> getMedicosConHorarios() {
@@ -88,7 +75,7 @@ public class ControllerDoctor {
         Medico medico = serviceDoctor.getDoctorbyUser(usuario);
         medico.setFotoUrl(serviceUser.cargarFoto(medico.getFotoUrl()));
         System.out.println(medico.getFotoUrl());
-        List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedico(medico);
+        List<HorariosMedicosDTO> horarios = serviceDoctor.listarHorariosPorMedicoDTO(medico);
         return new PerfilMedicoDTO(medico, horarios);
     }
 

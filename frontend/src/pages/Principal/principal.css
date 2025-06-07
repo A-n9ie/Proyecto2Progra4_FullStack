@@ -33,12 +33,6 @@
     outline: none;
 }
 
-.citas_disponibles form {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    font-size: 15px;
-}
 
 .buscar_especialidad_lugar span {
     margin-left: 10px;
@@ -54,6 +48,7 @@
     margin-top: 10px;
     border-radius: 10px;
     background-color: white;
+
 }
 
 .informacion_medico{
@@ -92,7 +87,7 @@
     white-space: normal;
 }
 .dias{
-    align-content: space-between;
+    justify-content: center;
 }
 .dias p{
     color: #FCAF58;
@@ -100,29 +95,32 @@
     font-family: Arial, sans-serif;
     font-weight: bold;
 }
+
 .cada_cita {
-    margin: 3%;
+    margin: 2%;
     display: flex;
     flex-direction: row;
-    height: 250px;
-    padding:1%;
+    justify-content: space-evenly;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-.citas_disponibles {
-    height: 270px;
-    width: 250px;
-    padding-top: 3%;
-    border-radius: 10%;
+
+.citas_disponibles form {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-rows: auto;
+    grid-template-rows: repeat(3, auto);
 }
 
 .btn_schedule{
+    background-color: #4E598C !important;
     margin: 1%;
     padding: 8px 15px;
-    background-color: #4E598C;
     color: white;
-    text-decoration: none;
     border-radius: 20px;
-    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
 }
 
 #cuerpo_div_index button, .historial_col button{

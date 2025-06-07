@@ -136,38 +136,30 @@ public class ControllerPatient {
 
     @PostMapping("/confirmar")
     public String confirmarCita(@RequestParam(value = "si", required = false) String confirmar,
-//                                @RequestParam(value = "no", required = false) String rechazar,
-//                                @RequestHeader ("usuario") String usuario,
                                 @RequestParam("dia") String fecha_cita,
                                 @RequestParam("hora") String hora_cita,
-                                @RequestParam("medicoId") Integer medicoId,
+                                @RequestParam("idMedico") int medicoId,
                                 Model model) {
         System.out.println("Confirmar cita llamada con:");
         System.out.println("confirmar: " + confirmar);
         System.out.println("fecha: " + fecha_cita);
         System.out.println("hora: " + hora_cita);
         System.out.println("medicoId: " + medicoId);
-//        if (rechazar != null) {
-//            return "redirect:";
-//        }
 
         if(confirmar != null) {
             try {
 
                 Usuario usuarioAutenticado = serviceUser.getUser("Glucas");
 
-                // Convertir fecha y hora
                 LocalDate fecha = LocalDate.parse(fecha_cita, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 LocalTime hora = LocalTime.parse(hora_cita, DateTimeFormatter.ofPattern("HH:mm"));
 
-                // Buscar el médico
                 Medico medico = serviceDoctor.findDoctorById(medicoId);
                 if (medico == null) {
                     model.addAttribute("error", "Médico no encontrado.");
                     return "redirect:";
                 }
 
-                // Obtener pacientes del usuario
                 Set<Paciente> pacientes = usuarioAutenticado.getPacientes();
                 if (pacientes == null || pacientes.isEmpty()) {
                     model.addAttribute("error", "No hay pacientes asociados al usuario.");

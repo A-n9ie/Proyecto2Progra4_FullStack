@@ -56,11 +56,16 @@ function List({ list }) {
                 <div className="buscador">
                     <form className="buscar_especialidad_lugar" action="/search" method="get">
                         <span>Speciality</span>
-                        <input type="text" name="speciality" placeholder="" />
+                        <input type="text" name="speciality" placeholder=""/>
                         <span>City</span>
-                        <input type="text" name="city" placeholder="" />
-                        <button type="submit" name="buscar" className="btn_schedule">
-                            Search
+                        <input type="text" name="city" placeholder=""/>
+                        <button
+                            type="button"
+                            className={"btn_schedule"}
+                            onClick={() => {
+                            }}
+                        >
+                            SEARCH
                         </button>
                     </form>
                 </div>
@@ -70,6 +75,7 @@ function List({ list }) {
                 {list.filter(item => item && item.nombre)
                     .map((m) => {
                         const horarios = m.horarios;
+
                     return (
                         <div key={m.id} className="cada_medico">
                             <div className="info_citas">
@@ -92,7 +98,7 @@ function List({ list }) {
                                     <div className="cada_cita">
                                         {horarios &&
                                             Object.entries(horarios).map(([fecha, horas], index) => (
-                                                <div key={fecha} className={index >= 4 ? "oculto" : ""}>
+                                                <div key={fecha} className={index >= 3 ? "oculto" : ""}>
                                                     <div className="dias">
                                                         <p>{fecha}</p>
                                                     </div>

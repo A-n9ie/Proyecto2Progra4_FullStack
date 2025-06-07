@@ -27,6 +27,8 @@ public class ServiceDoctor {
     private HorarioRepository horarioRepository;
     @Autowired
     private CitaRepository citaRepository;
+    @Autowired
+    private ServiceAppointment serviceAppointment;
 
     public List<Medico> medicosFindAll() {
         return doctorRepository.findAll();
@@ -44,7 +46,7 @@ public class ServiceDoctor {
 
     public List<HorariosMedico> horarioMdico(Integer id){return horarioRepository.findByMedicoId(id);}
 
-    public List<HorariosMedicosDTO> listarHorariosPorMedico(Medico medico) {
+    public List<HorariosMedicosDTO> listarHorariosPorMedicoDTO(Medico medico) {
         List<HorariosMedico> entidades = horarioRepository.findAllByMedico(medico);
 
         return entidades.stream()
@@ -58,7 +60,7 @@ public class ServiceDoctor {
                 .collect(Collectors.toList());
     }
 
-    public List<HorariosMedicosDTO> listarHorarios() {
+    public List<HorariosMedicosDTO> listarHorariosDTO() {
         List<HorariosMedico> entidades = horarioRepository.findAll();
 
         return entidades.stream()
@@ -115,36 +117,47 @@ public class ServiceDoctor {
 
     public Map<Integer, Map<String, List<String>>> listarHorariosAgrupados() {
 
+        //desde hoy
         LocalDate hoy = LocalDate.now();
+        //dentro de dos semanas
         LocalDate fechaFin = hoy.plusWeeks(2);
+        LocalTime ahora = LocalTime.now();
 
-        List<HorariosMedicosDTO> lista = listarHorarios();
+        List<HorariosMedicosDTO> lista = listarHorariosDTO();
 
+        Map<Integer, Map<String, Set<String>>> citasMap = serviceAppointment.obtenerCitasMap(hoy, fechaFin);
         Map<Integer, Map<String, List<String>>> result = new HashMap<>();
 
-        LocalTime ahora = LocalTime.now();
 
         for (HorariosMedicosDTO dto : lista) {
             result.putIfAbsent(dto.getMedicoId(), new TreeMap<>());
             Map<String, List<String>> fechasMap = result.get(dto.getMedicoId());
 
             List<String> fechas = generarFechas(hoy, fechaFin, dto.getDiaSemana());
-            List<String> horasDisponibles = calcularHoras(dto.getHorarioInicio(), dto.getHorarioFin(), dto.getFrecuenciaCitas());
+            List<String> horasGeneradas = calcularHoras(dto.getHorarioInicio(), dto.getHorarioFin(), dto.getFrecuenciaCitas());
 
             for (String fecha : fechas) {
                 LocalDate fechaActual = LocalDate.parse(fecha);
-                List<String> horasParaFecha;
+
+                //id medico(fecha y hora)
+                Set<String> horasOcupadas = citasMap
+                        .getOrDefault(dto.getMedicoId(), Collections.emptyMap())
+                        .getOrDefault(fecha, Collections.emptySet());
+
+                List<String> horasFiltradas = horasGeneradas.stream()
+                        .filter(h -> !horasOcupadas.contains(h))
+                        .collect(Collectors.toList());
 
                 if (fechaActual.isEqual(hoy)) {
-                    horasParaFecha = horasDisponibles.stream()
-                            .filter(hora -> LocalTime.parse(hora).compareTo(ahora) >= 0)
+                    List<String> horasHoy = horasFiltradas.stream()
+                            .filter(h -> LocalTime.parse(h).compareTo(ahora) >= 0)
                             .collect(Collectors.toList());
 
-                    if (!horasParaFecha.isEmpty()) {
-                        fechasMap.put(fecha, horasParaFecha);
+                    if (!horasHoy.isEmpty()) {
+                        fechasMap.put(fecha, horasHoy);
                     }
-                } else if (fechaActual.isAfter(hoy)) {
-                    fechasMap.put(fecha, horasDisponibles);
+                } else if (fechaActual.isAfter(hoy) && !horasFiltradas.isEmpty()) {
+                    fechasMap.put(fecha, horasFiltradas);
                 }
             }
         }
@@ -181,12 +194,11 @@ public class ServiceDoctor {
         );
         DayOfWeek targetDay = dias.get(diaSemana.toUpperCase());
 
-        LocalDate actual = inicio;
-        while (!actual.isAfter(fin)) {
-            if (actual.getDayOfWeek().equals(targetDay)) {
-                fechas.add(actual.toString()); // formato YYYY-MM-DD
+        while (!inicio.isAfter(fin)) {
+            if (inicio.getDayOfWeek().equals(targetDay)) {
+                fechas.add(inicio.toString());
             }
-            actual = actual.plusDays(1);
+            inicio = inicio.plusDays(1);
         }
         return fechas;
     }

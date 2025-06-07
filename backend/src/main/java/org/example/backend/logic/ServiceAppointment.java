@@ -3,8 +3,8 @@ package org.example.backend.logic;
 import org.example.backend.data.CitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service("serviceAppointment")
@@ -78,5 +78,24 @@ public class ServiceAppointment {
 
     public Cita getCitaById(Integer show) {
         return citaRepository.getReferenceById(show);
+    }
+
+    public Map<Integer, Map<String, Set<String>>> obtenerCitasMap(LocalDate inicio, LocalDate fin) {
+        List<Cita> citas = citaRepository.findAllByFechaCitaBetween(inicio, fin);
+
+        Map<Integer, Map<String, Set<String>>> citasMap = new HashMap<>();
+
+        for (Cita cita : citas) {
+            int medicoId = cita.getMedico().getId();
+            String fecha = cita.getFechaCita().toString();
+            String hora = cita.getHoraCita().toString();
+
+            citasMap
+                    .computeIfAbsent(medicoId, k -> new HashMap<>())
+                    .computeIfAbsent(fecha, k -> new HashSet<>())
+                    .add(hora);
+        }
+
+        return citasMap;
     }
 }

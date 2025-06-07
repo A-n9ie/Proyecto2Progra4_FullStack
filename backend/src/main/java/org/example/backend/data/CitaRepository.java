@@ -5,6 +5,7 @@ import org.example.backend.logic.Medico;
 import org.example.backend.logic.Paciente;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -14,5 +15,6 @@ public interface CitaRepository extends JpaRepository<Cita, Integer> {
     List<Cita> findCitaByPacienteOrderByFechaCitaDescHoraCitaDesc(Paciente paciente);
     List<Cita> findCitaByMedicoOrderByFechaCitaDescHoraCitaDesc(Medico doctor);
     List<LocalTime> findLocalTimeByMedico(Medico medico);
+    List<Cita> findAllByFechaCitaBetween(LocalDate inicio, LocalDate fin);
 
 }

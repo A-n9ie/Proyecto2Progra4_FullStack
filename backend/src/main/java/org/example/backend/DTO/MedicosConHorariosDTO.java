@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MedicosConHorariosDTO {
+    private int idMedico;
     private String nombre;
     private String especialidad;
     private BigDecimal costoConsulta;
@@ -16,6 +17,7 @@ public class MedicosConHorariosDTO {
     private Map<String, List<String>> horarios;
 
     public MedicosConHorariosDTO(Medico medico, Map<String, List<String>> horarios) {
+        this.idMedico = medico.getId();
         this.nombre = medico.getNombre();
         this.especialidad = medico.getEspecialidad();
         this.costoConsulta = medico.getCostoConsulta();
@@ -79,5 +81,13 @@ public class MedicosConHorariosDTO {
 
     public void setHorarios(Map<String, List<String>> horarios) {
         this.horarios = horarios;
+    }
+
+    public int getIdMedico() {
+        return idMedico;
+    }
+
+    public void setIdMedico(int idMedico) {
+        this.idMedico = idMedico;
     }
 }
