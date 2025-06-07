@@ -1,3 +1,4 @@
+
 import './Login.css';
 import React, {useContext, useEffect, useState} from 'react';
 import './Register.css';
@@ -6,7 +7,7 @@ import {faIdCard, faUser, faUserCircle, faKey, faLock, faUserTag, faFolder} from
 import {AppContext} from "../AppProvider";
 import { useRef } from 'react';
 
-function Register() {
+function Register({ onSuccess }) {
     const {personasState, setPersonasState } = useContext(AppContext);
     const [error, setError] = useState();
     const [password, setPassword] = useState({password_c: ''});
@@ -110,6 +111,8 @@ function Register() {
                 }
                 setError(null);
                 clear();
+                if (onSuccess) onSuccess();
+
             })
             .catch(() => {
                 setError("Error de red o del servidor");
@@ -117,10 +120,9 @@ function Register() {
     }
 
     return (
-        <div className="LoginBody" id="noPadding">
-            <form className="register" onSubmit={handleSave} encType="multipart/form-data">
+            <form className="register slide-down" onSubmit={handleSave} encType="multipart/form-data">
                 <div>
-                    <img src="/images/Registro%20Icon2.png" height="128" alt="Icon" />
+                    <img src="/images/Registro%20Icon2.png" height="128" alt="Icon"/>
                     <h2>REGISTER</h2>
                 </div>
 
@@ -131,7 +133,7 @@ function Register() {
                 )}
 
                 <div className="campo">
-                    <FontAwesomeIcon icon={faIdCard} className="icon" />
+                    <FontAwesomeIcon icon={faIdCard} className="icon"/>
                     <input
                         type="text"
                         name="cedula"
@@ -143,7 +145,7 @@ function Register() {
                 </div>
 
                 <div className="campo">
-                    <FontAwesomeIcon icon={faUser} className="icon" />
+                    <FontAwesomeIcon icon={faUser} className="icon"/>
                     <input
                         type="text"
                         name="nombre"
@@ -155,7 +157,7 @@ function Register() {
                 </div>
 
                 <div className="campo">
-                    <FontAwesomeIcon icon={faUserCircle} className="icon" />
+                    <FontAwesomeIcon icon={faUserCircle} className="icon"/>
                     <input
                         type="text"
                         name="username"
@@ -167,7 +169,7 @@ function Register() {
                 </div>
 
                 <div className="campo">
-                    <FontAwesomeIcon icon={faKey} className="icon" />
+                    <FontAwesomeIcon icon={faKey} className="icon"/>
                     <input
                         type="password"
                         name="clave"
@@ -179,7 +181,7 @@ function Register() {
                 </div>
 
                 <div className="campo">
-                    <FontAwesomeIcon icon={faLock} className="icon" />
+                    <FontAwesomeIcon icon={faLock} className="icon"/>
                     <input
                         type="password"
                         name="password_c"
@@ -223,7 +225,6 @@ function Register() {
                     <button type="submit">Register</button>
                 </div>
             </form>
-        </div>
     );
 }
 
