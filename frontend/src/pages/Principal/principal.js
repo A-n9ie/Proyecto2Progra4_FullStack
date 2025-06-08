@@ -63,7 +63,12 @@ function List({ list }) {
             </div>
 
             <div className="medicos">
-                {list.filter(item => item && item.nombre)
+                {list.filter(item => item && item.nombre && item.estado === true &&
+                    item.especialidad &&
+                    item.lugarAtencion &&
+                    item.costoConsulta &&
+                    item.horarios &&
+                    Object.keys(item.horarios).length > 0)
                     .map((m) => {
                         const horarios = m.horarios;
                     return (
@@ -112,7 +117,7 @@ function List({ list }) {
                                             <div className={"ver_mas"}>
                                                 <Link
                                                     to="/horarios_medico"
-                                                    state={{medico:m,
+                                                    state={{medico: m,
                                                         page: 0,
                                                         pageSize: 3
                                                         }}

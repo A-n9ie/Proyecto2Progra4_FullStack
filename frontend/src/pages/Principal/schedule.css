@@ -4,9 +4,16 @@
     padding: 20px;
 }
 
-.info-medico img {
-    border-radius: 10px;
-    margin-bottom: 10px;
+.informacion_personal_medico img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 1%;
+}
+
+.informacion_personal{
+    justify-content: center;
 }
 
 .fecha-block {
@@ -21,4 +28,68 @@
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
+}
+
+.info-completa_ex{
+    align-content: center;
+}
+
+.info-completa_ex{
+    margin: 7% auto;
+    align-content: center;
+}
+.informacion_personal_medico{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    text-align: left;
+    background-color: #4E598C;
+}
+.id_medico_ex{
+    color: #FCAF58;
+}
+
+.btn_schedule_ex{
+    background-color: #4E598C !important;
+    white-space: nowrap;
+    margin: 1%;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cada_cita_ex{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width: 100%;
+}
+
+.horarios_ex {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-rows: auto;
+    grid-template-rows: repeat(4, auto);
+}
+
+.botones_ex{
+    justify-content: center;
+}
+
+.botones_ex{
+    background-color: #FF8C42;
+    margin: 1%;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
+.botones_ex:hover {
+    background-color: #4E598C;
 }

@@ -14,6 +14,7 @@ public class MedicosConHorariosDTO {
     private String lugarAtencion;
     private String fotoUrl;
     private String presentacion;
+    private Boolean estado;
     private Map<String, List<String>> horarios;
 
     public MedicosConHorariosDTO(Medico medico, Map<String, List<String>> horarios) {
@@ -24,6 +25,7 @@ public class MedicosConHorariosDTO {
         this.lugarAtencion = medico.getLugarAtencion();
         this.fotoUrl = medico.getFotoUrl();
         this.presentacion = medico.getPresentacion();
+        this.estado = medico.getAprobado();
         this.horarios = horarios;
     }
 
@@ -89,5 +91,13 @@ public class MedicosConHorariosDTO {
 
     public void setIdMedico(int idMedico) {
         this.idMedico = idMedico;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
     }
 }

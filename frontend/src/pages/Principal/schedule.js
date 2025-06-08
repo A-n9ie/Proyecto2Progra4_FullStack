@@ -1,11 +1,10 @@
-import { useLocation } from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
-import {AppContext} from "../AppProvider";
+import {Link, useLocation} from "react-router-dom";
+import {useEffect, useState} from "react";
+import "./schedule.css";
 
 function HorarioMedico({medicoId}) {
     const location = useLocation();
-    const { medicoState, setMedicoState} = useContext(AppContext);
-    const { medico, page: initialPage = 0, pageSize = 3} = location.state || {};
+    const { medico, page: initialPage = 0, pageSize = 4} = location.state || {};
     const [page, setPage] = useState(0);
     const [horarios, setHorarios] = useState({});
     const [totalPages, setTotalPages] = useState(1);
@@ -46,42 +45,61 @@ function HorarioMedico({medicoId}) {
 
 
     return (
-        <div>
-            <h2>Horarios del Dr. {medico.nombre}</h2>
+        <div className="info-completa_ex">
+            <div className="informacion_personal_medico">
+                <img src={`http://localhost:8080/imagenes/ver/${medico.fotoUrl}`} alt="Foto del médico"
+                     alt="Foto del médico"
+                />
+                <div className="informacion_personal_ex">
+                        <h5 className="nombre_medico_ex">
+                            <span>{medico.nombre} </span>
+                            <span className="id_medico_ex">{medico.costoConsulta}</span>
+                        </h5>
+                        <small className="especialidad_medico_ex">{medico.especialidad}</small>
+                    <p className="lugar_atencion_ex">
+                        <span>{medico.lugarAtencion}</span>
+                    </p>
+                </div>
+            </div>
 
-            {Object.keys(horarios).length === 0 ? (
-                <p>No hay horarios disponibles.</p>
-            ) : (
-                Object.entries(horarios).map(([fecha, horas]) => (
-                    <div key={fecha}>
-                        <h4>{fecha}</h4>
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                            {horas.map((hora, idx) => (
-                                <button key={idx} className="btn_schedule">
-                                    {hora}
-                                </button>
-                            ))}
+            <div className="cada_cita_ex">
+                {Object.keys(horarios).length === 0 ? (
+                    <p>No hay horarios disponibles.</p>
+                ) : (
+                    Object.entries(horarios).map(([fecha, horas]) => (
+                        <div key={fecha} className="dias">
+                            <p>{fecha}</p>
+                            <div className="horarios_ex">
+                                {horas.map((hora, idx) => (
+                                        <Link
+                                            key={idx}
+                                            to="/agendar"
+                                            state={{medico, fecha: fecha, hora: hora}}
+                                            className="btn_schedule_ex"
+                                        >
+                                            {hora}
+                                        </Link>
+                                ))}
+                            </div>
+                            </div>
+                            ))
+                            )}
                         </div>
-                    </div>
-                ))
-            )}
-
-            <div className="pagination" style={{ marginTop: "1rem" }}>
-                <button onClick={() => setPage((p) => Math.max(p - 1, 0))} disabled={page === 0}>
-                    Anterior
-                </button>
-                <span style={{ margin: "0 1rem" }}>
+                    <button onClick={() => setPage((p) => Math.max(p - 1, 0))} disabled={page === 0}
+                    className="botones_ex">
+                        Anterior
+                    </button>
+                    <span style={{margin: "0 1rem"}}>
         Página {page + 1} de {totalPages}
       </span>
-                <button
-                    onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
-                    disabled={page >= totalPages - 1}
-                >
-                    Siguiente
-                </button>
-            </div>
+                    <button
+                        onClick={() => setPage((p) => Math.min(p + 1, totalPages - 1))}
+                        disabled={page >= totalPages - 1} className="botones_ex"
+                    >
+                        Siguiente
+                    </button>
         </div>
     );
 }
 
-export default HorarioMedico;
+            export default HorarioMedico;

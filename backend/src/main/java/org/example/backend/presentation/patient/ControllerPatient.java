@@ -87,53 +87,6 @@ public class ControllerPatient {
         return "/presentation/principal/index";
     }
 
-
-    @PostMapping("/presentation/patient/book/save")
-    public String saveAppointment(@RequestParam("dia") String fecha_cita,
-                                  @RequestParam("hora") String hora_cita,
-                                  @RequestParam Integer medicoId,
-                                  Model model) {
-        try {
-            // Obtener usuario autenticado
-            String username = serviceUser.getUserAuthenticated();
-            Usuario usuario = serviceUser.getUser(username);
-            // Convertir fecha y hora
-            LocalDate fecha = LocalDate.parse(fecha_cita, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            LocalTime hora = LocalTime.parse(hora_cita, DateTimeFormatter.ofPattern("HH:mm"));
-            System.out.println("Fecha y hora recibidas: " + fecha + " " + hora);
-
-            // Buscar el médico
-            Medico medico = serviceDoctor.findDoctorById(medicoId);
-            if (medico == null) {
-                model.addAttribute("error", "Médico no encontrado.");
-                return "/presentation/principal/index";
-            }
-            // Obtener pacientes del usuario
-            Set<Paciente> pacientes = usuario.getPacientes();
-
-            if (pacientes == null || pacientes.isEmpty()) {
-                model.addAttribute("error", "No hay pacientes asociados al usuario.");
-                return "/presentation/principal/index";
-            }
-            System.out.println("Pacientes encontrados: " + pacientes.size());
-
-            Paciente paciente = pacientes.iterator().next();
-
-            model.addAttribute("fecha", fecha);
-            model.addAttribute("hora", hora);
-            model.addAttribute("medico", medico);
-            model.addAttribute("paciente", paciente);
-
-            return "/presentation/patient/book";
-
-        } catch (DateTimeParseException e) {
-            model.addAttribute("error", "Formato de fecha u hora incorrecto.");
-        } catch (Exception e) {
-            model.addAttribute("error", "Ocurrió un error al guardar la cita.");
-        }
-        return "redirect:/presentation/patient/book";
-    }
-
     @PostMapping("/confirmar")
     public String confirmarCita(@RequestParam(value = "si", required = false) String confirmar,
                                 @RequestParam("dia") String fecha_cita,

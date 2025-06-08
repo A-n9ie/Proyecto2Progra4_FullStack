@@ -133,7 +133,7 @@ public class ControllerDoctor {
     }
 
     @GetMapping("/horarios/{medicoId}")
-    public ResponseEntity<Map<String, Object>> showSchedule(@PathVariable Integer medicoId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "3") int pageSize) {
+    public ResponseEntity<Map<String, Object>> showSchedule(@PathVariable Integer medicoId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "4") int pageSize) {
             Map<String, List<String>> horarios = serviceDoctor.listarHorariosAgrupadosPorMedico(medicoId);
 
             List<String> fechasOrdenadas = new ArrayList<>(horarios.keySet());
