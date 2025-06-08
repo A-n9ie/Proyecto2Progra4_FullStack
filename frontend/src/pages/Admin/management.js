@@ -7,21 +7,27 @@ function Management() {
     const [doctores, setDoctores] = useState([]);
 
     useEffect(() => {
-        fetch(`${backend}/medicos/pendientes`, {
+        fetch(`${backend}/management/medicos/pendientes`, {
             headers: {
                 "Authorization": "Bearer " + localStorage.getItem("token")
             }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`Error ${res.status}: Acceso denegado o sesión inválida`);
+                }
+                return res.json();
+            })
             .then(data => setDoctores(data))
             .catch(err => {
                 console.error("Error cargando doctores:", err);
             });
     }, []);
 
+
     const aprobarDoctor = async (id) => {
         try {
-            const response = await fetch(`${backend}/aprobar`, {
+            const response = await fetch(`${backend}/management/aprobar`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +56,7 @@ function Management() {
                 <div className="medicosAdmin" key={m.id}>
                     <div className="imagenAqui">
                         <img
-                            src={`${backend}/fotosPerfil/${m.fotoPerfil}`}
+                            src={`${backend}/imagenes/ver/${m.fotoPerfil}`}
                             alt="Foto de perfil"
                             className="SolicitanteFoto"
                         />

@@ -108,4 +108,4 @@ function HorarioMedico({medicoId}) {
     );
 }
 
-            export default HorarioMedico;
+export default HorarioMedico;

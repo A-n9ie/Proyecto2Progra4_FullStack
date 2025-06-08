@@ -20,9 +20,11 @@ public class UserDetailsImp implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(usuario.getRol()));
+        // Agrega el prefijo ROLE_ para compatibilidad con Spring Security
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
         return authorities;
     }
+
 
     @Override
     public String getPassword() {return usuario.getClave();}

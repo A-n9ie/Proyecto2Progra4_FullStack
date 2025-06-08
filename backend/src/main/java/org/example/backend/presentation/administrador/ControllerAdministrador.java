@@ -15,12 +15,16 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@RequestMapping("/management")
 public class ControllerAdministrador {
     @Autowired
     private ServiceDoctor serviceDoctor;
 
     @GetMapping("/medicos/pendientes")
     public List<ManejoDeMedicosDTO> getTodosMedicos() {
+
+
+
         List<Medico> medicos = serviceDoctor.medicosFindAll();
         return medicos.stream()
                 .map(m -> new ManejoDeMedicosDTO(

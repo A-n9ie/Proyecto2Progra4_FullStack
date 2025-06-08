@@ -19,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -63,6 +65,18 @@ public class SecurityConfig {
     }
 
     @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
+        grantedAuthoritiesConverter.setAuthorityPrefix(""); // si no quieres el "SCOPE_" prefijo
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+        return jwtAuthenticationConverter;
+    }
+
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
@@ -76,44 +90,52 @@ public class SecurityConfig {
                 }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers( "/usuarios/login",
+                        // Rutas públicas
+                        .requestMatchers(
+                                "/usuarios/login",
                                 "/usuarios/registerSys",
                                 "/usuarios/create",
                                 "/medicos",
                                 "/medicos/horarios",
-                                "/**"
+                                "/medicos/horarios/*",
+                                "/horarios/{medicoId}",
+                                "/imagenes/**",
+                                "/imagenes/ver/**"
                         ).permitAll()
-                        .requestMatchers("/doctor/**").hasAuthority("Medico")
-                        .requestMatchers("/patient/**").hasAuthority("Paciente")
-                        .requestMatchers("/administrador/**").hasAuthority("Administrador")
+
+                        // Acceso exclusivo para pacientes
+                        .requestMatchers(
+                                "/pacientes/confirmar",
+                                "/pacientes/history",
+                                "/pacientes/me",
+                                "/pacientes/update"
+                        ).hasAuthority("Paciente")
+
+                        // Acceso exclusivo para médicos
+                        .requestMatchers(
+                                "/medicos/history",
+                                "/medicos/cancel",
+                                "/medicos/saveNote",
+                                "/medicos/me",
+                                "/medicos/update"
+                        ).hasAuthority("Medico")
+
+                        // Acceso exclusivo para administradores
+                        .requestMatchers(
+                                "/medicos/pendientes",
+                                "/medicos/aprobar",
+                                "/management/**"
+                        ).hasAuthority("Administrador")
+
+                        // Cualquier otra requiere autenticación
                         .anyRequest().authenticated()
                 )
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                )
+
                 .build();
     }
 
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        return http
-//                .csrf(csrf -> csrf.disable())
-//                .cors(cors -> cors.configurationSource(request -> {
-//                    CorsConfiguration config = new CorsConfiguration();
-//                    config.setAllowedOrigins(List.of("http://localhost:3000"));
-//                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//                    config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-//                    return config;
-//                }))
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/usuarios/login", "/usuarios/registerSys", "/usuarios/create").permitAll()
-//                        // aquí define roles o scopes
-//                        .requestMatchers("/doctor/**").hasAuthority("Medico")
-//                        .requestMatchers("/patient/**").hasAuthority("Paciente")
-//                        .requestMatchers("/administrador/**").hasAuthority("Administrador")
-//                        .anyRequest().authenticated()
-//                )
-//                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-//                .build();
-//    }
 }
