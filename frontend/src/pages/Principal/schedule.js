@@ -1,9 +1,10 @@
-import {Link, useLocation} from "react-router-dom";
+import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import "./schedule.css";
 
 function HorarioMedico({medicoId}) {
     const location = useLocation();
+    const navigate = useNavigate();
     const { medico, page: initialPage = 0, pageSize = 4} = location.state || {};
     const [page, setPage] = useState(0);
     const [horarios, setHorarios] = useState({});
@@ -18,6 +19,11 @@ function HorarioMedico({medicoId}) {
     const backend = "http://localhost:8080/medicos";
 
     async function listarHorarioMedico(medicoId, page, pageSize){
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate('/login');
+            return;
+        }
         try {
             const response = await fetch(`${backend}/horarios/${medicoId}?page=${page}&pageSize=${pageSize}`,
                 {method: 'GET', headers:{ }});

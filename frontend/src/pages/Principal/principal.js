@@ -1,7 +1,7 @@
 import './principal.css';
 import {AppContext} from '../AppProvider';
 import {useContext, useEffect, useState} from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 function Medicos(){
     const { medicosState, setMedicosState} = useContext(AppContext);
@@ -11,9 +11,12 @@ function Medicos(){
     }, []);
 
     const backend = "http://localhost:8080/medicos";
+    const navigate = useNavigate();
 
-    async function handleList() {
-        const data = await listHorarios();
+    async function handleList(filtros = {}) {
+        const data = Object.keys(filtros).length === 0
+            ? await listHorarios()
+            : await busqueda(filtros);
 
         if (!data) {
             console.error("No se pudo cargar la información de los médicos y horarios.");
@@ -33,28 +36,53 @@ function Medicos(){
         return data;
     }
 
+    async function busqueda(filtros = {}){
+        const token = localStorage.getItem("token");
+        if(token){
+        const query = new URLSearchParams(filtros).toString();
+        const request = new Request(`http://localhost:8080/pacientes/buscar?${query}`, {
+            method: 'GET', headers: {}
+        });
+        const response = await fetch(request);
+
+        if(!response.ok){
+            alert("Error: " + response.status);
+            return;
+        }
+        return await response.json();
+        }else{
+            navigate(`/login`);
+            return null;
+        }
+
+    }
+
     return (
         <List
-            list={medicosState.medicos}
+            list={medicosState.medicos} handleList={handleList}
         />
     );
 }
 
-function List({ list }) {
+function List({ list, handleList}) {
     return (
         <div id="cuerpo_div_index" className="cuerpoIndex">
             <div className="buscar_lugar_especialidad">
                 <div className="buscador">
-                    <form className="buscar_especialidad_lugar" action="/search" method="get">
-                        <span>Speciality</span>
+                    <form className="buscar_especialidad_lugar" onSubmit={(e) =>{
+                        e.preventDefault();
+                        const formData = new FormData(e.target);
+                        const speciality = formData.get('speciality');
+                        const city = formData.get('city');
+                        handleList({ speciality, city });
+                    }}>
+                        <span>Especialidad</span>
                         <input type="text" name="speciality" placeholder=""/>
-                        <span>City</span>
+                        <span>Ciudad</span>
                         <input type="text" name="city" placeholder=""/>
                         <button
-                            type="button"
+                            type="submit"
                             className={"btn_schedule"}
-                            onClick={() => {
-                            }}
                         >
                             SEARCH
                         </button>

@@ -1,5 +1,6 @@
 package org.example.backend.presentation.patient;
 
+import org.example.backend.DTO.MedicosConHorariosDTO;
 import org.example.backend.DTO.PacienteCitasDTO;
 import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.data.UsuarioRepository;
@@ -78,31 +79,34 @@ public class ControllerPatient {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/search")
-    public String search(@RequestParam(value = "speciality", required = false) String speciality,
-                         @RequestParam(value = "city", required = false) String city, Model model) {
+    @GetMapping("/buscar")
+    public List<MedicosConHorariosDTO> search(@RequestParam(required = false) String speciality,
+                         @RequestParam(required = false) String city) {
 
-        Iterable<Medico> doctorByLocation = serviceDoctor.obtenerMedicosPorLugarYEspecialidad(speciality, city);
-        model.addAttribute("medicos", doctorByLocation);
-        return "/presentation/principal/index";
+        List<Medico> medicosFiltrados = serviceDoctor.obtenerMedicosPorLugarYEspecialidad(speciality, city);
+        Map<Integer, Map<String, List<String>>> horariosAgrupados = serviceDoctor.listarHorariosAgrupados();
+
+        return medicosFiltrados.stream()
+                .map(medico -> new MedicosConHorariosDTO(
+                        medico,
+                        horariosAgrupados.getOrDefault(medico.getId(), Map.of())
+                ))
+                .collect(Collectors.toList());
+
     }
 
     @PostMapping("/confirmar")
-    public String confirmarCita(@RequestParam(value = "si", required = false) String confirmar,
+    public ResponseEntity<?> confirmarCita(@RequestParam(value = "si", required = false) String confirmar,
                                 @RequestParam("dia") String fecha_cita,
                                 @RequestParam("hora") String hora_cita,
                                 @RequestParam("idMedico") int medicoId,
-                                Model model) {
-        System.out.println("Confirmar cita llamada con:");
-        System.out.println("confirmar: " + confirmar);
-        System.out.println("fecha: " + fecha_cita);
-        System.out.println("hora: " + hora_cita);
-        System.out.println("medicoId: " + medicoId);
-
+                                Model model,
+                                Authentication authentication) {
         if(confirmar != null) {
             try {
-
-                Usuario usuarioAutenticado = serviceUser.getUser("Glucas");
+                Jwt jwt = (Jwt) authentication.getPrincipal();
+                String nombre = jwt.getClaim("name");
+                Usuario usuario = serviceUser.getUser(nombre);
 
                 LocalDate fecha = LocalDate.parse(fecha_cita, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
                 LocalTime hora = LocalTime.parse(hora_cita, DateTimeFormatter.ofPattern("HH:mm"));
@@ -110,13 +114,13 @@ public class ControllerPatient {
                 Medico medico = serviceDoctor.findDoctorById(medicoId);
                 if (medico == null) {
                     model.addAttribute("error", "Médico no encontrado.");
-                    return "redirect:";
+                    return ResponseEntity.badRequest().body("Médico no encontrado.");
                 }
 
-                Set<Paciente> pacientes = usuarioAutenticado.getPacientes();
+                Set<Paciente> pacientes = usuario.getPacientes();
                 if (pacientes == null || pacientes.isEmpty()) {
                     model.addAttribute("error", "No hay pacientes asociados al usuario.");
-                    return "redirect:";
+                    return ResponseEntity.badRequest().body("No hay pacientes asociados al usuario.");
                 }
 
                 Paciente paciente = pacientes.iterator().next();
@@ -132,16 +136,15 @@ public class ControllerPatient {
                 // Guardar la cita
                 serviceAppointment.saveAppointment(nuevaCita);
 
-                return "redirect:/presentation/patient/history/show";
-
+                return ResponseEntity.ok("Cita confirmada exitosamente.");
             } catch (DateTimeParseException e) {
-                model.addAttribute("error", "Formato de fecha u hora incorrecto.");
+                return ResponseEntity.badRequest().body("Formato de fecha u hora incorrecto.");
             } catch (Exception e) {
-                model.addAttribute("error", "Ocurrió un error al confirmar la cita.");
+                return ResponseEntity.status(500).body("Ocurrió un error al confirmar la cita.");
             }
         }
 
-        return "redirect:";
+        return ResponseEntity.badRequest().body("Confirmación inválida.");
     }
 
 }

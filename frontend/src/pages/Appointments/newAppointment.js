@@ -16,6 +16,11 @@ function AgendarCitas() {
     const backend = "http://localhost:8080/pacientes";
 
     const handleConfirmar = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate('/login');
+            return;
+        }
         try {
             const formData = new URLSearchParams();
             formData.append('si', 'confirmar');
@@ -26,7 +31,8 @@ function AgendarCitas() {
 
             const response = await fetch(backend+'/confirmar', {
                 method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                headers: {'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + token,},
                 body: formData.toString(),
             });
             const texto = await response.text();

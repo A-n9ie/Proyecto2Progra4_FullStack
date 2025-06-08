@@ -256,7 +256,7 @@ public class ServiceDoctor {
         return result;
     }
 
-    public Iterable<Medico> obtenerMedicosPorLugarYEspecialidad(String speciality, String city) {
+    public List<Medico> obtenerMedicosPorLugarYEspecialidad(String speciality, String city) {
 
         if (speciality.isEmpty() && city.isEmpty()) {
             return doctorRepository.findAll();

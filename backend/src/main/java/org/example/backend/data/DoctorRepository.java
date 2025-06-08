@@ -16,13 +16,13 @@ public interface DoctorRepository extends JpaRepository<Medico, Integer> {
     public Medico findById(int id);
 
     // Buscar médicos por ciudad (búsqueda parcial)
-    Iterable<Medico> findByLugarAtencionContainingIgnoreCase(String ciudad);
+    List<Medico> findByLugarAtencionContainingIgnoreCase(String ciudad);
 
     // Buscar médicos por especialidad (búsqueda parcial)
-    Iterable<Medico> findByEspecialidadContainingIgnoreCase(String especialidad);
+    List<Medico> findByEspecialidadContainingIgnoreCase(String especialidad);
 
     // Buscar médicos por especialidad y ciudad (búsqueda parcial)
-    Iterable<Medico> findByEspecialidadContainingIgnoreCaseAndLugarAtencionContainingIgnoreCase(String especialidad, String ciudad);
+    List<Medico> findByEspecialidadContainingIgnoreCaseAndLugarAtencionContainingIgnoreCase(String especialidad, String ciudad);
 
     //Iterable<Medico> findByNombreOrCedula(String medico);
 
