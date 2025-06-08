@@ -34,29 +34,31 @@ public class SecurityConfig {
     private final JwtConfig jwtConfig;
     private final UsuarioRepository userRepository;
 
-    @Bean
-    public JwtDecoder jwtDecoder() { return NimbusJwtDecoder.withSecretKey(jwtConfig.getSecretKey()).build(); }
+    @Autowired
+    private UserDetailsServiceImpl userDetailsServiceImpl;
 
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withSecretKey(jwtConfig.getSecretKey()).build();
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public AuthenticationManager authManager(AuthenticationProvider authenticationProvider) {
         return new ProviderManager(authenticationProvider);
     }
 
+
     @Bean
     AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(userDetailsServiceImpl);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
-    }
-
-    @Bean
-    UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsuario(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     public SecurityConfig(JwtConfig jwtConfig, UsuarioRepository userRepository) {
@@ -68,7 +70,7 @@ public class SecurityConfig {
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("scope");
-        grantedAuthoritiesConverter.setAuthorityPrefix(""); // si no quieres el "SCOPE_" prefijo
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
@@ -94,6 +96,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/usuarios/login",
                                 "/usuarios/registerSys",
+                                "/usuarios/register",
                                 "/usuarios/create",
                                 "/medicos",
                                 "/medicos/horarios",

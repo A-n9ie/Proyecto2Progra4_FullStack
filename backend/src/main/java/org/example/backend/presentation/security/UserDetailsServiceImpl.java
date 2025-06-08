@@ -25,31 +25,26 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        try {
-            System.out.println("Cargando usuario: " + username);
-            Optional<Usuario> user = usuarioRepository.findByUsuario(username);
+        Optional<Usuario> user = usuarioRepository.findByUsuario(username);
 
-            if (user.isEmpty()) {
-                System.out.println("Usuario no encontrado: " + username);
-                throw new UsernameNotFoundException("Usuario '" + username + "' no encontrado");
-            }
-
-            if ("Medico".equals(user.get().getRol())) {
-                Medico medico = doctorRepository.findByUsuario(user.orElse(null));
-                if (medico == null || !Boolean.TRUE.equals(medico.getAprobado())) {
-                    throw new UsernameNotFoundException("Su usuario no está aprobado, comuníquese con el administrador");
-                }
-            }
-
-            return new UserDetailsImp(user.orElse(null));
-
-        } catch (UsernameNotFoundException e) {
-            throw e;
-        } catch (Exception e) {
-            System.out.println("Error inesperado al cargar usuario: " + e.getMessage());
-            throw new UsernameNotFoundException("Error interno al autenticar usuario");
+        if (user.isEmpty()) {
+            throw new UsernameNotFoundException("Usuario '" + username + "' no encontrado");
         }
+
+        Usuario usuario = user.get();
+
+        if ("Medico".equals(usuario.getRol())) {
+            Medico medico = doctorRepository.findByUsuario(usuario);
+            if (medico == null || !Boolean.TRUE.equals(medico.getAprobado())) {
+                throw new UsernameNotFoundException("Su usuario no está aprobado, comuníquese con el administrador");
+            }
+        }
+
+        return usuario; // <- USÁ directamente el objeto usuario
     }
+
+
+
 
 
 }
