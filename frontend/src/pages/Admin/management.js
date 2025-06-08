@@ -33,8 +33,9 @@ function Management() {
             if (response.ok) {
 
                 setDoctores(prev => prev.map(doc =>
-                    doc.id === id ? { ...doc, aprobado: true } : doc
+                    doc.id === id ? { ...doc, estado: true } : doc
                 ));
+
             } else {
                 alert("Error al aprobar el doctor.");
             }
@@ -49,7 +50,7 @@ function Management() {
                 <div className="medicosAdmin" key={m.id}>
                     <div className="imagenAqui">
                         <img
-                            src={`${backend}/fotosPerfil/${m.fotoUrl}`}
+                            src={`${backend}/fotosPerfil/${m.fotoPerfil}`}
                             alt="Foto de perfil"
                             className="SolicitanteFoto"
                         />
@@ -59,7 +60,7 @@ function Management() {
                         <span>{m.id}</span>
                     </h5>
                     <div className="BotonesAprobar">
-                        {m.aprobado ? (
+                        {m.estado ? (
                             <span>Aprobado</span>
                         ) : (
                             <button className="aprobar" onClick={() => aprobarDoctor(m.id)}>

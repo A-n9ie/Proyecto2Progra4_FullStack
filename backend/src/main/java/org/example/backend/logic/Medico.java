@@ -38,9 +38,9 @@ public class Medico {
     @NotBlank(message = "Name is required")
     private String nombre;
 
-    @ColumnDefault("0")
+//    @ColumnDefault("0")
     @Column(name = "aprobado")
-    private Boolean aprobado;
+    private Boolean aprobado = false;
 
     @Size(max = 30)
     @Column(name = "especialidad", length = 30)

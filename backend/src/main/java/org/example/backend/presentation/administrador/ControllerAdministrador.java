@@ -1,6 +1,7 @@
 package org.example.backend.presentation.administrador;
 
 
+import org.example.backend.DTO.ManejoDeMedicosDTO;
 import org.example.backend.logic.Medico;
 import org.example.backend.logic.ServiceDoctor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -18,8 +20,17 @@ public class ControllerAdministrador {
     private ServiceDoctor serviceDoctor;
 
     @GetMapping("/medicos/pendientes")
-    public List<Medico> getTodosMedicos() {
-        return serviceDoctor.medicosFindAll(); // Trae todos los doctores, sin filtrar por aprobado
+    public List<ManejoDeMedicosDTO> getTodosMedicos() {
+        List<Medico> medicos = serviceDoctor.medicosFindAll();
+        return medicos.stream()
+                .map(m -> new ManejoDeMedicosDTO(
+                        m.getId(),
+                        m.getNombre(),
+                        m.getCedula(),
+                        m.getFotoUrl(),
+                        m.getAprobado()
+                ))
+                .collect(Collectors.toList());
     }
 
 
