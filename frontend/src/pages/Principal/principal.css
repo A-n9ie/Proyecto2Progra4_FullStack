@@ -4,11 +4,13 @@
     width: 80%;
     border-radius: 10px;
     margin: 7% auto;
+    overflow: auto;
 }
 
 .busca_lugar_especialidad {
     background-color: white;
     padding: 20px;
+
 }
 
 .buscador {
@@ -48,7 +50,8 @@
     margin-top: 10px;
     border-radius: 10px;
     background-color: white;
-
+    width: 100%;
+    overflow: auto;
 }
 
 .informacion_medico{
