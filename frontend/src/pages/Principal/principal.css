@@ -51,12 +51,12 @@
     border-radius: 10px;
     background-color: white;
     width: 100%;
-    overflow: auto;
 }
 
 .informacion_medico{
     display: flex;
     align-items: center;
+    margin: 1%;
 }
 
 .medicos h5{
