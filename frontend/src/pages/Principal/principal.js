@@ -37,8 +37,7 @@ function Medicos(){
     }
 
     async function busqueda(filtros = {}){
-        const token = localStorage.getItem("token");
-        if(token){
+
         const query = new URLSearchParams(filtros).toString();
         const request = new Request(`http://localhost:8080/pacientes/buscar?${query}`, {
             method: 'GET', headers: {}
@@ -50,10 +49,6 @@ function Medicos(){
             return;
         }
         return await response.json();
-        }else{
-            navigate(`/login`);
-            return null;
-        }
 
     }
 

@@ -103,7 +103,8 @@ public class SecurityConfig {
                                 "/medicos/horarios/*",
                                 "/horarios/{medicoId}",
                                 "/imagenes/**",
-                                "/imagenes/ver/**"
+                                "/imagenes/ver/**",
+                                "/pacientes/buscar"
                         ).permitAll()
 
                         // Acceso exclusivo para pacientes

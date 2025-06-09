@@ -114,16 +114,15 @@ function Main({ user, estadoPerfil, handleLogin }) {
 
                     <Route path="/login" element={
                         user.id
-                            ? (estadoPerfil === 'incompleto'
-                                ? <Navigate to="/profile" />
-                                : estadoPerfil === 'completo'
-                                    ? <Navigate to="/history" />
-                                    : user.rol === 'Administrador'
-                                        ? <Navigate to="/management" />
-                                        : <Navigate to="/" />)
+                            ? (user.rol === 'Medico'
+                                ? (estadoPerfil === 'incompleto'
+                                    ? <Navigate to="/profile" />
+                                    : <Navigate to="/history" />)
+                                : user.rol === 'Administrador'
+                                    ? <Navigate to="/management" />
+                                    : <Navigate to="/" />)
                             : <Login handleLogin={handleLogin} />
                     } />
-
 
                     {/* Registro accesible para todos */}
                     <Route path="/register" element={<Register />} />
