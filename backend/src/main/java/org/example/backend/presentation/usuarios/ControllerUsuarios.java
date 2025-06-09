@@ -114,14 +114,29 @@ public class ControllerUsuarios {
         System.out.println("Login recibido: usuario=" + user.getUsuario() + ", clave=" + user.getClave());
 
         var authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        user.getUsuario(), user.getClave()));
+                new UsernamePasswordAuthenticationToken(user.getUsuario(), user.getClave()));
 
         String token = tokenService.generateToken(authentication);
         System.out.println("Token generado: " + token);
 
-        return ResponseEntity.ok().body(Map.of("token", token));
+        Usuario usuarioDB = serviceUser.findByUsername(user.getUsuario());
+
+        // Si es MEDICO, verificamos si su perfil está completo
+        String estadoPerfil = "completo";
+
+        if ("Medico".equals(usuarioDB.getRol())) {
+            Medico medico = serviceDoctor.findByUser(usuarioDB);
+            if (medico.getEspecialidad() == null || medico.getEspecialidad().isBlank()) {
+                estadoPerfil = "incompleto";
+            }
+        }
+
+        // Retornar respuesta
+        return ResponseEntity.ok().body(
+                Map.of("token", token, "estadoPerfil", estadoPerfil)
+        );
     }
+
 
     @GetMapping("/verificar-token")
     public ResponseEntity<?> verificarToken() {

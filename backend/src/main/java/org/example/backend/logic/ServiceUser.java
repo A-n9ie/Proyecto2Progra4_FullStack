@@ -61,4 +61,9 @@ public class ServiceUser {
                 : null;
     }
 
+
+    public Usuario findByUsername(String username) {
+        return usuarioRepository.findByUsuario(username).orElse(null);
+    }
+
 }

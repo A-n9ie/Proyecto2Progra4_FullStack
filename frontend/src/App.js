@@ -19,43 +19,41 @@ import Schedule from "./pages/Principal/schedule";
 
 function App() {
     const [user, setUser] = useState({ id: null, rol: '', name: '' });
+    const [estadoPerfil, setEstadoPerfil] = useState(null);
 
     // Carga usuario de token
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {
-            // Validar el token con el backend
             fetch("http://localhost:8080/usuarios/verificar-token", {
-                headers: {
-                    "Authorization": "Bearer " + token
-                }
+                headers: { "Authorization": "Bearer " + token }
             })
                 .then(res => {
                     if (!res.ok) throw new Error();
+                    // Obtener usuario desde token y setear en estado
                     const usuario = getUser(token);
                     setUser(usuario);
+                    setEstadoPerfil(usuario.estadoPerfil); // <---- Aquí actualizo estadoPerfil
 
                     return fetch("http://localhost:8080/usuarios/me", {
-                        headers: {
-                            "Authorization": "Bearer " + token
-                        }
+                        headers: { "Authorization": "Bearer " + token }
                     });
                 })
                 .then(res => res.json())
                 .catch(() => {
-                    // Token inválido o error
                     localStorage.removeItem("token");
                     setUser({ id: null, rol: '', name: '' });
+                    setEstadoPerfil(null);
                 });
         }
     }, []);
 
-
+    // Decodifica token para obtener info usuario
     function getUser(token) {
         try {
             const parts = token.split(".");
             const payload = JSON.parse(atob(parts[1]));
-            return { id: payload.id, rol: payload.scope[0], name: payload.name };
+            return { id: payload.id, rol: payload.scope[0], name: payload.name, estadoPerfil: payload.estadoPerfil };
         } catch (err) {
             return { id: null, rol: '', name: '' };
         }
@@ -74,45 +72,58 @@ function App() {
 
         const data = await response.json();
         const token = data.token;
+        const estadoPerfil = data.estadoPerfil || null;  // <-- acá obtienes directamente el estadoPerfil
 
         localStorage.setItem("token", token);
+
+        // Aquí setea el usuario decodificando el token, y el estadoPerfil directo desde data
         const usuario = getUser(token);
+
         setUser(usuario);
-        return usuario;
+        setEstadoPerfil(estadoPerfil);
+
+        return { usuario, estadoPerfil };
     }
+
 
     function handleLogout() {
         localStorage.removeItem("token");
         setUser({ id: null, rol: '', name: '' });
+        setEstadoPerfil(null);
     }
 
     return (
         <div className="App">
             <BrowserRouter>
                 <Header user={user} handleLogout={handleLogout} />
-                <Main user={user} handleLogin={handleLogin} />
+                {/* Paso estadoPerfil a Main */}
+                <Main user={user} estadoPerfil={estadoPerfil} handleLogin={handleLogin} />
                 <Footer />
             </BrowserRouter>
         </div>
     );
 }
 
-function Main({ user, handleLogin }) {
+function Main({ user, estadoPerfil, handleLogin }) {
+    console.log("Main render - estadoPerfil:", estadoPerfil, "user:", user);
     return (
         <div className={"App-main"}>
             <AppProvider>
                 <Routes>
-                    {/* Página principal accesible para todos */}
                     <Route path="/" element={<Principal />} />
 
-                    {/* Login: redirecciona al rol correspondiente */}
                     <Route path="/login" element={
                         user.id
-                            ? (user.rol === 'Administrador'
-                                ? <Navigate to="/management" />
-                                : <Navigate to="/" />)
+                            ? (estadoPerfil === 'incompleto'
+                                ? <Navigate to="/profile" />
+                                : estadoPerfil === 'completo'
+                                    ? <Navigate to="/history" />
+                                    : user.rol === 'Administrador'
+                                        ? <Navigate to="/management" />
+                                        : <Navigate to="/" />)
                             : <Login handleLogin={handleLogin} />
                     } />
+
 
                     {/* Registro accesible para todos */}
                     <Route path="/register" element={<Register />} />
@@ -140,7 +151,7 @@ function Main({ user, handleLogin }) {
                                         : <Navigate to="/historyPatient" />)
                                     : <Navigate to="/login" />
                             } />
-                            </>
+                        </>
                     )}
 
                     {/* Ruta exclusiva para admin */}
@@ -152,6 +163,7 @@ function Main({ user, handleLogin }) {
         </div>
     );
 }
+
 
 function Header({ user, handleLogout }) {
     const navigate = useNavigate();

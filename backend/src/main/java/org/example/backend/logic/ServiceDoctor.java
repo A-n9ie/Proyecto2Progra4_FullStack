@@ -291,4 +291,9 @@ public class ServiceDoctor {
         return doctorRepository.findByAprobadoFalse();
     }
 
+
+    public Medico findByUser(Usuario usuario) {
+        return doctorRepository.findByUsuario(usuario);
+    }
+
 }

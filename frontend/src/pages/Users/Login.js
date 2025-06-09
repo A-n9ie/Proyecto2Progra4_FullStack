@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faLock } from '@fortawesome/free-solid-svg-icons';
@@ -30,8 +30,14 @@ function Login({ handleLogin }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await handleLogin(formData);
-            navigate("/home"); // redirección SPA (sin recarga)
+            const data = await handleLogin(formData); // espera y recibe el resultado
+            if (data.estadoPerfil === "incompleto") {
+                navigate("/profile");
+            } else if (data.usuario.rol === "Administrador") {
+                navigate("/management");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             setError("Credenciales inválidas desde LOGIN.JS");
         }
