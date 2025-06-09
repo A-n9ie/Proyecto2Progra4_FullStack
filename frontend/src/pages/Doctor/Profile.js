@@ -277,7 +277,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <input
                                     type="text"
                                     id="lugar_atencion"
-                                    name="lugar_atencion"
+                                    name="lugarAtencion"
                                     value={entity.lugarAtencion}
                                     onChange={handleChange}
                                     required

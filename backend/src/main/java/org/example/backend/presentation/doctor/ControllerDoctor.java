@@ -84,7 +84,6 @@ public class ControllerDoctor {
 
         serviceDoctor.editHorariosMedico(dto, usuario);
         return ResponseEntity.ok("Doctor actualizado");
-
     }
 
     @GetMapping("/history")
