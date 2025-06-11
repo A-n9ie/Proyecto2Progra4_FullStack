@@ -1,7 +1,7 @@
 #cuerpo_div_index{
     background-color: #FCAF58;
     padding: 5px;
-    width: 80%;
+    width: auto;
     border-radius: 10px;
     margin: 7% auto;
     overflow: auto;
@@ -51,6 +51,7 @@
     border-radius: 10px;
     background-color: white;
     width: 100%;
+    overflow: hidden;
 }
 
 .informacion_medico{
@@ -109,9 +110,9 @@
 
 .cada_cita form {
     display: grid;
-    grid-auto-flow: column;
+    grid-auto-flow: row;
     grid-auto-rows: auto;
-    grid-template-rows: repeat(4, auto);
+    grid-template-columns: repeat(3, auto);
 }
 
 .btn_schedule{
@@ -165,8 +166,8 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .medicos img {
-        animation: App-logo-spin infinite 1s linear;
+    .medicos img:hover{
+        animation: App-logo-spin infinite 0.1s linear;
     }
 }
 

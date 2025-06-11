@@ -131,7 +131,6 @@ public class SecurityConfig {
                                 "/management/**"
                         ).hasAuthority("Administrador")
 
-                        // Cualquier otra requiere autenticación
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

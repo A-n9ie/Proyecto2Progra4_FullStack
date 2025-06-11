@@ -47,7 +47,7 @@ public class ImagenController {
             if (tipo.equalsIgnoreCase("paciente")) {
                 Paciente paciente = pacienteRepository.findByCedula(cedula);
                 if (paciente != null) {
-                    paciente.setFotoUrl(nombreArchivo); // Guardamos solo el nombre del archivo
+                    paciente.setFotoUrl(nombreArchivo);
                     pacienteRepository.save(paciente);
                     return ResponseEntity.ok("Imagen del paciente subida correctamente.");
                 }
@@ -77,7 +77,7 @@ public class ImagenController {
 
         org.springframework.core.io.Resource recurso = new UrlResource(archivo.toURI());
         return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG) // O IMAGE_PNG si es PNG
+                .contentType(MediaType.IMAGE_JPEG)
                 .body(recurso);
     }
 }

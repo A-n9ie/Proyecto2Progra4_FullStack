@@ -19,7 +19,7 @@ function Login({ handleLogin }) {
         setTimeout(() => {
             setShowRegister(false);
             setIsClosing(false);
-        }, 400); // mismo tiempo que la animación CSS
+        }, 400);
     };
     //-----
 
@@ -30,7 +30,7 @@ function Login({ handleLogin }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const data = await handleLogin(formData); // espera y recibe el resultado
+            const data = await handleLogin(formData);
             if (data.estadoPerfil === "incompleto") {
                 navigate("/profile");
             } else if (data.usuario.rol === "Administrador") {
@@ -39,7 +39,7 @@ function Login({ handleLogin }) {
                 navigate("/");
             }
         } catch (err) {
-            setError("Credenciales inválidas desde LOGIN.JS");
+            setError("Credenciales inválidas");
         }
     };
 

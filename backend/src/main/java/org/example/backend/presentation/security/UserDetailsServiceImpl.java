@@ -21,7 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     DoctorRepository doctorRepository;
 
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,7 +39,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             }
         }
 
-        return usuario; // <- USÁ directamente el objeto usuario
+        return usuario;
     }
 
 

@@ -22,7 +22,6 @@ public class TokenService {
     }
 
     public String generateToken(Authentication authentication) {
-        // header + payload/claims + signature
         var header = new JWSHeader.Builder(jwtConfig.getAlgorithm()).type(JOSEObjectType.JWT).build();
         Instant now = Instant.now();
         var builder = new JWTClaimsSet.Builder().issuer("TotalSoft").issueTime(Date.from(now))

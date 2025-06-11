@@ -1,6 +1,8 @@
 package org.example.backend.presentation.usuarios;
 
 import jakarta.annotation.Resource;
+import org.example.backend.DTO.HorariosMedicosDTO;
+import org.example.backend.DTO.PerfilMedicoDTO;
 import org.example.backend.logic.*;
 import org.example.backend.presentation.security.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,11 +43,19 @@ public class ControllerUsuarios {
     @Autowired
     private TokenService tokenService;
 
-    @PostMapping("/notAuthorized")
-    public String error(Model model) {
-        model.addAttribute("error", "Acceso NO autorizado");
-        return "/presentation/error";
+    @GetMapping("/me")
+    public ResponseEntity<?> userLogin(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        String nombre = jwt.getClaim("name");
+        Usuario usuario = serviceUser.getUser(nombre);
+        Map<String, Object> usuarioLoggeado = new HashMap<>();
+        usuarioLoggeado.put("id", usuario.getId());
+        usuarioLoggeado.put("username", usuario.getUsuario());
+        usuarioLoggeado.put("rol", usuario.getRol());
+
+        return ResponseEntity.ok(usuarioLoggeado);
     }
+
 
     @PostMapping("/register")
     public ResponseEntity<String> registrarUsuario(
@@ -117,7 +131,6 @@ public class ControllerUsuarios {
 
         Usuario usuarioDB = serviceUser.findByUsername(user.getUsuario());
 
-        // Si es MEDICO, verificamos si su perfil está completo
         String estadoPerfil = "completo";
 
         if ("Medico".equals(usuarioDB.getRol())) {
@@ -127,7 +140,6 @@ public class ControllerUsuarios {
             }
         }
 
-        // Retornar respuesta
         return ResponseEntity.ok().body(
                 Map.of("token", token, "estadoPerfil", estadoPerfil)
         );

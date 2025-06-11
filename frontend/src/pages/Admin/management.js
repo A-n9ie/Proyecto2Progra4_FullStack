@@ -63,7 +63,7 @@ function Management() {
                     </div>
                     <h5 className="nombreSolicitante">
                         <span>{m.nombre}</span>
-                        <span>{m.id}</span>
+                        <span>{m.cedula}</span>
                     </h5>
                     <div className="BotonesAprobar">
                         {m.estado ? (
