@@ -95,7 +95,7 @@ function List({ list, handleList}) {
                     .map((m) => {
                         const horarios = m.horarios;
                     return (
-                        <div key={m.id} className="cada_medico">
+                        <div key={m.idMedico} className="cada_medico">
                             <div className="info_citas">
                                 <div className="informacion_medico">
                                         <img src={`http://localhost:8080/imagenes/ver/${m.fotoUrl}`} alt="Foto del médico"
