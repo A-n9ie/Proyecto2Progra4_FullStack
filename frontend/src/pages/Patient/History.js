@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
-import './History.css';
+import '../Users/History.css';
 import '../Principal/principal.css';
 
 function History(){
@@ -97,7 +97,7 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
 
     return (
         <>
-            <div className="cuerpo historial_col">
+            <div className="cuerpoH historial_col">
                 <div className="datos">
                     <h1>Paciente - </h1>
                     <h1>{nombrePaciente} </h1>
@@ -131,8 +131,8 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
                         <div className="informacion_personal">
                             <div className="separacion">
                                 <h5 className="nombre_medico">
-                                    <span>{c.nombreMedico}</span>
-                                    <span className="id_medico">{c.costoConsulta}</span>
+                                    <span>{c.nombreMedico} </span>
+                                    <span className="id_medico"> {c.costoConsulta}</span>
                                 </h5>
                                 <small className="especialidad_medico">{c.especialidad}</small>
                             </div>
@@ -151,7 +151,7 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
                                 >
                                     {c.estado}
                                 </button>
-                                {c.estado === "Atendida" && (
+                                {c.estado === "Atendida" && (!citaSeleccionada || citaSeleccionada.id !== c.id) && (
                                     <a
                                         href="#"
                                         onClick={(e) => {
@@ -162,12 +162,13 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
                                         <FontAwesomeIcon icon={faEye} className="icono-ojo" />
                                     </a>
                                 )}
+
                             </div>
 
 
                             {citaSeleccionada && citaSeleccionada.id === c.id && (
                                 <div className="modal">
-                                    <div className="modal-content">
+                                    <div className="modal-content-H">
                                         <a
                                             href="#"
                                             className="close"

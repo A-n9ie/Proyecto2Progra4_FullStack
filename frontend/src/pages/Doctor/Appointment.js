@@ -1,7 +1,7 @@
 import {useContext, useEffect, useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faEye, faTimes } from '@fortawesome/free-solid-svg-icons';
-import './History.css';
+import '../Users/History.css';
 import '../Principal/principal.css';
 
 function History(){
@@ -157,11 +157,11 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
     const [citaSeleccionada, setCitaSeleccionada] = useState(null);
 
     return (
-        <div className="cuerpo historial_col">
+        <div className="cuerpoH historial_col">
             <div className="datos">
                 <h1>Médico - </h1>
                 <h1>{nombreMedico}</h1>
-                <h1> - historial de citas</h1>
+                <h1> - Historial de citas</h1>
             </div>
 
             <div className="datos" id="fila_historial">
@@ -206,28 +206,34 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
 
                         <button name="estado_cita" id={c.estado}>{c.estado}</button>
                         <div className="estado_y_icono">
-                            {c.estado === 'Pendiente' && (
+                            {c.estado === 'Pendiente' && (!citaSeleccionada || citaSeleccionada.id !== c.id) && (
                                 <>
                                     <a onClick={() => setCitaSeleccionada(c)} style={{color: 'green'}}>
-                                        <FontAwesomeIcon icon={faCheck}/> Atender
+                                        <FontAwesomeIcon icon={faCheck} className="close"/> Atender
                                     </a>
 
-                                    <a onClick={() => cancel(c.id)}  style={{color: 'red'}}>
-                                        <FontAwesomeIcon icon={faTimes}/> Cancelar
+                                    <a onClick={() => cancel(c.id)} style={{color: 'red'}}>
+                                        <FontAwesomeIcon icon={faTimes} className="close"/> Cancelar
                                     </a>
                                 </>
                             )}
 
-                            {c.estado === 'Atendida' && (
-                                <a onClick={() => setCitaSeleccionada(c)} style={{color: 'blue'}}>
-                                    <FontAwesomeIcon icon={faEye}/>
+                            {c.estado === "Atendida" && (!citaSeleccionada || citaSeleccionada.id !== c.id) && (
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        setCitaSeleccionada(c);
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={faEye} className="icono-ojo" />
                                 </a>
                             )}
                         </div>
 
                             {citaSeleccionada?.id === c.id && (
                                 <div className="modal">
-                                    <div className="modal-content">
+                                    <div className="modal-content-H">
                                         <span className="close" onClick={() => setCitaSeleccionada(null)}>&times;</span>
                                         <h2>Detalles</h2>
                                         <p><strong>Fecha:</strong> {citaSeleccionada.fechaCita}</p>
@@ -235,7 +241,8 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                                         <p><strong>Paciente:</strong> {citaSeleccionada.nombrePaciente}</p>
                                         <p><strong>Médico:</strong> {citaSeleccionada.nombreMedico}</p>
                                         <p><strong>Estado:</strong> {citaSeleccionada.estado}</p>
-                                        <p><strong>Anotaciones:</strong> {citaSeleccionada.anotaciones || ''}</p>
+                                        <p><strong>Anotaciones:</strong> </p>
+                                        <p>{citaSeleccionada.anotaciones || ''}</p>
 
                                         {c.estado === 'Pendiente' && (
                                             <form onSubmit={(e) => {

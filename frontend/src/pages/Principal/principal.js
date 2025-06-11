@@ -79,7 +79,7 @@ function List({ list, handleList}) {
                             type="submit"
                             className={"btn_schedule"}
                         >
-                            SEARCH
+                            BUSCAR
                         </button>
                     </form>
                 </div>

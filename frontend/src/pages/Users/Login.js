@@ -82,7 +82,7 @@ function Login({ handleLogin }) {
                     </div>
 
                     <div className="loginSeccion">
-                        <input type="submit" value="Login" className="buttonLogin"/>
+                        <input type="submit" value="Iniciar sesión" className="buttonLogin"/>
                     </div>
                 </form>
 

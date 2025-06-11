@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from 'react';
 import {AppContext} from '../AppProvider';
-import './Profile.css';
+import '../Users/Profile.css';
 
 function Profile() {
     const {medicosState, setMedicosState} = useContext(AppContext);
@@ -326,7 +326,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label>Days:</label>
+                                <label>Días:</label>
                                 <div className="datos">
                                     {diasSemana.map(dia => (
                                         <div key={dia}>

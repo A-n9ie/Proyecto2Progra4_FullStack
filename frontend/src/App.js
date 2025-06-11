@@ -204,15 +204,15 @@ function Header({ user, handleLogout }) {
                                         {/* Mostrar solo si NO es administrador */}
                                         {user.rol !== 'Administrador' && (
                                             <>
-                                                <li><Link to="/profile">Profile</Link></li>
-                                                <li><Link to="/history">History</Link></li>
+                                                <li><Link to="/profile">Perfil</Link></li>
+                                                <li><Link to="/history">Historial</Link></li>
                                             </>
                                         )}
                                         {/* Mostrar solo si ES administrador */}
                                         {user.rol === 'Administrador' && (
                                             <li><Link to="/management">Gestión</Link></li>
                                         )}
-                                        <li><button onClick={onLogout}>Logout</button></li>
+                                        <li><button onClick={onLogout}>Cerrar sesión</button></li>
                                     </ul>
                                 </li>
                             )}

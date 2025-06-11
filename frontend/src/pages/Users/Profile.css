@@ -5,6 +5,7 @@
     width: 50%;
     display: flex;
     justify-content: center;
+    align-content: center;
     margin: 5% auto;
     box-shadow: 0 -4px 8px rgba(149, 89, 5, 0.1), 0 4px 8px rgba(9, 9, 215, 0.1);
 }
@@ -27,6 +28,7 @@
     padding: 2%;
     cursor: pointer;
     transition: background 0.3s ease;
+    width: 20%;
 }
 
 .col_datos button:hover {
@@ -73,7 +75,7 @@ textarea {
 .datos {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: auto;
     color: black;
     align-items: center;
 }

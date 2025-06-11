@@ -1,6 +1,6 @@
 import {useContext, useEffect, useState} from 'react';
 import {AppContext} from '../AppProvider';
-import './Profile.css';
+import '../Users/Profile.css';
 
 function Profile({user}) {
     const {pacientesState, setPacientesState} = useContext(AppContext);
