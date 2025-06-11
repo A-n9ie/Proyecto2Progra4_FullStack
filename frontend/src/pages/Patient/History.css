@@ -49,9 +49,3 @@
 #Atendida {
     background: lightgreen;
 }
-
-.estado_y_icono {
-    display: flex;
-    align-items: center;
-    gap: 50px; /* Ajusta el espacio entre el botón y el icono */
-}

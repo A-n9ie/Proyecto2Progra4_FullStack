@@ -47,6 +47,7 @@
 
 #Atendida {
     background: lightgreen;
+    cursor: pointer;
 }
 
 .estado_y_icono {

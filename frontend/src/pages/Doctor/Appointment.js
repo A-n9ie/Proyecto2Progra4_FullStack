@@ -159,15 +159,15 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
     return (
         <div className="cuerpo historial_col">
             <div className="datos">
-                <h1>Doctor - </h1>
+                <h1>Médico - </h1>
                 <h1>{nombreMedico}</h1>
-                <h1> - appointment history</h1>
+                <h1> - historial de citas</h1>
             </div>
 
             <div className="datos" id="fila_historial">
                 <div className="buscador">
                 <form className="buscar_especialidad_lugar" onSubmit={handleSearch}>
-                        <span>Status</span>
+                        <span>Estado</span>
                         <input
                             type="text"
                             name="status"
@@ -175,7 +175,7 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
                         />
-                        <span>Patient</span>
+                        <span>Paciente</span>
                         <input
                             type="text"
                             name="patient"
@@ -183,7 +183,7 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                             value={patient}
                             onChange={(e) => setPatient(e.target.value)}
                         />
-                        <button type="submit" name="buscar">Search</button>
+                        <button type="submit" name="buscar">Buscar</button>
                     </form>
                 </div>
             </div>
@@ -209,11 +209,11 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                             {c.estado === 'Pendiente' && (
                                 <>
                                     <a onClick={() => setCitaSeleccionada(c)} style={{color: 'green'}}>
-                                        <FontAwesomeIcon icon={faCheck}/> Attend
+                                        <FontAwesomeIcon icon={faCheck}/> Atender
                                     </a>
 
                                     <a onClick={() => cancel(c.id)}  style={{color: 'red'}}>
-                                        <FontAwesomeIcon icon={faTimes}/> Cancel
+                                        <FontAwesomeIcon icon={faTimes}/> Cancelar
                                     </a>
                                 </>
                             )}
@@ -229,13 +229,13 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                                 <div className="modal">
                                     <div className="modal-content">
                                         <span className="close" onClick={() => setCitaSeleccionada(null)}>&times;</span>
-                                        <h2>Appointment Details</h2>
-                                        <p><strong>Date:</strong> {citaSeleccionada.fechaCita}</p>
-                                        <p><strong>Time:</strong> {citaSeleccionada.horaCita}</p>
-                                        <p><strong>Patient:</strong> {citaSeleccionada.nombrePaciente}</p>
-                                        <p><strong>Doctor:</strong> {citaSeleccionada.nombreMedico}</p>
-                                        <p><strong>Status:</strong> {citaSeleccionada.estado}</p>
-                                        <p><strong>Annotations:</strong> {citaSeleccionada.anotaciones || 'N/A'}</p>
+                                        <h2>Detalles</h2>
+                                        <p><strong>Fecha:</strong> {citaSeleccionada.fechaCita}</p>
+                                        <p><strong>Hora:</strong> {citaSeleccionada.horaCita}</p>
+                                        <p><strong>Paciente:</strong> {citaSeleccionada.nombrePaciente}</p>
+                                        <p><strong>Médico:</strong> {citaSeleccionada.nombreMedico}</p>
+                                        <p><strong>Estado:</strong> {citaSeleccionada.estado}</p>
+                                        <p><strong>Anotaciones:</strong> {citaSeleccionada.anotaciones || ''}</p>
 
                                         {c.estado === 'Pendiente' && (
                                             <form onSubmit={(e) => {
@@ -243,10 +243,9 @@ function Show({ citas, cancel, attend, status, setStatus, patient, setPatient, h
                                                 const nota = e.target.anotaciones.value;
                                                 attend(citaSeleccionada.id, nota, () => setCitaSeleccionada(null));
                                             }}>
-                                                <label htmlFor="anotaciones">Note:</label>
                                                 <textarea id="anotaciones" name="anotaciones" rows="4" maxLength="200"
                                                           required/>
-                                                <button type="submit">Save</button>
+                                                <button type="submit">Guardar</button>
                                             </form>
                                         )}
                                     </div>

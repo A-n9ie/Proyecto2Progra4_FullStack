@@ -159,18 +159,4 @@ public class ControllerDoctor {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/administrador/management")
-    public String showDocsForApproval(Model model) {
-        model.addAttribute("Doctors", serviceDoctor.medicosFindAll());
-        return "/presentation/administrator/management";
-    }
-
-    @PostMapping("/aprobar")
-    public String aprobarDoctor(@RequestParam("id") int id, Model model) {
-        serviceDoctor.cambiarEstado(id, true);
-        model.addAttribute("Doctors", serviceDoctor.medicosFindAll());
-        return "/presentation/administrator/management";
-    }
-
-
 }

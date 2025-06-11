@@ -67,7 +67,7 @@ function Register({ onSuccess }) {
 
     function validar() {
         if (password.password_c !== personasState.persona.usuario.clave) {
-            alert("Passwords do NOT match");
+            setError("Las contraseñas no coinciden");
             return false;
         }
 
@@ -105,8 +105,8 @@ function Register({ onSuccess }) {
         })
             .then(async (response) => {
                 if (!response.ok) {
-                    const errorData = await response.json();
-                    setError(errorData.message);
+                    const errorText = await response.text();
+                    setError(errorText);
                     return;
                 }
                 setError(null);
@@ -123,7 +123,7 @@ function Register({ onSuccess }) {
             <form className="register slide-down" onSubmit={handleSave} encType="multipart/form-data">
                 <div>
                     <img src="/images/Registro%20Icon2.png" height="128" alt="Icon"/>
-                    <h2>REGISTER</h2>
+                    <h2>REGISTRO</h2>
                 </div>
 
                 {error && (
@@ -149,7 +149,7 @@ function Register({ onSuccess }) {
                     <input
                         type="text"
                         name="nombre"
-                        placeholder="Name"
+                        placeholder="Nombre"
                         required
                         value={personasState.persona.nombre}
                         onChange={handleChange}
@@ -161,7 +161,7 @@ function Register({ onSuccess }) {
                     <input
                         type="text"
                         name="username"
-                        placeholder="Username"
+                        placeholder="Usuario"
                         required
                         value={personasState.persona.usuario.username}
                         onChange={handleChange}
@@ -173,7 +173,7 @@ function Register({ onSuccess }) {
                     <input
                         type="password"
                         name="clave"
-                        placeholder="Password"
+                        placeholder="Contraseña"
                         required
                         value={personasState.persona.usuario.clave}
                         onChange={handleChange}
@@ -185,7 +185,7 @@ function Register({ onSuccess }) {
                     <input
                         type="password"
                         name="password_c"
-                        placeholder="Confirm Password"
+                        placeholder="Confirmar contraseña"
                         required
                         value={password.password_c}
                         onChange={handleChange}
@@ -200,16 +200,16 @@ function Register({ onSuccess }) {
                         value={personasState.persona.usuario.rol || ''}
                         onChange={handleChange}
                     >
-                        <option value="">Select role</option>
-                        <option value="Paciente">Patient</option>
-                        <option value="Medico">Doctor</option>
+                        <option value="">Seleccione rol</option>
+                        <option value="Paciente">Paciente</option>
+                        <option value="Medico">Medico</option>
                     </select>
 
                 </div>
 
                 <div className="campo">
                     <FontAwesomeIcon icon={faFolder} className="icon"/>
-                    <label htmlFor="photo" className="upload">Photo</label>
+                    <label htmlFor="photo" className="upload">Foto</label>
                     <input
                         type="file"
                         id="photo"
@@ -222,7 +222,7 @@ function Register({ onSuccess }) {
                 </div>
 
                 <div className="campo">
-                    <button type="submit">Register</button>
+                    <button type="submit">Registrarse</button>
                 </div>
             </form>
     );

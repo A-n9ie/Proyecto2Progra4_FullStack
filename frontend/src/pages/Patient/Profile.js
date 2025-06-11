@@ -111,7 +111,7 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="username">Username:</label>
+                                <label htmlFor="username">Usuario:</label>
                                 <input
                                     type="text"
                                     id="username"
@@ -137,7 +137,7 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
                                 <br/><br/>
                             </div>
                             <div className="col_datos">
-                                <label htmlFor="nombre">Name:</label>
+                                <label htmlFor="nombre">Nombre:</label>
                                 <input
                                     type="text"
                                     id="nombre"
@@ -152,7 +152,7 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="telefono">Phone-number:</label>
+                                <label htmlFor="telefono">Teléfono:</label>
                                 <input
                                     type="text"
                                     id="telefono"
@@ -163,7 +163,7 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
                                 <br/><br/>
                             </div>
                             <div className="col_datos">
-                                <label htmlFor="direccion">Address:</label>
+                                <label htmlFor="direccion">Dirección:</label>
                                 <input
                                     type="text"
                                     id="direccion"
@@ -174,7 +174,7 @@ function ShowPaciente({ entity, handleChange, handleSave, user}) {
                                 <br/><br/>
                             </div>
                         </div>
-                        <button type="submit"> Save changes</button>
+                        <button type="submit">Guardar cambios</button>
                     </div>
                 </div>
             </form>

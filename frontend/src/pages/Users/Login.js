@@ -94,8 +94,8 @@ function Login({ handleLogin }) {
                 </div>
 
                 {error && (
-                    <div className="toast">
-                        <p>{error}</p>
+                    <div className={`toast ${error.startsWith("OK:") ? 'success' : 'error'}`}>
+                        <p>{error.replace("OK:", "").trim()}</p>
                     </div>
                 )}
             </div>
@@ -106,7 +106,7 @@ function Login({ handleLogin }) {
                         <Register onSuccess={() => {
                             closeModal();
                             setTimeout(() => {
-                                alert("Successfull");
+                                setError("OK: ¡Registro exitoso!");
                             }, 500);
                         }} />
                     </div>

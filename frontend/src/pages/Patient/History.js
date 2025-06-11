@@ -99,22 +99,22 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
         <>
             <div className="cuerpo historial_col">
                 <div className="datos">
-                    <h1>Patient - </h1>
+                    <h1>Paciente - </h1>
                     <h1>{nombrePaciente} </h1>
-                    <h1> - appointment history</h1>
+                    <h1> - Historial de citas</h1>
                 </div>
 
                 <div className="datos" id="fila_historial">
                     <div className="buscador">
                         <form className="buscar_especialidad_lugar" onSubmit={handleSearch}>
-                            <span>Status</span>
+                            <span>Estado</span>
                             <input type="text" name="status" placeholder="All" value={status}
                                    onChange={(e) => setStatus(e.target.value)}/>
-                            <span>Doctor</span>
+                            <span>Médico</span>
                             <input type="text" name="doctor" placeholder="" value={doctor}
                                    onChange={(e) => setDoctor(e.target.value)}/>
                             <button type="submit" name="buscar">
-                                Search
+                                Buscar
                             </button>
                         </form>
                     </div>
@@ -178,29 +178,29 @@ function Show({ citas, status, setStatus, doctor, setDoctor, handleSearch, nombr
                                         >
                                             &times;
                                         </a>
-                                        <h2>Appointment Details</h2>
+                                        <h2>Detalles</h2>
                                         <p>
-                                            <strong>Date:</strong>{" "}
+                                            <strong>Fecha:</strong>{" "}
                                             <span>{citaSeleccionada.fechaCita}</span>
                                         </p>
                                         <p>
-                                            <strong>Time:</strong>{" "}
+                                            <strong>Hora:</strong>{" "}
                                             <span>{citaSeleccionada.horaCita}</span>
                                         </p>
                                         <p>
-                                            <strong>Patient:</strong>{" "}
+                                            <strong>Paciente:</strong>{" "}
                                             <span>{citaSeleccionada.nombrePaciente}</span>
                                         </p>
                                         <p>
-                                            <strong>Doctor:</strong>{" "}
+                                            <strong>Médico:</strong>{" "}
                                             <span>{citaSeleccionada.nombreMedico}</span>
                                         </p>
                                         <p>
-                                            <strong>Status:</strong>{" "}
+                                            <strong>Estado:</strong>{" "}
                                             <span>{citaSeleccionada.estado}</span>
                                         </p>
                                         <p>
-                                            <strong>Annotations:</strong>{" "}
+                                            <strong>Anotaciones:</strong>{" "}
                                             <span>{citaSeleccionada.anotaciones}</span>
                                         </p>
                                     </div>

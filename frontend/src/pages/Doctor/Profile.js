@@ -206,7 +206,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="username">Username:</label>
+                                <label htmlFor="username">Usuario:</label>
                                 <input
                                     type="text"
                                     id="datos"
@@ -231,7 +231,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <br/><br/>
                             </div>
                             <div className="col_datos">
-                                <label htmlFor="nombre">Name:</label>
+                                <label htmlFor="nombre">Nombre:</label>
                                 <input
                                     type="text"
                                     id="datos"
@@ -246,7 +246,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="especialidad">Speciality:</label>
+                                <label htmlFor="especialidad">Especialidad:</label>
                                 <input
                                     type="text"
                                     id="datos"
@@ -258,7 +258,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                 <br/><br/>
                             </div>
                             <div className="col_datos">
-                                <label htmlFor="costo_consulta">Consultation fee:</label>
+                                <label htmlFor="costo_consulta">Costo de consulta:</label>
                                 <input
                                     type="number"
                                     id="costoConsulta"
@@ -273,7 +273,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
 
                         <div className="datos">
                             <div className="col_datos">
-                                <label htmlFor="lugar_atencion">Location:</label>
+                                <label htmlFor="lugar_atencion">Lugar de atención:</label>
                                 <input
                                     type="text"
                                     id="lugar_atencion"
@@ -288,7 +288,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                         {/*los que ya tiene*/}
                         <div className="datos">
                             <div className="col_datos">
-                                <label>Current Schedule</label>
+                                <label>Horario</label>
                                 <div className="datos">
                                     {(entity.dias || []).map(({
                                                                   diaSemana,
@@ -298,10 +298,10 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                                               }, idx) => (
                                         <div key={diaSemana}>
                                             <div key={diaSemana}>
-                                                <label>{diaSemana} <br/> START {horarioInicio} <br/> END: {horarioFin}
+                                                <label>{diaSemana} <br/> Inicio: {horarioInicio} <br/> Fin: {horarioFin}
                                                 </label>
                                             </div>
-                                            <label>Frequency (minutes): {frecuenciaCitas}</label>
+                                            <label>Frecuencia (minutos): {frecuenciaCitas}</label>
                                         </div>
                                     ))}
                                     <br/><br/>
@@ -311,7 +311,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                         <div className="datos">
                             <div className="col_datos">
                                 <div id="perfil_in">
-                                    <label htmlFor="presentacion">Presentation:</label>
+                                    <label htmlFor="presentacion">Presentación:</label>
                                     <textarea
                                         id="presentacion"
                                         name="presentacion"
@@ -341,7 +341,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                             {isDiaSelected(dia) && (
                                                 <div>
                                                     <label>
-                                                        START:</label>
+                                                        Inicio:</label>
                                                     <input id={"tiempo"}
                                                         type="time"
                                                         value={entity.dias.find(d => d.diaSemana === dia)?.horarioInicio || '00:00'}
@@ -352,7 +352,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                                     />
 
                                                     <label>
-                                                        END:
+                                                        Fin:
                                                     </label>
                                                     <input id={"tiempo"}
                                                         type="time"
@@ -380,7 +380,7 @@ function Show({ entity, handleChange, handleSave, handleHorarioDiaChange, diasSe
                                         </div>
                                     ))}
                                 </div>
-                                <button type="submit">Save changes</button>
+                                <button type="submit">Guardar cambios</button>
                             </div>
                         </div>
                     </div>

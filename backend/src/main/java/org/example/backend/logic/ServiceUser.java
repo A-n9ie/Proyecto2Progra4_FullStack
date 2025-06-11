@@ -35,7 +35,7 @@ public class ServiceUser {
 
     public void addUser(Usuario user) {
         if (getUser(user.getUsername()) != null) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username Already Exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Usuario existente");
         }
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         user.setClave(passwordEncoder.encode(user.getClave()));
