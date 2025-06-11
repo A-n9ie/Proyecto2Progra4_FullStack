@@ -53,12 +53,19 @@ public class ControllerUsuarios {
             @RequestParam(value = "foto", required = false) MultipartFile foto) {
 
         try {
-            if(rol.equals("Medico"))
-                if(serviceDoctor.findDoctor(cedula) != null)
+            if (rol.equals("Medico")) {
+                if (serviceDoctor.findDoctor(cedula) != null) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("El medico ya existe");
-            else
-                if(servicePatient.findPatient(cedula) != null)
+                }
+            } else {
+                if (servicePatient.findPatient(cedula) != null) {
                     return ResponseEntity.status(HttpStatus.CONFLICT).body("El paciente ya existe");
+                }
+            }
+
+            if (serviceUser.findByUsername(username) != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("El nombre de usuario ya existe");
+            }
             Usuario usuario = new Usuario();
             usuario.setUsuario(username);
             usuario.setClave(clave);
